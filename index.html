@@ -1210,10 +1210,14 @@ You can contact me by <a href="mailto:gianluigilopardo@gmail.com">e-mail</a>, on
     
     
       
+        
+        
+      
+      
     
 
     <div class="mb-3">
-      <form name="contact" method="POST" netlify netlify-honeypot="welcome-bot" data-netlify-recaptcha="true">
+      <form name="contact" method="POST" action="https://formspree.io/f/%!s(<nil>)"  data-netlify-recaptcha="true">
         <div class="form-group form-inline">
           <label class="sr-only" for="inputName">Name</label>
           <input type="text" name="name" class="form-control w-100" id="inputName" placeholder="Name" required>
@@ -1226,13 +1230,6 @@ You can contact me by <a href="mailto:gianluigilopardo@gmail.com">e-mail</a>, on
           <label class="sr-only" for="inputMessage">Message</label>
           <textarea name="message" class="form-control" id="inputMessage" rows="5" placeholder="Message" required></textarea>
         </div>
-        
-          <div class="d-none">
-            <label>Do not fill this field unless you are a bot: <input name="welcome-bot"></label>
-          </div>
-          
-            <div class="form-group" data-netlify-recaptcha="true"></div>
-          
         
         <button type="submit" class="btn btn-outline-primary px-3 py-2">Send</button>
       </form>
