@@ -1,3 +1,3 @@
 User-agent: *
 
-Sitemap: https://gianluigilopardo.github.io/sitemap.xml
+Sitemap: https://gianluigilopardo.science/sitemap.xml
