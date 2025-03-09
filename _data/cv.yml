@@ -2,96 +2,31 @@
   type: map
   contents:
     - name: Full Name
-      value: Albert Einstein
-    - name: Date of Birth
-      value: 14th March 1879
+      value: Gianluigi Lopardo
+    - name: Email
+      value: gianluigilopardo@gmail.com
     - name: Languages
-      value: English, German
+      value: Italian, English, French
 
 - title: Education
   type: time_table
   contents:
-    - title: PhD
-      institution: University of Zurich, Zurich, Switzerland
-      year: 1905
+    - title: Ph.D. in Applied Mathematics
+      institution: Inria & Université Côte d'Azur, France
+      year: 2024
       description:
-        - Description 1.
-        - Description 2.
-        - title: Description 3.
-          contents:
-            - Sub-description 1.
-            - Sub-description 2.
-    - title: Federal teaching diploma
-      institution: Eidgenössische Technische Hochschule, Zurich, Switzerland
-      year: 1900
+        - Thesis on the Foundations of Machine Learning Interpretability
+        - Supervised by Damien Garreau and Frédéric Precioso
+    - title: M.Sc. in Mathematical Engineering
+      institution: Politecnico di Torino, Italy
+      year: 2021
       description:
-        - Description 1.
-        - Description 2.
-
-- title: Experience
-  type: time_table
-  contents:
-    - title: Professor of Theoretical Physics
-      institution: Institute for Advanced Study, Princeton University
-      year: 1933 - 1955
+        - Thesis: Explainable AI for business decision-making
+        - Supervisors: Prof. Elena Maria Baralis (PoliTo), Prof. Damien Garreau (UCA/Inria), Prof. Frédéric Precioso (UCA/Inria), Dr. Greger Ottosson (IBM)
+        - Main courses: Machine Learning and Deep Learning, Quantitative methods for risk management, Financial Engineering, Business intelligence for big data, Advanced Statistics
+    - title: B.Sc. in Applied Mathematics
+      institution: Politecnico di Torino, Italy
+      year: 2019
       description:
-        - Description 1.
-        - Description 2.
-        - title: Description 3.
-          contents:
-            - Sub-description 1.
-            - Sub-description 2.
-    - title: Visiting Professor
-      institution: California Institute of Technology, Pasadena, California, US
-      year: 1933
-      description:
-        - Description 1.
-        - Description 2.
-
-    - title: Director
-      institution: Kaiser Wilhelm Institute for Physics, Berlin, Germany.
-      year: 1917-1933
-
-    - title: Professor of Theoretical Physics
-      institution: Karl-Ferdinand University, Prague, Czechoslovakia
-      year: 1911 - 1917
-      description:
-
-    - title: Associate Professor of Theoretical Physics
-      institution: University of Zurich, Zurich, Switzerland
-      year: 1909 - 1911
-
-- title: Open Source Projects
-  type: time_table
-  contents:
-    - title: <a href="https://github.com/alshedivat/al-folio">al-folio</a>
-      year: 2015-now
-      description: A beautiful, simple, clean, and responsive Jekyll theme for academics.
-
-- title: Honors and Awards
-  type: time_table
-  contents:
-    - year: 1921
-      items:
-        - Nobel Prize in Physics
-        - Matteucci Medal
-    - year: 2029
-      items:
-        - Max Planck Medal
-
-- title: Academic Interests
-  type: nested_list
-  contents:
-    - title: Topic 1.
-      items:
-        - Description 1.
-        - Description 2.
-    - title: Topic 2.
-      items:
-        - Description 1.
-        - Description 2.
-
-- title: Other Interests
-  type: list
-  contents:
-    - <u>Hobbies:</u> Hobby 1, Hobby 2, etc.
+        - Thesis: Quantitative and qualitative analysis on the relation between innovation and economic performances in companies
+        - Main courses: Probability and Statistics, Economics, Object-oriented programming, Database

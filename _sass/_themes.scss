@@ -1,159 +1,169 @@
 /*******************************************************************************
- * Themes
+ * Themes - ECB-like Blue Color Palette
  ******************************************************************************/
 
-@use "sass:color";
+ @use "sass:color";
 
-:root {
-  --global-bg-color: #{$white-color};
-  --global-code-bg-color: #{$code-bg-color-light};
-  --global-text-color: #{$black-color};
-  --global-text-color-light: #{$grey-color};
-  --global-theme-color: #{$purple-color};
-  --global-hover-color: #{$purple-color};
-  --global-hover-text-color: #{$white-color};
-  --global-footer-bg-color: #{$grey-color-dark};
-  --global-footer-text-color: #{$grey-color-light};
-  --global-footer-link-color: #{$white-color};
-  --global-distill-app-color: #{$grey-color};
-  --global-divider-color: rgba(0, 0, 0, 0.1);
-  --global-card-bg-color: #{$white-color};
-  --global-highlight-color: #{$red-color-dark};
-  --global-back-to-top-bg-color: rgba(
-    #{color.channel($black-color, "red", $space: rgb)},
-    #{color.channel($black-color, "green", $space: rgb)},
-    #{color.channel($black-color, "blue", $space: rgb)},
-    0.4
-  );
-  --global-back-to-top-text-color: #{$white-color};
-  --global-newsletter-bg-color: #{$white-color};
-  --global-newsletter-text-color: #{$black-color};
-
-  --global-tip-block: #42b983;
-  --global-tip-block-bg: #e2f5ec;
-  --global-tip-block-text: #215d42;
-  --global-tip-block-title: #359469;
-  --global-warning-block: #e7c000;
-  --global-warning-block-bg: #fff8d8;
-  --global-warning-block-text: #6b5900;
-  --global-warning-block-title: #b29400;
-  --global-danger-block: #c00;
-  --global-danger-block-bg: #ffe0e0;
-  --global-danger-block-text: #600;
-  --global-danger-block-title: #c00;
-
-  #light-toggle-system {
-    padding-left: 10px;
-    padding-top: 12px;
-    display: block;
-  }
-
-  #light-toggle-dark {
-    display: none;
-  }
-
-  #light-toggle-light {
-    display: none;
-  }
-
-  .only-light {
-    display: block;
-  }
-
-  .only-dark {
-    display: none;
-  }
-
-  #back-to-top {
-    color: var(--global-back-to-top-text-color);
-    background: var(--global-back-to-top-bg-color);
-    bottom: $back-to-top-bottom;
-    right: $back-to-top-right;
-    height: $back-to-top-height;
-    width: $back-to-top-width;
-    z-index: $back-to-top-z-index;
-  }
-}
-
-html[data-theme="dark"] {
-  --global-bg-color: #{$grey-color-dark};
-  --global-code-bg-color: #{$code-bg-color-dark};
-  --global-text-color: #{$grey-color-light};
-  --global-text-color-light: #{$grey-color};
-  --global-theme-color: #{$cyan-color};
-  --global-hover-color: #{$cyan-color};
-  --global-hover-text-color: #{$white-color};
-  --global-footer-bg-color: #{$grey-color-light};
-  --global-footer-text-color: #{$grey-color-dark};
-  --global-footer-link-color: #{$black-color};
-  --global-distill-app-color: #{$grey-color-light};
-  --global-divider-color: #424246;
-  --global-card-bg-color: #{$grey-900};
-  --global-back-to-top-bg-color: rgba(
-    #{color.channel($white-color, "red", $space: rgb)},
-    #{color.channel($white-color, "green", $space: rgb)},
-    #{color.channel($white-color, "blue", $space: rgb)},
-    0.5
-  );
-  --global-back-to-top-text-color: #{$black-color};
-  --global-newsletter-bg-color: #{$grey-color-light};
-  --global-newsletter-text-color: #{$grey-color-dark};
-
-  --global-tip-block: #42b983;
-  --global-tip-block-bg: #e2f5ec;
-  --global-tip-block-text: #215d42;
-  --global-tip-block-title: #359469;
-  --global-warning-block: #e7c000;
-  --global-warning-block-bg: #fff8d8;
-  --global-warning-block-text: #6b5900;
-  --global-warning-block-title: #b29400;
-  --global-danger-block: #c00;
-  --global-danger-block-bg: #ffe0e0;
-  --global-danger-block-text: #600;
-  --global-danger-block-title: #c00;
-
-  .only-light {
-    display: none;
-  }
-
-  .only-dark {
-    display: block;
-  }
-}
-
-html[data-theme-setting="dark"] {
-  #light-toggle-system {
-    display: none;
-  }
-
-  #light-toggle-dark {
-    padding-left: 10px;
-    padding-top: 12px;
-    display: block;
-  }
-
-  #light-toggle-light {
-    display: none;
-  }
-
-  #back-to-top {
-    color: var(--global-back-to-top-text-color);
-    background: var(--global-back-to-top-bg-color);
-  }
-}
-
-html[data-theme-setting="light"] {
-  #light-toggle-system {
-    display: none;
-  }
-
-  #light-toggle-dark {
-    display: none;
-  }
-
-  #light-toggle-light {
-    padding-left: 10px;
-    padding-top: 12px;
-    display: block;
-  }
-}
+ // Define ECB blue color variables
+ $ecb-blue: #004996;         // Primary ECB blue
+ $ecb-blue-light: #0062c3;   // Lighter blue
+ $ecb-blue-dark: #003370;    // Darker blue
+ $ecb-blue-very-light: #e6f0fa; // Very light blue for backgrounds
+ $ecb-blue-very-dark: #001f4d; // Very dark blue
+ $ecb-yellow: #ffd700;       // ECB accent gold/yellow
+ 
+ :root {
+   --global-bg-color: #{$white-color};
+   --global-code-bg-color: #{$code-bg-color-light};
+   --global-text-color: #{$black-color};
+   --global-text-color-light: #{$grey-color};
+   --global-theme-color: #{$ecb-blue};
+   --global-hover-color: #{$ecb-blue-light};
+   --global-hover-text-color: #{$white-color};
+   --global-footer-bg-color: #{$ecb-blue-dark};
+   --global-footer-text-color: #{$grey-color-light};
+   --global-footer-link-color: #{$white-color};
+   --global-distill-app-color: #{$grey-color};
+   --global-divider-color: rgba(0, 0, 0, 0.1);
+   --global-card-bg-color: #{$white-color};
+   --global-highlight-color: #{$ecb-yellow};
+   --global-back-to-top-bg-color: rgba(
+     #{color.channel($ecb-blue, "red", $space: rgb)},
+     #{color.channel($ecb-blue, "green", $space: rgb)},
+     #{color.channel($ecb-blue, "blue", $space: rgb)},
+     0.8
+   );
+   --global-back-to-top-text-color: #{$white-color};
+   --global-newsletter-bg-color: #{$white-color};
+   --global-newsletter-text-color: #{$black-color};
+ 
+   --global-tip-block: #{$ecb-blue-light};
+   --global-tip-block-bg: #{$ecb-blue-very-light};
+   --global-tip-block-text: #{$ecb-blue-dark};
+   --global-tip-block-title: #{$ecb-blue};
+   --global-warning-block: #{$ecb-yellow};
+   --global-warning-block-bg: rgba(255, 215, 0, 0.15);
+   --global-warning-block-text: #6b5900;
+   --global-warning-block-title: #b29400;
+   --global-danger-block: #c00;
+   --global-danger-block-bg: #ffe0e0;
+   --global-danger-block-text: #600;
+   --global-danger-block-title: #c00;
+ 
+   #light-toggle-system {
+     padding-left: 10px;
+     padding-top: 12px;
+     display: block;
+   }
+ 
+   #light-toggle-dark {
+     display: none;
+   }
+ 
+   #light-toggle-light {
+     display: none;
+   }
+ 
+   .only-light {
+     display: block;
+   }
+ 
+   .only-dark {
+     display: none;
+   }
+ 
+   #back-to-top {
+     color: var(--global-back-to-top-text-color);
+     background: var(--global-back-to-top-bg-color);
+     bottom: $back-to-top-bottom;
+     right: $back-to-top-right;
+     height: $back-to-top-height;
+     width: $back-to-top-width;
+     z-index: $back-to-top-z-index;
+   }
+ }
+ 
+ html[data-theme="dark"] {
+   --global-bg-color: #{$grey-color-dark};
+   --global-code-bg-color: #{$code-bg-color-dark};
+   --global-text-color: #{$grey-color-light};
+   --global-text-color-light: #{$grey-color};
+   --global-theme-color: #{$ecb-blue-light};
+   --global-hover-color: #{$ecb-blue};
+   --global-hover-text-color: #{$white-color};
+   --global-footer-bg-color: #{$ecb-blue-very-dark};
+   --global-footer-text-color: #{$grey-color-light};
+   --global-footer-link-color: #{$white-color};
+   --global-distill-app-color: #{$grey-color-light};
+   --global-divider-color: #424246;
+   --global-card-bg-color: #{$grey-900};
+   --global-highlight-color: #{$ecb-yellow};
+   --global-back-to-top-bg-color: rgba(
+     #{color.channel($ecb-blue-light, "red", $space: rgb)},
+     #{color.channel($ecb-blue-light, "green", $space: rgb)},
+     #{color.channel($ecb-blue-light, "blue", $space: rgb)},
+     0.8
+   );
+   --global-back-to-top-text-color: #{$white-color};
+   --global-newsletter-bg-color: #{$grey-color-light};
+   --global-newsletter-text-color: #{$grey-color-dark};
+ 
+   --global-tip-block: #{$ecb-blue-light};
+   --global-tip-block-bg: rgba(0, 98, 195, 0.2);
+   --global-tip-block-text: #{$ecb-blue-very-light};
+   --global-tip-block-title: #{$ecb-blue-light};
+   --global-warning-block: #{$ecb-yellow};
+   --global-warning-block-bg: rgba(255, 215, 0, 0.2);
+   --global-warning-block-text: #fff8d8;
+   --global-warning-block-title: #{$ecb-yellow};
+   --global-danger-block: #ff3333;
+   --global-danger-block-bg: rgba(204, 0, 0, 0.2);
+   --global-danger-block-text: #ffe0e0;
+   --global-danger-block-title: #ff3333;
+ 
+   .only-light {
+     display: none;
+   }
+ 
+   .only-dark {
+     display: block;
+   }
+ }
+ 
+ html[data-theme-setting="dark"] {
+   #light-toggle-system {
+     display: none;
+   }
+ 
+   #light-toggle-dark {
+     padding-left: 10px;
+     padding-top: 12px;
+     display: block;
+   }
+ 
+   #light-toggle-light {
+     display: none;
+   }
+ 
+   #back-to-top {
+     color: var(--global-back-to-top-text-color);
+     background: var(--global-back-to-top-bg-color);
+   }
+ }
+ 
+ html[data-theme-setting="light"] {
+   #light-toggle-system {
+     display: none;
+   }
+ 
+   #light-toggle-dark {
+     display: none;
+   }
+ 
+   #light-toggle-light {
+     padding-left: 10px;
+     padding-top: 12px;
+     display: block;
+   }
+ }
+ 

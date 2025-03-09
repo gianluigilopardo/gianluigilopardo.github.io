@@ -1,115 +1,121 @@
----
----
 
-@string{aps = {American Physical Society,}}
 
-@book{einstein1920relativity,
-  title={Relativity: the Special and General Theory},
-  author={Einstein, Albert},
-  year={1920},
-  publisher={Methuen & Co Ltd},
-  html={relativity.html}
-}
-
-@book{einstein1956investigations,
+@phdthesis{lopardo2024foundation,
+	title = {{Foundations of Machine Learning Interpretability}},
+	author = {Lopardo, Gianluigi},
+	year = 2024,
+	school = {Université Côte d'Azur},
   bibtex_show={true},
-  title={Investigations on the Theory of the Brownian Movement},
-  author={Einstein, Albert},
-  year={1956},
-  publisher={Courier Corporation},
-  preview={brownian-motion.gif}
-}
-
-@article{einstein1950meaning,
-  abbr={AJP},
-  bibtex_show={true},
-  title={The meaning of relativity},
-  author={Einstein, Albert and Taub, AH},
-  journal={American Journal of Physics},
-  volume={18},
-  number={6},
-  pages={403--404},
-  year={1950},
-  publisher={American Association of Physics Teachers}
-}
-
-@article{PhysRev.47.777,
-  abbr={PhysRev},
-  title={Can Quantum-Mechanical Description of Physical Reality Be Considered Complete?},
-  author={Einstein*†, A. and Podolsky*, B. and Rosen*, N.},
-  abstract={In a complete theory there is an element corresponding to each element of reality. A sufficient condition for the reality of a physical quantity is the possibility of predicting it with certainty, without disturbing the system. In quantum mechanics in the case of two physical quantities described by non-commuting operators, the knowledge of one precludes the knowledge of the other. Then either (1) the description of reality given by the wave function in quantum mechanics is not complete or (2) these two quantities cannot have simultaneous reality. Consideration of the problem of making predictions concerning a system on the basis of measurements made on another system that had previously interacted with it leads to the result that if (1) is false then (2) is also false. One is thus led to conclude that the description of reality as given by a wave function is not complete.},
-  journal={Phys. Rev.},
-  location={New Jersey},
-  volume={47},
-  issue={10},
-  pages={777--780},
-  numpages={0},
-  year={1935},
-  month={May},
-  publisher=aps,
-  doi={10.1103/PhysRev.47.777},
-  url={http://link.aps.org/doi/10.1103/PhysRev.47.777},
-  html={https://journals.aps.org/pr/abstract/10.1103/PhysRev.47.777},
-  pdf={example_pdf.pdf},
-  altmetric={248277},
-  dimensions={true},
-  google_scholar_id={qyhmnyLat1gC},
-  video={https://www.youtube-nocookie.com/embed/aqz-KE-bpKQ},
-  additional_info={. *More Information* can be [found here](https://github.com/alshedivat/al-folio/)},
-  annotation={* Example use of superscripts<br>† Albert Einstein},
+  preview={},
+  html={https://theses.hal.science/tel-04917007/},  
+  pdf={https://theses.hal.science/tel-04917007v1/document},
   selected={true},
-  inspirehep_id = {3255}
+  abstract={The rising use of complex Machine Learning (ML) models, especially in critical applications, has highlighted the urgent need for interpretability methods. Despite the variety of solutions proposed to explain automated algorithmic decisions, understanding their decision-making process remains a challenge. This manuscript investigates the interpretability of ML models, using mathematical analysis and empirical evaluation to compare existing methods and propose novel solutions.Our main focus is on post-hoc interpretability methods, which provide insights into the decision-making process of ML models post-training, independent of specific model architectures. We delve into Natural Language Processing (NLP), exploring techniques for explaining text models.We address a key challenge: interpretability methods can yield varied explanations even for simple models. This highlights a critical issue: the absence of a robust theoretical foundation for these methods. To address this issue, we use a rigorous theoretical framework to formally analyze existing interpretability techniques, assessing their behavior and limitations.Building on this, we propose a novel explainer to provide a more faithful and robust approach to interpreting text data models. We also engage with the debate on the effectiveness of attention weights as explanatory tools within powerful transformer architectures.Through this analysis, we expose the strengths and limitations of existing interpretability methods and pave the way for more reliable, theoretically grounded approaches. This will lead to a deeper understanding of how complex models make decisions, fostering trust and responsible deployment in critical ML applications.},
 }
 
-@article{einstein1905molekularkinetischen,
-  title={{\"U}ber die von der molekularkinetischen Theorie der W{\"a}rme geforderte Bewegung von in ruhenden Fl{\"u}ssigkeiten suspendierten Teilchen},
-  author={Einstein, A.},
-  journal={Annalen der physik},
-  volume={322},
-  number={8},
-  pages={549--560},
-  year={1905},
-  publisher={Wiley Online Library}
-}
 
-@article{einstein1905movement,
-  abbr={Ann. Phys.},
-  title={Un the movement of small particles suspended in statiunary liquids required by the molecular-kinetic theory 0f heat},
-  author={Einstein, A.},
-  journal={Ann. Phys.},
-  volume={17},
-  pages={549--560},
-  year={1905}
-}
-
-@article{einstein1905electrodynamics,
-  title={On the electrodynamics of moving bodies},
-  author={Einstein, A.},
-  year={1905}
-}
-
-@Article{einstein1905photoelectriceffect,
+@inproceedings{lopardo2024attention,
+	title = {{Attention Meets Post-hoc Interpretability: A Mathematical Perspective}},
+	author = {Lopardo, Gianluigi and Precioso, Frederic and Garreau, Damien},
+	year = 2024,
+	booktitle = {{International Conference on Machine Learning (ICML)}},
+	organization = {PMLR},
   bibtex_show={true},
-  abbr={Ann. Phys.},
-  title="{{\"U}ber einen die Erzeugung und Verwandlung des Lichtes betreffenden heuristischen Gesichtspunkt}",
-  author={Albert Einstein},
-  abstract={This is the abstract text.},
-  journal={Ann. Phys.},
-  volume={322},
-  number={6},
-  pages={132--148},
-  year={1905},
-  doi={10.1002/andp.19053220607},
-  award={Albert Einstein receveid the **Nobel Prize in Physics** 1921 *for his services to Theoretical Physics, and especially for his discovery of the law of the photoelectric effect*},
-  award_name={Nobel Prize}
+  preview={},
+  html={https://openreview.net/forum?id=wnkC5T11Z9},  
+  pdf={https://openreview.net/pdf?id=wnkC5T11Z9},
+  code={https://github.com/gianluigilopardo/attention_meets_xai},   
+  selected={true},
+  abstract={Attention-based architectures, in particular transformers, are at the heart of a technological revolution. Interestingly, in addition to helping obtain state-of-the-art results on a wide range of applications, the attention mechanism intrinsically provides meaningful insights on the internal behavior of the model. Can these insights be used as explanations? Debate rages on. In this paper, we mathematically study a simple attention-based architecture and pinpoint the differences between post-hoc and attention-based explanations. We show that they provide quite different results, and that, despite their limitations, post-hoc methods are capable of capturing more useful insights than merely examining the attention weights.},
 }
 
-@book{przibram1967letters,
+
+@inproceedings{lopardo2022anchors,
+	title = {{A Sea of Words: An In-Depth Analysis of Anchors for Text Data}},
+	author = {Lopardo, Gianluigi and Precioso, Frederic and Garreau, Damien},
+	year = 2023,
+	booktitle = {{International Conference on Artificial Intelligence and Statistics (AISTATS)}},
   bibtex_show={true},
-  title={Letters on wave mechanics},
-  author={Einstein, Albert and Schrödinger, Erwin and Planck, Max and Lorentz, Hendrik Antoon and Przibram, Karl},
-  year={1967},
-  publisher={Vision},
-  preview={wave-mechanics.gif},
-  abbr={Vision}
+  preview={},
+  html={https://proceedings.mlr.press/v206/lopardo23a.html},  
+  pdf={https://proceedings.mlr.press/v206/lopardo23a/lopardo23a.pdf},
+  code={https://github.com/gianluigilopardo/anchors_text_theory},   
+  selected={true},
+  abstract={Anchors (Ribeiro et al., 2018) is a post-hoc, rule-based interpretability method. For text data, it proposes to explain a decision by highlighting a small set of words (an anchor) such that the model to explain has similar outputs when they are present in a document. In this paper, we present the first theoretical analysis of Anchors, considering that the search for the best anchor is exhaustive. After formalizing the algorithm for text classification, we present explicit results on different classes of models when the vectorization step is TF-IDF, and words are replaced by a fixed out-of-dictionary token when removed. Our inquiry covers models such as elementary if-then rules and linear classifiers. We then leverage this analysis to gain insights on the behavior of Anchors for any differentiable classifiers. For neural networks, we empirically show that the words corresponding to the highest partial derivatives of the model with respect to the input, reweighted by the inverse document frequencies, are selected by Anchors.},
+}
+
+
+@article{lopardo2023fred,
+	title = {{Faithful and Robust Local Interpretability for Textual Predictions}},
+	author = {Lopardo, Gianluigi and Precioso, Frederic and Garreau, Damien},
+	year = 2023,
+	journal = {arXiv preprint arXiv:2311.01605},
+  bibtex_show={true},
+  preview={},
+  html={https://arxiv.org/abs/2311.01605},  
+  pdf={https://arxiv.org/pdf/2311.01605},
+  code={https://github.com/gianluigilopardo/fred},   
+  selected={true},
+  abstract={Interpretability is essential for machine learning models to be trusted and deployed in critical domains. However, existing methods for interpreting text models are often complex, lack mathematical foundations, and their performance is not guaranteed. In this paper, we propose FRED (Faithful and Robust Explainer for textual Documents), a novel method for interpreting predictions over text. FRED offers three key insights to explain a model prediction: (1) it identifies the minimal set of words in a document whose removal has the strongest influence on the prediction, (2) it assigns an importance score to each token, reflecting its influence on the model's output, and (3) it provides counterfactual explanations by generating examples similar to the original document, but leading to a different prediction. We establish the reliability of FRED through formal definitions and theoretical analyses on interpretable classifiers. Additionally, our empirical evaluation against state-of-the-art methods demonstrates the effectiveness of FRED in providing insights into text models.},
+}
+
+
+@mastersthesis{lopardo2021xai,
+	title = {{Explainable AI for business decision-making}},
+	author = {Lopardo, Gianluigi},
+	year = 2021,
+	school = {Politecnico di Torino},
+  bibtex_show={true},
+  preview={},
+  html={https://webthesis.biblio.polito.it/secure/19854/},  
+  pdf={https://webthesis.biblio.polito.it/secure/19854/1/tesi.pdf},
+  code={https://github.com/gianluigilopardo/smace},   
+  selected={false},
+  abstract={Machine Learning is increasingly being leveraged in business processes to make automated decisions. Nevertheless, a decision is rarely made by a standalone machine learning model, but is rather the result of an orchestration of predictive models, each predicting key quantities for the problem at hand, which are then combined through decision rules to produce the final decision. For example, a mobile phone company aiming to reduce customer churn would use machine learning to predict churn risk and rank potential retention offers, and then apply eligibility rules and other policies to decide whether a retention offer is worth proposing to a certain customer and, if so, which one. Applying decision rules on top of machine learning-based predictions or classifications is typically performed by companies to deliver better conformance, adaptability, and transparency. Interpretability is a pressing question in these situations. In the example above, it is fundamental for the sales representative to know, even roughly, why a decision was made. While the field of interpretable machine learning is full of open challenges in itself, when trying to explain a decision that relies on both business rules and multiple machine learning models, a number of additional challenges arise. First, the business rules surrounding the models represent non-linearities that cause problems for attribution-based interpretability methods like LIME and SHAP. Second, the already transparent business rules represent knowledge that unless exploited will causeproblems for sampling-based explanation methods. Third, machine learning models with overlapping features will produce conflicting explanation weights. As a result, applying current methods to these real-world decision systems produce unreliable and brittle explanations. In this configuration, there is knowledge that we can exploit to make our explanations processaware. We know which variables are involved in the decision policy and we know its rules. It is worth to exploit this information instead of treating the whole system as a black-box and being completely model-agnostic. In this thesis, we present SMACE - Semi-Model-Agnostic Contextual Explainer, a new interpretability method that combines a geometric approach (for business rules) with existing interpretability solutions (for machine learning models) to generate feature importance based explanations. Specifically, SMACE provides two levels of explanation, for the different users involved in the decision-making process. The first level, which is useful for the business user, must provide a ranking of importance for all the variables used, whether they are input attributes or values calculated in-house. This is useful, for example, to the sales representative, who has access to and knowledge of company policies. By interpreting the process, the business user can explain, modify, override or validate the specific decision. The second level is necessary for the end customer. She does not have access to the internal policy rules, nor to the way in which decision-making processes are managed. It therefore requires explanations based solely on information that she is aware of, i.e., input features, such as her personal details or service usage values. We show that while LIME and SHAP produce poor results when applied to such a decision system, SMACE provides intuitive feature ranking, tailored to business needs.},
+}
+
+
+@inproceedings{lopardo2022comparing,
+	title = {{Comparing Feature Importance and Rule Extraction for Interpretability on Text Data}},
+	author = {Lopardo, Gianluigi and Garreau, Damien},
+	year = 2022,
+	booktitle = {{2-nd Workshop on Explainable and Ethical AI-26TH International Conference on Pattern Recognition (XAIE @ ICPR)}},
+  bibtex_show={true},
+  preview={},
+  html={https://arxiv.org/abs/2207.01420},  
+  pdf={https://arxiv.org/pdf/2207.01420},
+  code={https://github.com/gianluigilopardo/anchors_vs_lime_text},   
+  selected={false},
+  abstract={Complex machine learning algorithms are used more and more often in critical tasks involving text data, leading to the development of interpretability methods. Among local methods, two families have emerged: those computing importance scores for each feature and those extracting simple logical rules. In this paper we show that using different methods can lead to unexpectedly different explanations, even when applied to simple models for which we would expect qualitative coincidence. To quantify this effect, we propose a new approach to compare explanations produced by different methods.},
+}
+
+
+@inproceedings{lopardo2022smace,
+	title = {{SMACE: A New Method for the Interpretability of Composite Decision Systems}},
+	author = {Lopardo, Gianluigi and Garreau, Damien and Precioso, Frederic and Ottosson, Greger},
+	year = 2022,
+	booktitle = {Joint European Conference on Machine Learning and Knowledge Discovery in Databases (ECML PKDD)},
+	pages = {325--339},
+	organization = {Springer},
+  bibtex_show={true},
+  preview={},
+  html={https://link.springer.com/chapter/10.1007/978-3-031-26387-3_20},  
+  pdf={https://arxiv.org/pdf/2111.08749},
+  code={https://github.com/gianluigilopardo/smace},   
+  selected={true},
+  abstract={Interpretability is a pressing issue for decision systems. Many post hoc methods have been proposed to explain the predictions of a single machine learning model. However, business processes and decision systems are rarely centered around a unique model. These systems combine multiple models that produce key predictions, and then apply rules to generate the final decision. To explain such decisions, we propose the Semi-Model-Agnostic Contextual Explainer (SMACE), a new interpretability method that combines a geometric approach for decision rules with existing interpretability methods for machine learning models to generate an intuitive feature ranking tailored to the end user. We show that established model-agnostic approaches produce poor results on tabular data in this setting, in particular giving the same importance to several features, whereas SMACE can rank them in a meaningful way.},
+}
+
+
+@article{lopardo2023understanding,
+  title={Understanding Post-hoc Explainers: The Case of Anchors},
+  author={Lopardo, Gianluigi and Precioso, Frederic and Garreau, Damien},
+  journal={54es Journées de Statistique},
+  year={2023},
+  bibtex_show={true},
+  preview={},
+  html={https://inria.hal.science/hal-04038665/},  
+  pdf={https://hal.science/hal-04038665v1/document},
+  selected={false},
+  abstract={In many scenarios, the interpretability of machine learning models is a highly required but difficult task. To explain the individual predictions of such models, local model-agnostic approaches have been proposed. However, the process generating the explanations can be, for a user, as mysterious as the prediction to be explained. Furthermore, interpretability methods frequently lack theoretical guarantees, and their behavior on simple models is frequently unknown. While it is difficult, if not impossible, to ensure that an explainer behaves as expected on a cutting-edge model, we can at least ensure that everything works on simple, already interpretable models. In this paper, we present a theoretical analysis of Anchors (Ribeiro et al., 2018): a popular rule-based interpretability method that highlights a small set of words to explain a text classifier's decision. After formalizing its algorithm and providing useful insights, we demonstrate mathematically that Anchors produces meaningful results when used with linear text classifiers on top of a TF-IDF vectorization. We believe that our analysis framework can aid in the development of new explainability methods based on solid theoretical foundations.},
 }

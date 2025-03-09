@@ -2,11 +2,20 @@
 layout: page
 permalink: /teaching/
 title: teaching
-description: Materials for courses you taught. Replace this text with your description.
+description: During my PhD, I also taught undergraduate courses in science and economics, as well as master's level courses within the Mathematical Engineering master program of Université Côte d'Azur. 
 nav: true
 nav_order: 6
 ---
 
-For now, this page is assumed to be a static description of your courses. You can convert it to a collection similar to `_projects/` so that you can have a dedicated page for each course.
+## 2023-2024 (64 hours)
+* Mathematical Statistics (MSc, 1st year, Mathematical Engineering, 36 hours)
+* Statistics 2 (BSc, 2nd year, Economics, 21 hours)
+* Probability and introduction to statistics (BSc, 2nd year, 7 hours)
+  
+## 2022-2023 (64 hours)
+* Mathematical methods (BSc, 2nd year, 48 hours)
+* Introduction to Mathematics (BSc, 1st year, 16 hours)
 
-Organize your courses by years, topics, or universities, however you like!
+## 2021-2022 (40 hours)
+* Mathematical Statistics (MSc, 1st year, Mathematical Engineering, 16 hours)
+* Fundamentals of mathematics (BSc, 1st year, 24 hours)
