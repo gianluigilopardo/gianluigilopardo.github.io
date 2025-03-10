@@ -3,7 +3,7 @@ layout: page
 permalink: /teaching/
 title: teaching
 description: During my PhD, I also taught undergraduate courses in science and economics, as well as master's level courses within the Mathematical Engineering master program of Université Côte d'Azur. 
-nav: true
+nav: false
 nav_order: 6
 ---
 

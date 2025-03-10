@@ -1,10 +1,12 @@
-- title: General Information
+- title: Basics
   type: map
   contents:
     - name: Full Name
       value: Gianluigi Lopardo
     - name: Email
-      value: gianluigilopardo@gmail.com
+      value: "<a href='mailto:gianluigilopardo@gmail.com'>gianluigilopardo@gmail.com</a>"
+    - name: Location
+      value: Frankfurt am Main, Germany
     - name: Languages
       value: Italian, English, French
 
@@ -12,21 +14,137 @@
   type: time_table
   contents:
     - title: Ph.D. in Applied Mathematics
-      institution: Inria & Université Côte d'Azur, France
-      year: 2024
+      institution: "<a href='https://inria.fr'>Inria</a> & <a href='https://univ-cotedazur.fr/'>Université Côte d'Azur</a>"
+      year: 2021-2024
+      location: Nice, France
       description:
-        - Thesis on the Foundations of Machine Learning Interpretability
-        - Supervised by Damien Garreau and Frédéric Precioso
+        - "Thesis: <a href='https://theses.hal.science/tel-04917007/'>Foundations of Machine Learning Interpretability</a>"
+        - "Supervisors: Prof. <a href='https://sites.google.com/view/damien-garreau/home'>Damien Garreau</a> (<a href='https://univ-cotedazur.fr/'>UCA</a>/<a href='https://inria.fr'>Inria</a>), Prof. <a href='https://webusers.i3s.unice.fr/~precioso/'>Frédéric Precioso</a> (<a href='https://univ-cotedazur.fr/'>UCA</a>/<a href='https://inria.fr'>Inria</a>)"
     - title: M.Sc. in Mathematical Engineering
-      institution: Politecnico di Torino, Italy
-      year: 2021
+      institution: "<a href='https://www.polito.it/'>Politecnico di Torino</a>"
+      year: 2019-2021
+      location: Turin, Italy
       description:
-        - Thesis: Explainable AI for business decision-making
-        - Supervisors: Prof. Elena Maria Baralis (PoliTo), Prof. Damien Garreau (UCA/Inria), Prof. Frédéric Precioso (UCA/Inria), Dr. Greger Ottosson (IBM)
-        - Main courses: Machine Learning and Deep Learning, Quantitative methods for risk management, Financial Engineering, Business intelligence for big data, Advanced Statistics
+        - "Thesis: <a href='https://webthesis.biblio.polito.it/secure/19854/'>Explainable AI for business decision-making</a>"
+        - "Supervisors: Prof. <a href='https://www.polito.it/personale?p=elena.baralis'>Elena Maria Baralis</a> (<a href='https://www.polito.it/'>PoliTo</a>), Prof. <a href='https://sites.google.com/view/damien-garreau/home'>Damien Garreau</a> (<a href='https://univ-cotedazur.fr/'>UCA</a>/<a href='https://inria.fr'>Inria</a>), Prof. <a href='https://webusers.i3s.unice.fr/~precioso/'>Frédéric Precioso</a> (<a href='https://univ-cotedazur.fr/'>UCA</a>/<a href='https://inria.fr'>Inria</a>), Dr. <a href='https://fr.linkedin.com/in/gregerottosson'>Greger Ottosson</a> (<a href='https://www.ibm.com/'>IBM</a>)"
     - title: B.Sc. in Applied Mathematics
-      institution: Politecnico di Torino, Italy
-      year: 2019
+      institution: "<a href='https://www.polito.it/'>Politecnico di Torino</a>"
+      year: 2016-2019
+      location: Turin, Italy
       description:
-        - Thesis: Quantitative and qualitative analysis on the relation between innovation and economic performances in companies
-        - Main courses: Probability and Statistics, Economics, Object-oriented programming, Database
+        - "Thesis: Quantitative and qualitative analysis on the relation between innovation and economic performances in companies"
+        - "Supervisor: Prof. <a href='https://www.polito.it/personale?p=federico.caviggioli'>Federico Caviggioli</a> (<a href='https://www.polito.it/'>PoliTo</a>)"
+
+- title: Work
+  type: time_table
+  contents:
+    - title: Data Science PhD Trainee
+      institution: "<a href='https://www.ecb.europa.eu/'>European Central Bank</a>"
+      year: 2024-present
+      location: Frankfurt, Germany
+      description:
+        - Applying AI and machine learning to economic research in the International Policy Analysis Division
+      
+    - title: Doctoral Researcher
+      institution: <a href='https://inria.fr'>Inria</a> & <a href='https://univ-cotedazur.fr/'>Université Côte d'Azur</a>
+      year: 2021-2024
+      location: Nice, France
+      description:
+        - Researched machine learning interpretability, analyzed and developed eXplainable AI methods
+      
+    - title: Teaching Assistant
+      institution: <a href='https://univ-cotedazur.fr/'>Université Côte d'Azur</a>
+      year: 2021-2024
+      location: Nice, France
+      description:
+        - Led lectures, supervised labs, and mentored students in math and statistics courses, including undergraduate and master's levels
+      
+    - title: AI Research Intern
+      institution: "<a href='https://inria.fr'>Inria</a> (<a href='https://team.inria.fr/maasai/team-members/'>Maasai team</a>)"
+      year: 2021
+      location: Nice, France
+      description:
+        - Researched AI interpretability to improve business decision-making
+      
+    - title: Machine Learning Engineer Intern
+      institution: "<a href='https://www.alten.com/'>ALTEN</a>"
+      year: 2020-2021
+      location: Nice, France
+      description:
+        - Developed computer vision solutions to automate document processing
+
+- title: Volunteer
+  type: time_table
+  contents:
+    - title: Data Analyst
+      institution: "<a href='https://orgvisionary.com/'>Visionary</a>"
+      year: 2019-2022
+      location: Turin, Italy
+      description:
+        - Provided data-driven insights, optimizations, and IT solutions for event management
+      
+    - title: Deputy Head of IT
+      institution: "<a href='https://jetop.com/'>JEToP</a>"
+      year: 2017-2018
+      location: Turin, Italy
+      description:
+        - Directed IT projects and oversaw the IT team to support organizational goals
+      
+    - title: IT Consultant
+      institution: "<a href='https://jetop.com/'>JEToP</a>"
+      year: 2016-2018
+      location: Turin, Italy
+      description:
+        - Created websites and applications for both internal use and clients
+
+- title: Teaching
+  type: time_table
+  contents:
+    - title: Mathematical Statistics
+      institution: "<a href='https://univ-cotedazur.fr/'>Université Côte d'Azur</a>"
+      year: 2023-2024
+      location: Nice, France
+      description:
+        - Mathematical Engineering, MSc, 1st year, 36 hours 
+        
+    - title: Statistics 2
+      institution: "<a href='https://univ-cotedazur.fr/'>Université Côte d'Azur</a>"
+      year: 2023-2024
+      location: Nice, France
+      description:
+        - Economics, BSc, 2nd year, 21 hours 
+        
+    - title: Probability and Introduction to Statistics 
+      institution: "<a href='https://univ-cotedazur.fr/'>Université Côte d'Azur</a>"
+      year: 2023-2024
+      location: Nice, France
+      description:
+        - BSc, 2nd year, 7 hours
+        
+    - title: Mathematical Methods
+      institution: "<a href='https://univ-cotedazur.fr/'>Université Côte d'Azur</a>"
+      year: 2022-2023
+      location: Nice, France
+      description:
+        -  BSc, 2nd year, 48 hours
+        
+    - title: Introduction to Mathematics
+      institution: "<a href='https://univ-cotedazur.fr/'>Université Côte d'Azur</a>"
+      year: 2022-2023
+      location: Nice, France
+      description:
+        - BSc, 1st year, 16 hours
+        
+    - title: Mathematical Statistics 
+      institution: "<a href='https://univ-cotedazur.fr/'>Université Côte d'Azur</a>"
+      year: 2021-2022
+      location: Nice, France
+      description:
+        - Mathematical Engineering, MSc, 1st year, 16 hours
+        
+    - title: Fundamentals of Mathematics 
+      institution: "<a href='https://univ-cotedazur.fr/'>Université Côte d'Azur</a>"
+      year: 2021-2022
+      location: Nice, France
+      description:
+        - BSc, 1st year, 24 hours 

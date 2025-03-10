@@ -125,6 +125,77 @@
       "location": "Turin, Italy",
       "summary": "Provided data-driven insights, optimizations, and IT solutions for event management."
     }
+  ],
+  "teaching": [
+    {
+      "title": "Teaching Assistant",
+      "organization": "Université Côte d'Azur",
+      "position": "Mathematical Statistics",
+      "url": "https://univ-cotedazur.fr/",
+      "startDate": "2023-09-01",
+      "endDate": "2024-06-30",
+      "location": "Nice, France",
+      "summary": "MSc, 1st year, Mathematical Engineering (36 hours)"
+    },
+    {
+      "title": "Teaching Assistant",
+      "organization": "Université Côte d'Azur",
+      "position": "Statistics 2",
+      "url": "https://univ-cotedazur.fr/",
+      "startDate": "2023-09-01",
+      "endDate": "2024-06-30",
+      "location": "Nice, France",
+      "summary": "BSc, 2nd year, Economics (21 hours)"
+    },
+    {
+      "title": "Teaching Assistant",
+      "organization": "Université Côte d'Azur",
+      "position": "Probability and Introduction to Statistics",
+      "url": "https://univ-cotedazur.fr/",
+      "startDate": "2023-09-01",
+      "endDate": "2024-06-30",
+      "location": "Nice, France",
+      "summary": "BSc, 2nd year (7 hours)"
+    },
+    {
+      "title": "Teaching Assistant",
+      "organization": "Université Côte d'Azur",
+      "position": "Mathematical Methods",
+      "url": "https://univ-cotedazur.fr/",
+      "startDate": "2022-09-01",
+      "endDate": "2023-06-30",
+      "location": "Nice, France",
+      "summary": "BSc, 2nd year (48 hours)"
+    },
+    {
+      "title": "Teaching Assistant",
+      "organization": "Université Côte d'Azur",
+      "position": "Introduction to Mathematics",
+      "url": "https://univ-cotedazur.fr/",
+      "startDate": "2022-09-01",
+      "endDate": "2023-06-30",
+      "location": "Nice, France",
+      "summary": "BSc, 1st year (16 hours)"
+    },
+    {
+      "title": "Teaching Assistant",
+      "organization": "Université Côte d'Azur",
+      "position": "Mathematical Statistics",
+      "url": "https://univ-cotedazur.fr/",
+      "startDate": "2021-09-01",
+      "endDate": "2022-06-30",
+      "location": "Nice, France",
+      "summary": "MSc, 1st year, Mathematical Engineering (16 hours)"
+    },
+    {
+      "title": "Teaching Assistant",
+      "organization": "Université Côte d'Azur",
+      "position": "Fundamentals of Mathematics",
+      "url": "https://univ-cotedazur.fr/",
+      "startDate": "2021-09-01",
+      "endDate": "2022-06-30",
+      "location": "Nice, France",
+      "summary": "BSc, 1st year (24 hours)"
+    }
   ]
 }
-
