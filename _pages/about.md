@@ -6,7 +6,7 @@ subtitle: Data Scientist | <a href='https://www.ecb.europa.eu/'>European Central
 
 profile:
   align: right
-  image: prof_pic.jpeg
+  image: prof_picc.jpeg
   image_circular: false # crops the image to make it circular
   more_info: >
     <p>International Policy Analysis</p>
