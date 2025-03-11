@@ -73,12 +73,12 @@
       description:
         - Developed computer vision solutions to automate document processing
 
-- title: Volunteer
+- title: Teams
   type: time_table
   contents:
     - title: Data Analyst
       institution: "<a href='https://orgvisionary.com/'>Visionary</a>"
-      year: 2019-2022
+      year: 2019-2020
       location: Turin, Italy
       description:
         - Provided data-driven insights, optimizations, and IT solutions for event management
