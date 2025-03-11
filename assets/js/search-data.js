@@ -11,21 +11,21 @@ ninja.data = [{
     },
   },{id: "nav-publications",
           title: "publications",
-          description: "publications by year in reversed chronological order.",
+          description: "publications by year in reversed chronological order",
           section: "Navigation",
           handler: () => {
             window.location.href = "/publications/";
           },
         },{id: "nav-projects",
           title: "projects",
-          description: "A growing collection of your cool projects (building). Meanwhile, explore more on my GitHub.",
+          description: "a growing collection of cool projects (building) // meanwhile, explore more on my GitHub",
           section: "Navigation",
           handler: () => {
             window.location.href = "/projects/";
           },
         },{id: "nav-cv",
           title: "cv",
-          description: "This is a summary of my CV beyond projects and publications.",
+          description: "this is a summary of my CV beyond projects and publications",
           section: "Navigation",
           handler: () => {
             window.location.href = "/cv/";
