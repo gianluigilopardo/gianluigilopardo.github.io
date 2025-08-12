@@ -9,12 +9,12 @@ ninja.data = [{
     handler: () => {
       window.location.href = "/";
     },
-  },{id: "nav-genai-trends",
-          title: "GenAI Trends",
+  },{id: "nav-genai-talks",
+          title: "GenAI Talks",
           description: "Interactive visualization of US corporate GenAI exposure and sentiment trends",
           section: "Navigation",
           handler: () => {
-            window.location.href = "/genai/";
+            window.location.href = "/genaitalks/";
           },
         },{id: "nav-publications",
           title: "publications",
