@@ -1,54 +1,257 @@
 ---
-layout: default
+layout: page
 title: GenAI Trends
 permalink: /genai/
+description: Interactive visualization of US corporate GenAI exposure and sentiment trends
+nav: true
 ---
 
-<div class="container mt-5">
-  <h1 class="mb-4">GenAI Trends Analysis</h1>
-  
-  <div class="row mb-4">
-    <div class="col-md-6">
-      <div class="form-group">
-        <label for="companySelect">Select Company:</label>
-        <select class="form-control" id="companySelect">
-          <option value="all">All Companies</option>
-          <!-- Companies will be dynamically added here -->
-        </select>
-      </div>
+<style>
+/* Custom styles for GenAI visualization - adapted for al-folio theme */
+.genai-container {
+    margin-top: 2rem;
+}
+
+.genai-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--global-divider-color);
+}
+
+.genai-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.genai-subtitle {
+    font-size: 1.1rem;
+    color: var(--global-text-color-light);
+    margin-bottom: 1rem;
+}
+
+.genai-paper-link {
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.genai-meta {
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    color: var(--global-text-color-light);
+}
+
+.genai-definition {
+    margin-top: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--global-text-color-light);
+    line-height: 1.5;
+    padding: 1rem;
+    background: var(--global-bg-color);
+    border-left: 3px solid var(--global-theme-color);
+}
+
+.genai-controls {
+    margin-bottom: 2rem;
+}
+
+.genai-control-group {
+    margin-bottom: 1.5rem;
+}
+
+.genai-control-group label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--global-text-color-light);
+    margin-bottom: 0.5rem;
+}
+
+.genai-stats {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.genai-stat-item {
+    flex: 1;
+    min-width: 150px;
+    padding: 1.25rem;
+    background: var(--global-card-bg-color);
+    border: 1px solid var(--global-divider-color);
+    border-radius: 0.5rem;
+    text-align: center;
+}
+
+.genai-stat-value {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--global-theme-color);
+    margin-bottom: 0.25rem;
+}
+
+.genai-stat-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--global-text-color-light);
+}
+
+.genai-chart-container {
+    background: var(--global-card-bg-color);
+    border: 1px solid var(--global-divider-color);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    height: 500px;
+    position: relative;
+}
+
+.genai-loading {
+    text-align: center;
+    padding: 3rem;
+    color: var(--global-text-color-light);
+}
+
+.genai-search-input {
+    margin-bottom: 0.5rem;
+}
+
+.genai-filter-info {
+    font-size: 0.75rem;
+    color: var(--global-text-color-light);
+    margin-top: 0.25rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .genai-header h1 {
+        font-size: 2rem;
+    }
+    
+    .genai-stats {
+        gap: 1rem;
+    }
+    
+    .genai-stat-item {
+        min-width: 100px;
+        padding: 1rem;
+    }
+    
+    .genai-chart-container {
+        height: 400px;
+    }
+}
+
+/* Dark mode adjustments */
+html[data-theme="dark"] .genai-stat-item {
+    background: var(--global-card-bg-color);
+    border-color: var(--global-divider-color);
+}
+
+html[data-theme="dark"] .genai-chart-container {
+    background: var(--global-card-bg-color);
+    border-color: var(--global-divider-color);
+}
+</style>
+
+<div class="genai-container">
+    <div class="genai-header">
+        <h1>GenAI Exposure Analysis</h1>
+        <p class="genai-subtitle">Interactive visualization of US corporate GenAI exposure and sentiment trends</p>
+        <div class="genai-paper-link">
+            Data and indicators from our research paper:<br>
+            <a href="https://www.ecb.europa.eu/pub/pdf/scpwps/ecb.wp3093~458d28b4bc.en.pdf?35448d13078514c607eed78f10606c0d" target="_blank">
+                Michele Ca' Zorzi, Gianluigi Lopardo, Ana-Simona Manu, <em>Verba volant, transcripta manent: what corporate earnings calls reveal about the AI stock rally</em>
+            </a>
+        </div>
+        <div class="genai-meta">
+            <strong>Last data update:</strong> January 2025
+        </div>
+        <div class="genai-definition">
+            <strong>Definitions:</strong><br>
+            <strong>Exposure</strong> = share of a quarterly earnings call transcript devoted to GenAI (GenAI-related content / total transcript content)<br>
+            <strong>Sentiment</strong> (Risk, Adoption, Opportunity) = shares of the GenAI-related portion classified into those categories; they partition the GenAI segment, not the whole call.
+        </div>
     </div>
-    <div class="col-md-6">
-      <div class="form-group">
-        <label for="metricSelect">Select Metric:</label>
-        <select class="form-control" id="metricSelect">
-          <option value="GenAI_Exposure">GenAI Exposure</option>
-          <option value="GenAI_Risk">GenAI Risk</option>
-          <option value="GenAI_Adoption">GenAI Adoption</option>
-          <option value="GenAI_Opportunity">GenAI Opportunity</option>
-        </select>
-      </div>
+
+    <div class="genai-controls">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="genai-control-group">
+                    <label for="filterType">Filter By</label>
+                    <select id="filterType" class="form-control form-control-sm">
+                        <option value="all">All Companies</option>
+                        <option value="sector">Sector</option>
+                        <option value="industry">Industry</option>
+                        <option value="firm">Firm</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="col-md-3" id="filterValueGroup" style="display: none;">
+                <div class="genai-control-group">
+                    <label for="filterValue">Select Values</label>
+                    <input type="text" id="searchInput" class="form-control form-control-sm genai-search-input" placeholder="Search...">
+                    <select id="filterValue" multiple class="form-control form-control-sm" size="6">
+                    </select>
+                    <div class="genai-filter-info">Hold Ctrl/Cmd to select multiple</div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="genai-control-group">
+                    <label for="selectedMetric">Metric</label>
+                    <select id="selectedMetric" class="form-control form-control-sm">
+                        <option value="GenAI_Exposure" selected>Overall Exposure</option>
+                        <option value="GenAI_Risk">Risk</option>
+                        <option value="GenAI_Adoption">Adoption</option>
+                        <option value="GenAI_Opportunity">Opportunity</option>
+                        <option value="sentiment" id="sentimentOption" style="display: none;">Sentiment (All)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="genai-control-group">
+                    <label>&nbsp;</label>
+                    <button id="updateChart" class="btn btn-primary btn-sm btn-block">Update Chart</button>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-  
-  <div class="card mb-4">
-    <div class="card-body">
-      <canvas id="trendsChart"></canvas>
+
+    <div class="genai-stats">
+        <div class="genai-stat-item">
+            <div class="genai-stat-value" id="companyCount">-</div>
+            <div class="genai-stat-label">Companies</div>
+        </div>
+        <div class="genai-stat-item">
+            <div class="genai-stat-value" id="quarterCount">-</div>
+            <div class="genai-stat-label">Quarters</div>
+        </div>
+        <div class="genai-stat-item">
+            <div class="genai-stat-value" id="dataPoints">-</div>
+            <div class="genai-stat-label">Data Points</div>
+        </div>
     </div>
-  </div>
-  
-  <div id="loading" class="text-center py-5">
-    <div class="spinner-border text-primary" role="status">
-      <span class="sr-only">Loading...</span>
+
+    <div class="genai-chart-container">
+        <canvas id="chart"></canvas>
     </div>
-    <p class="mt-2">Loading data...</p>
-  </div>
-  
-  <div id="error-message" class="alert alert-danger" style="display: none;"></div>
+    
+    <div class="genai-loading" id="loading">
+        <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <p>Loading data...</p>
+    </div>
 </div>
 
-<!-- External libraries -->
+<!-- Load required libraries -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
 
-<!-- Custom resources -->
-<script src="{{ '/assets/js/genai.js' | relative_url }}"></script>
+<!-- Load the GenAI visualization script -->
+<script src="{{ '/assets/js/genai-viz.js' | relative_url }}"></script>
