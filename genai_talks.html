@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GenAI Exposure</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #ffffff;
+            color: #222;
+            line-height: 1.55;
+            padding: 32px 24px;
+            min-height: 100vh;
+            font-size: 17px; /* closer to site text scale */
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .page-wrapper { max-width: 1100px; margin: 0 auto; background: transparent; box-shadow: none; border-radius: 0; }
+
+        .header {
+            background: transparent;
+            color: #111;
+            padding: 0 0 28px 0;
+            text-align: left;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .header h1 {
+            font-size: 38px;
+            font-weight: 500;
+            letter-spacing: -0.75px;
+            margin: 0 0 6px 0;
+        }
+
+        .header p {
+            font-size: 16px;
+            font-weight: 400;
+            opacity: 0.85;
+            margin: 4px 0;
+        }
+
+        .header a {
+            color: #0d62ff !important;
+            text-decoration: none !important;
+            border-bottom: 1px solid rgba(13,98,255,0.35);
+        }
+
+        .header a:hover {
+            border-color: #0d62ff;
+        }
+
+        .content {
+            padding: 32px 0 0 0;
+        }
+
+        /* Controls */
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+            gap: 20px 28px;
+            margin: 0 0 36px 0;
+            padding: 0;
+            background: transparent;
+            border: none;
+        }
+
+        .control-group {
+            gap: 6px;
+        }
+
+        label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            color: #555;
+        }
+
+        select, input[type="text"] {
+            padding: 10px 12px;
+            border: 1px solid #d0d5dc;
+            background: #fff;
+            font-size: 14px;
+            border-radius: 6px;
+            transition: border-color .15s, box-shadow .15s;
+        }
+
+        select:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: #0d62ff;
+            box-shadow: 0 0 0 3px rgba(13,98,255,0.15);
+        }
+
+        select[multiple] {
+            height: 150px;
+        }
+
+        .search-input {
+            padding: 8px 10px;
+            font-size: 13px;
+            border-radius: 4px;
+        }
+
+        /* Button */
+        button {
+            padding: 11px 18px;
+            border: 1px solid #222;
+            background: #fff;
+            color: #222;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.4px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background .18s, color .18s, box-shadow .18s, transform .18s;
+            text-transform: none;
+        }
+
+        button:hover { background: #111; color: #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.18); }
+        button:active { transform: translateY(1px); }
+
+        /* Stats (refined) */
+        .stat-item { background: #fff; border: 1px solid #e4e6e8; padding: 16px 14px; border-radius: 8px; text-align: left; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+        .stat-item:hover { background: #f9fafb; border-color: #d8dce0; }
+        .stat-value { font-size: 24px; font-weight: 600; color: #111; margin: 0 0 4px 0; letter-spacing: -0.4px; }
+        .stat-label { font-size: 11px; color: #666; font-weight: 600; letter-spacing: 0.6px; }
+        .stats { display:flex; flex-wrap:nowrap; gap:24px; margin:0 0 34px 0; padding:0; }
+        .stats .stat-item { flex:1 1 0; min-width:0; }
+        @media (max-width:640px){ .stats { gap:12px; } .stat-value { font-size:20px; } }
+
+        /* Meta line */
+        .meta-line { margin-top: 10px; font-size: 12px; color: #666; letter-spacing: 0.3px; }
+        .meta-line span { font-weight: 500; }
+        .definition-note { margin-top:12px; font-size:12px; line-height:1.35; color:#555; max-width:880px; }
+        @media (prefers-color-scheme: dark){ .definition-note{ color:#9aa0a6; } }
+        
+        /* Chart */
+        .chart-container {
+            height: 520px;
+            padding: 24px 22px 16px;
+            border: 1px solid #e5e7eb;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+        }
+
+        .loading {
+            padding: 40px 0;
+            font-size: 15px;
+            color: #666;
+        }
+
+        /* Filter info */
+        .filter-info {
+            font-size: 11px;
+            color: #777;
+        }
+
+        /* Dark mode */
+        @media (prefers-color-scheme: dark) {
+            body { background: #111; color: #e5e7eb; }
+            .header { border-color: #2a2f36; }
+            .header h1 { color: #fff; }
+            .header p { color: #c7ccd1; }
+            .controls { border: none; }
+            select, input[type="text"], .search-input { background: #1d232a; border-color: #38414b; color: #e5e7eb; }
+            select:focus, input[type="text"]:focus { border-color: #4d8dff; box-shadow: 0 0 0 3px rgba(77,141,255,0.25); }
+            button { border-color: #ccc; background: #1b1b1b; color: #e5e5e5; }
+            button:hover { background: #e5e5e5; color: #111; box-shadow: 0 4px 14px rgba(0,0,0,0.6); }
+            .meta-line { color: #9aa0a6; }
+            .stat-item { background: #1d232a; border-color: #2c333b; }
+            .stat-item:hover { background: #242c34; }
+            .stat-value { color: #e5e7eb; }
+            .chart-container { background: #1b2127; border-color: #2b343d; }
+        }
+
+        /* Responsive tweaks */
+        @media (max-width: 640px) {
+            .header h1 { font-size: 30px; }
+            body { font-size: 16px; padding: 24px 18px; }
+            .chart-container { height: 440px; }
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .page-wrapper {
+                box-shadow: none;
+                border-radius: 0;
+            }
+
+            .header {
+                background: #667eea !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .controls {
+                display: none;
+            }
+
+            .chart-container {
+                height: 400px;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+        <div class="header">
+            <h1>GenAI Exposure Analysis</h1>
+            <p>Interactive visualization of US corporate GenAI exposure and sentiment trends</p>
+            <p style="margin-top: 15px; font-size: 14px; opacity: 0.8;">
+                Data and indicators from our research paper:<br>
+                <a href="https://www.ecb.europa.eu/pub/pdf/scpwps/ecb.wp3093~458d28b4bc.en.pdf?35448d13078514c607eed78f10606c0d" target="_blank" style="color: #0d62ff; text-decoration: none; border-bottom: 1px solid rgba(13,98,255,0.35);">
+                    Michele Ca’ Zorzi, Gianluigi Lopardo, Ana-Simona Manu, <em>Verba volant, transcripta manent: what corporate earnings calls reveal about the AI stock rally</em>
+                </a>
+            </p>
+            <div class="meta-line"><span id="lastUpdate">Last data update: January 2025</span></div>
+            <div class="definition-note">Exposure = share of a quarterly earnings call transcript devoted to GenAI (GenAI-related content / total transcript content).<br>Sentiment (Risk, Adoption, Opportunity) = shares of the GenAI-related portion classified into those categories; they partition the GenAI segment, not the whole call.</div>
+        </div>
+        
+        <div class="content">
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="filterType">Filter By</label>
+                <select id="filterType">
+                    <option value="all">All Companies</option>
+                    <option value="sector">Sector</option>
+                    <option value="industry">Industry</option>
+                    <option value="firm">Firm</option>
+                </select>
+            </div>
+
+            <div class="control-group" id="filterValueGroup" style="display: none;">
+                <label for="filterValue">Select Values</label>
+                <div class="search-container">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Search..." />
+                </div>
+                <select id="filterValue" multiple class="filtered-select">
+                </select>
+                <div class="filter-info">Hold Ctrl/Cmd to select multiple</div>
+            </div>
+
+            <div class="control-group">
+                <label>Metric</label>
+                <select id="selectedMetric">
+                    <option value="GenAI_Exposure" selected>Overall Exposure</option>
+                    <option value="GenAI_Risk">Risk</option>
+                    <option value="GenAI_Adoption">Adoption</option>
+                    <option value="GenAI_Opportunity">Opportunity</option>
+                    <option value="sentiment" id="sentimentOption" style="display: none;">Sentiment (Risk, Adoption, Opportunity)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>&nbsp;</label>
+                <button id="updateChart">Update Chart</button>
+            </div>
+        </div>
+
+        <div class="stats" id="stats">
+            <div class="stat-item">
+                <div class="stat-value" id="companyCount">-</div>
+                <div class="stat-label">Companies</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="quarterCount">-</div>
+                <div class="stat-label">Quarters</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="dataPoints">-</div>
+                <div class="stat-label">Data Points</div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="chart"></canvas>
+        </div>
+        
+        <div class="loading" id="loading">Loading data...</div>
+        </div>
+    </div>
+
+    <script>
+        const LAST_UPDATE = 'January 2025';
+        document.addEventListener('DOMContentLoaded', () => {
+            const lu = document.getElementById('lastUpdate');
+            if (lu) lu.textContent = 'Last data update: ' + LAST_UPDATE;
+        });
+        // This visualization automatically reads ALL data from your genai_trends.csv file
+        // No manual data entry needed - it processes all 20,503 rows directly from the CSV
+        
+        let data = [];
+        let chart = null;
+        let processedData = {};
+
+        // Color palette - minimal and professional
+        const colors = {
+            'GenAI_Exposure': 'rgb(0, 0, 0)',
+            'GenAI_Risk': 'rgb(220, 53, 69)',
+            'GenAI_Adoption': 'rgb(40, 167, 69)',
+            'GenAI_Opportunity': 'rgb(0, 123, 255)'
+        };
+
+        const metricLabels = {
+            'GenAI_Exposure': 'Overall Exposure',
+            'GenAI_Risk': 'Risk',
+            'GenAI_Adoption': 'Adoption',
+            'GenAI_Opportunity': 'Opportunity'
+        };
+
+        async function loadData() {
+            try {
+                // READING ALL DATA FROM YOUR CSV FILE: exposure/genai_trends.csv
+                const response = await fetch('exposure/genai_trends.csv');
+                if (!response.ok) {
+                    throw new Error(`Network response was not ok: ${response.statusText}`);
+                }
+                const csvContent = await response.text();
+                
+                // Parse the entire CSV file with all 20,503 rows
+                Papa.parse(csvContent, {
+                    header: true,
+                    dynamicTyping: true,
+                    skipEmptyLines: true,
+                    delimitersToGuess: [',', '\t', '|', ';'], // Handle different delimiters
+                    complete: function(results) {
+                        data = results.data;
+                        
+                        console.log(`Loaded ${data.length} rows from genai_trends.csv`);
+                        
+                        // Clean and validate data - remove any rows without quarter or ticker
+                        data = data.filter(row => row.quarter && row.ticker);
+                        
+                        // Sort by quarter and ticker as requested
+                        data.sort((a, b) => {
+                            if (a.quarter !== b.quarter) {
+                                return a.quarter.localeCompare(b.quarter);
+                            }
+                            return a.ticker.localeCompare(b.ticker);
+                        });
+                        
+                        console.log(`Processing ${data.length} valid rows after filtering`);
+                        
+                        initializeFilters();
+                        updateChart();
+                        document.getElementById('loading').style.display = 'none';
+                    },
+                    error: function(error) {
+                        console.error('Error parsing CSV:', error);
+                        document.getElementById('loading').innerHTML = 'Error loading data: ' + error.message;
+                    }
+                });
+            } catch (error) {
+                console.error('Error reading file:', error);
+                document.getElementById('loading').innerHTML = 'Error reading _exposure/genai_trends.csv file. Please ensure the _exposure folder is in the same directory.';
+            }
+        }
+
+        function initializeFilters() {
+            const filterType = document.getElementById('filterType');
+            const filterValueGroup = document.getElementById('filterValueGroup');
+            const filterValue = document.getElementById('filterValue');
+            const searchInput = document.getElementById('searchInput');
+
+            filterType.addEventListener('change', function() {
+                if (this.value === 'all') {
+                    filterValueGroup.style.display = 'none';
+                } else {
+                    filterValueGroup.style.display = 'block';
+                    populateFilterValues(this.value);
+                }
+                updateSentimentOption();
+            });
+
+            // Add event listener for filter value changes to update sentiment option
+            filterValue.addEventListener('change', updateSentimentOption);
+            
+            // Add search functionality
+            searchInput.addEventListener('input', function() {
+                filterOptions(this.value.toLowerCase());
+            });
+            
+            // Initialize sentiment option on load
+            updateSentimentOption();
+        }
+
+        function filterOptions(searchTerm) {
+            const filterValue = document.getElementById('filterValue');
+            const options = filterValue.querySelectorAll('option');
+            
+            options.forEach(option => {
+                const text = option.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    option.style.display = '';
+                } else {
+                    option.style.display = 'none';
+                }
+            });
+        }
+
+        function updateSentimentOption() {
+            const filterType = document.getElementById('filterType').value;
+            const filterValue = document.getElementById('filterValue');
+            const sentimentOption = document.getElementById('sentimentOption');
+            
+            // Show sentiment option only when one entity is selected (or all companies)
+            if (filterType === 'all' || (filterValue.selectedOptions.length === 1)) {
+                sentimentOption.style.display = 'block';
+            } else {
+                sentimentOption.style.display = 'none';
+                // Reset to exposure if sentiment was selected
+                if (document.getElementById('selectedMetric').value === 'sentiment') {
+                    document.getElementById('selectedMetric').value = 'GenAI_Exposure';
+                }
+            }
+        }
+
+        function populateFilterValues(type) {
+            const filterValue = document.getElementById('filterValue');
+            const searchInput = document.getElementById('searchInput');
+            filterValue.innerHTML = '';
+            searchInput.value = ''; // Clear search when switching filter types
+            
+            let values = [];
+            if (type === 'sector') {
+                values = [...new Set(data.map(d => d.sector))].filter(v => v).sort();
+            } else if (type === 'industry') {
+                values = [...new Set(data.map(d => d.industry))].filter(v => v).sort();
+            } else if (type === 'firm') {
+                values = [...new Set(data.map(d => d.firm))].filter(v => v).sort();
+            }
+            
+            values.forEach(value => {
+                const option = document.createElement('option');
+                option.value = value;
+                option.textContent = value;
+                filterValue.appendChild(option);
+            });
+            
+            // Select first few items by default
+            if (values.length > 0) {
+                filterValue.selectedIndex = 0;
+                if (values.length > 1) filterValue.options[1].selected = true;
+            }
+            
+            // Update sentiment option after populating values
+            updateSentimentOption();
+        }
+
+        function getFilteredData() {
+            const filterType = document.getElementById('filterType').value;
+            const filterValue = document.getElementById('filterValue');
+            
+            let filtered = data;
+            
+            if (filterType !== 'all') {
+                const selectedValues = Array.from(filterValue.selectedOptions).map(opt => opt.value);
+                if (selectedValues.length > 0) {
+                    filtered = data.filter(row => selectedValues.includes(row[filterType]));
+                }
+            }
+            
+            return filtered;
+        }
+
+        function aggregateDataByEntity(filteredData, metric, filterType) {
+            const quarters = [...new Set(filteredData.map(d => d.quarter))].sort();
+            const entities = [...new Set(filteredData.map(d => d[filterType]))].filter(e => e).sort();
+            const aggregated = {};
+            
+            entities.forEach(entity => {
+                aggregated[entity] = {};
+                quarters.forEach(quarter => {
+                    const quarterData = filteredData.filter(d => d.quarter === quarter && d[filterType] === entity);
+                    // Fixed: Only filter out null, undefined, and NaN - keep zero values
+                    const values = quarterData.map(d => d[metric]).filter(v => v !== null && v !== undefined && !isNaN(v));
+                    if (values.length > 0) {
+                        aggregated[entity][quarter] = values.reduce((a, b) => a + b, 0) / values.length;
+                    }
+                });
+            });
+            
+            return { quarters, aggregated, entities };
+        }
+
+        function generateColors(count) {
+            const baseColors = [
+                'rgb(0, 0, 0)',
+                'rgb(220, 53, 69)',
+                'rgb(40, 167, 69)',
+                'rgb(0, 123, 255)',
+                'rgb(255, 193, 7)',
+                'rgb(108, 117, 125)',
+                'rgb(111, 66, 193)',
+                'rgb(255, 87, 34)',
+                'rgb(76, 175, 80)',
+                'rgb(33, 150, 243)'
+            ];
+            
+            if (count <= baseColors.length) {
+                return baseColors.slice(0, count);
+            }
+            
+            // Generate additional colors if needed
+            const colors = [...baseColors];
+            for (let i = baseColors.length; i < count; i++) {
+                const hue = (i * 137.508) % 360; // Golden angle approximation
+                colors.push(`hsl(${hue}, 70%, 50%)`);
+            }
+            return colors;
+        }
+
+        function updateChart() {
+            const filteredData = getFilteredData();
+            const metric = document.getElementById('selectedMetric').value;
+            const filterType = document.getElementById('filterType').value;
+            
+            let quarters, aggregated, entities, datasets;
+            
+            if (metric === 'sentiment') {
+                // Special handling for sentiment - show Risk, Adoption, Opportunity as separate lines
+                quarters = [...new Set(filteredData.map(d => d.quarter))].sort();
+                
+                const sentimentMetrics = ['GenAI_Risk', 'GenAI_Adoption', 'GenAI_Opportunity'];
+                
+                if (filterType === 'all') {
+                    // For all companies, aggregate each sentiment metric
+                    aggregated = {};
+                    sentimentMetrics.forEach(sentimentMetric => {
+                        aggregated[sentimentMetric] = {};
+                        quarters.forEach(quarter => {
+                            const quarterData = filteredData.filter(d => d.quarter === quarter);
+                            // Fixed: Only filter out null, undefined, and NaN - keep zero values
+                            const values = quarterData.map(d => d[sentimentMetric]).filter(v => v !== null && v !== undefined && !isNaN(v));
+                            if (values.length > 0) {
+                                aggregated[sentimentMetric][quarter] = values.reduce((a, b) => a + b, 0) / values.length;
+                            }
+                        });
+                    });
+                } else {
+                    // For specific entity, show sentiment breakdown
+                    const selectedValue = document.getElementById('filterValue').selectedOptions[0].value;
+                    aggregated = {};
+                    sentimentMetrics.forEach(sentimentMetric => {
+                        aggregated[sentimentMetric] = {};
+                        quarters.forEach(quarter => {
+                            const quarterData = filteredData.filter(d => d.quarter === quarter && d[filterType] === selectedValue);
+                            // Fixed: Only filter out null, undefined, and NaN - keep zero values
+                            const values = quarterData.map(d => d[sentimentMetric]).filter(v => v !== null && v !== undefined && !isNaN(v));
+                            if (values.length > 0) {
+                                aggregated[sentimentMetric][quarter] = values.reduce((a, b) => a + b, 0) / values.length;
+                            }
+                        });
+                    });
+                }
+                
+                // Create datasets for sentiment metrics
+                datasets = sentimentMetrics.map(sentimentMetric => ({
+                    label: metricLabels[sentimentMetric],
+                    data: quarters.map(q => aggregated[sentimentMetric][q] !== undefined ? aggregated[sentimentMetric][q] : null),
+                    borderColor: colors[sentimentMetric],
+                    backgroundColor: colors[sentimentMetric] + '20',
+                    borderWidth: 2,
+                    pointRadius: 3,
+                    pointHoverRadius: 5,
+                    tension: 0.1
+                }));
+                
+            } else {
+                // Regular single metric handling
+                if (filterType === 'all') {
+                    // When showing all companies, aggregate across all data
+                    quarters = [...new Set(filteredData.map(d => d.quarter))].sort();
+                    aggregated = { 'All Companies': {} };
+                    entities = ['All Companies'];
+                    
+                    quarters.forEach(quarter => {
+                        const quarterData = filteredData.filter(d => d.quarter === quarter);
+                        // Fixed: Only filter out null, undefined, and NaN - keep zero values
+                        const values = quarterData.map(d => d[metric]).filter(v => v !== null && v !== undefined && !isNaN(v));
+                        if (values.length > 0) {
+                            aggregated['All Companies'][quarter] = values.reduce((a, b) => a + b, 0) / values.length;
+                        }
+                    });
+                } else {
+                    // When filtering by specific entities, show individual lines for each
+                    const result = aggregateDataByEntity(filteredData, metric, filterType);
+                    quarters = result.quarters;
+                    aggregated = result.aggregated;
+                    entities = result.entities;
+                }
+                
+                // Generate colors for entities
+                const entityColors = generateColors(entities.length);
+                
+                // Prepare chart data - one line per entity
+                datasets = entities.map((entity, index) => ({
+                    label: entity,
+                    data: quarters.map(q => aggregated[entity][q] !== undefined ? aggregated[entity][q] : null),
+                    borderColor: entityColors[index],
+                    backgroundColor: entityColors[index] + '20',
+                    borderWidth: 2,
+                    pointRadius: 3,
+                    pointHoverRadius: 5,
+                    tension: 0.1
+                }));
+            }
+            
+            // Update stats
+            updateStats(filteredData, quarters);
+            
+            const chartConfig = {
+                type: 'line',
+                data: {
+                    labels: quarters,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                boxWidth: 12,
+                                padding: 15,
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            padding: 12,
+                            cornerRadius: 4,
+                            titleFont: {
+                                size: 12
+                            },
+                            bodyFont: {
+                                size: 12
+                            },
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + (context.parsed.y !== null && context.parsed.y !== undefined ? context.parsed.y.toFixed(3) : 'N/A');
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                font: {
+                                    size: 11
+                                },
+                                maxRotation: 45,
+                                minRotation: 45
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: '#f0f0f0',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                font: {
+                                    size: 11
+                                },
+                                callback: function(value) {
+                                    return value.toFixed(2);
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: metric === 'sentiment' ? 'Sentiment Scores (%)' : metricLabels[metric] + ' (%)',
+                                font: {
+                                    size: 11,
+                                    weight: 'normal'
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+            
+            if (chart) {
+                chart.destroy();
+            }
+            
+            const ctx = document.getElementById('chart').getContext('2d');
+            chart = new Chart(ctx, chartConfig);
+        }
+
+        function updateStats(filteredData, quarters) {
+            const companies = [...new Set(filteredData.map(d => d.firm))].length;
+            const quarterCount = quarters.length;
+            const dataPoints = filteredData.length;
+            
+            document.getElementById('companyCount').textContent = companies.toLocaleString();
+            document.getElementById('quarterCount').textContent = quarterCount;
+            document.getElementById('dataPoints').textContent = dataPoints.toLocaleString();
+        }
+
+        // Event listeners
+        document.getElementById('updateChart').addEventListener('click', updateChart);
+
+        // Initialize
+        loadData();
+    </script>
+</body>
+</html>
