@@ -316,16 +316,16 @@
             }
             
             const entityColors = generateColors(entities.length);
-            
+
             datasets = entities.map((entity, index) => ({
                 label: entity,
-                data: quarters.map(q => aggregated[entity][q] !== undefined ? aggregated[entity][q] : null),
+                data: quarters.map(q => aggregated[entity][q] ?? null),
                 borderColor: entityColors[index],
-                backgroundColor: entityColors[index] + '20',
                 borderWidth: 2,
                 pointRadius: 3,
                 pointHoverRadius: 5,
-                tension: 0.1
+                tension: 0.1,
+                fill: false // <-- prevents area fill
             }));
         }
         
