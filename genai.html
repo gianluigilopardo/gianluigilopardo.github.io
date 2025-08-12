@@ -325,8 +325,8 @@
 
         async function loadData() {
             try {
-                // READING ALL DATA FROM YOUR CSV FILE: _exposure/genai_trends.csv
-                const response = await fetch('_exposure/genai_trends.csv');
+                // READING ALL DATA FROM YOUR CSV FILE: exposure/genai_trends.csv
+                const response = await fetch('exposure/genai_trends.csv');
                 if (!response.ok) {
                     throw new Error(`Network response was not ok: ${response.statusText}`);
                 }
@@ -367,7 +367,7 @@
                 });
             } catch (error) {
                 console.error('Error reading file:', error);
-                document.getElementById('loading').innerHTML = 'Error reading _exposure/genai_trends.csv file. Please ensure the _exposure folder is in the same directory.';
+                document.getElementById('loading').innerHTML = 'Error reading exposure/genai_trends.csv file. Please ensure the _exposure folder is in the same directory.';
             }
         }
 
