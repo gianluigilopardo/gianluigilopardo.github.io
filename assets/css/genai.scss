@@ -1,186 +1,99 @@
-/* Scoped styles for GenAI page */
-.genai-wrapper {
-  max-width: 1100px;
+---
+---
+
+/* GenAI Visualization Styles */
+.genai-container {
+  max-width: 1000px;
   margin: 0 auto;
-  padding: 32px 24px;
-  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  line-height: 1.55;
-  color: #222;
-  background: transparent;
-  font-size: 17px;
-  -webkit-font-smoothing: antialiased;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-.genai-header {
-  padding: 0 0 28px 0;
-  border-bottom: 1px solid #e5e5e5;
+h1 {
+  color: #333;
+  text-align: center;
+  margin-bottom: 30px;
 }
 
-.genai-header h1 {
-  font-size: 38px;
-  font-weight: 500;
-  letter-spacing: -0.75px;
-  margin: 0 0 6px 0;
-  color: #111;
+.chart-controls {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  
+  select {
+    margin: 0 10px;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f8f8f8;
+    cursor: pointer;
+    
+    &:focus {
+      outline: none;
+      border-color: #75b6e7;
+    }
+  }
 }
 
-.genai-header p {
-  font-size: 16px;
-  margin: 4px 0;
-  opacity: 0.85;
+#chart-container {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  padding: 20px;
+  margin-bottom: 30px;
+  min-height: 400px;
 }
 
-.genai-header a {
-  color: #0d62ff;
-  text-decoration: none;
-  border-bottom: 1px solid rgba(13,98,255,0.35);
-}
-.genai-header a:hover { border-color: #0d62ff; }
-
-.meta-line { margin-top: 10px; font-size: 12px; color: #666; letter-spacing: 0.3px; }
-.definition-note { margin-top:12px; font-size:12px; line-height:1.35; color:#555; max-width:880px; }
-
-.controls {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px 28px;
-  margin: 0 0 36px 0;
-}
-
-.control-group label {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  color: #555;
-  display: block;
-  margin-bottom: 6px;
-}
-
-.controls select,
-.controls input[type="text"] {
-  padding: 10px 12px;
-  border: 1px solid #d0d5dc;
-  background: #fff;
-  font-size: 14px;
-  border-radius: 6px;
-  transition: border-color .15s, box-shadow .15s;
-  width: 100%;
-}
-
-.controls select:focus,
-.controls input[type="text"]:focus {
-  outline: none;
-  border-color: #0d62ff;
-  box-shadow: 0 0 0 3px rgba(13,98,255,0.15);
-}
-
-.controls select[multiple] { height: 150px; }
-
-.search-input {
-  padding: 8px 10px;
-  font-size: 13px;
-  border: 1px solid #d0d5dc;
-  border-radius: 4px;
-  margin-bottom: 6px;
-}
-
-.filter-info {
-  font-size: 11px;
-  color: #777;
-  margin-top: 4px;
-}
-
-.genai-wrapper button {
-  padding: 11px 18px;
-  border: 1px solid #222;
-  background: #fff;
-  color: #222;
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.4px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background .18s, color .18s, box-shadow .18s, transform .18s;
-}
-.genai-wrapper button:hover { background: #111; color:#fff; box-shadow: 0 4px 14px rgba(0,0,0,0.18); }
-.genai-wrapper button:active { transform: translateY(1px); }
-
-.stats {
-  display:flex;
-  flex-wrap:nowrap;
-  gap:24px;
-  margin:0 0 34px 0;
-  padding:0;
-}
-.stat-item {
-  flex:1 1 0;
-  background:#fff;
-  border:1px solid #e4e6e8;
-  padding:16px 14px;
-  border-radius:8px;
-  text-align:left;
-  box-shadow:0 1px 2px rgba(0,0,0,0.04);
-  min-width:0;
-  transition: background .15s, border-color .15s;
-}
-.stat-item:hover { background:#f9fafb; border-color:#d8dce0; }
-.stat-value { font-size:24px; font-weight:600; color:#111; margin:0 0 4px 0; letter-spacing:-0.4px; }
-.stat-label { font-size:11px; color:#666; font-weight:600; letter-spacing:0.6px; }
-@media (max-width:640px){
-  .stats { gap:12px; }
-  .stat-value { font-size:20px; }
-  .genai-header h1 { font-size:30px; }
-  .genai-wrapper { font-size:16px; padding:24px 18px; }
-}
-
-.chart-container {
-  height:520px;
-  padding:24px 22px 16px;
-  border:1px solid #e5e7eb;
-  background:#fff;
-  border-radius:12px;
-  box-shadow:0 2px 4px rgba(0,0,0,0.04);
-  position:relative;
-}
-
-.loading {
-  padding: 24px 0;
-  font-size: 15px;
+#loading {
+  text-align: center;
+  padding: 40px;
+  font-style: italic;
   color: #666;
 }
 
-@media (max-width:640px){
-  .chart-container { height:440px; }
-}
-
-/* Dark mode */
-@media (prefers-color-scheme: dark) {
-  .genai-wrapper { color:#e5e7eb; background:#111; }
-  .genai-header { border-color:#2a2f36; }
-  .genai-header h1 { color:#fff; }
-  .genai-header p { color:#c7ccd1; }
-  .controls select,
-  .controls input[type="text"],
-  .search-input { background:#1d232a; border-color:#38414b; color:#e5e7eb; }
-  .controls select:focus,
-  .controls input[type="text"]:focus { border-color:#4d8dff; box-shadow:0 0 0 3px rgba(77,141,255,0.25); }
-  .genai-wrapper button { border-color:#ccc; background:#1b1b1b; color:#e5e5e5; }
-  .genai-wrapper button:hover { background:#e5e5e5; color:#111; box-shadow:0 4px 14px rgba(0,0,0,0.6); }
-  .meta-line { color:#9aa0a6; }
-  .definition-note { color:#9aa0a6; }
-  .stat-item { background:#1d232a; border-color:#2c333b; }
-  .stat-item:hover { background:#242c34; }
-  .stat-value { color:#e5e7eb; }
-  .chart-container { background:#1b2127; border-color:#2b343d; }
-}
-
-/* Print */
-@media print {
-  .genai-wrapper {
-    padding:0;
-    background:white;
+.error-text {
+  color: #e74c3c;
+  text-align: center;
+  padding: 20px;
+  font-weight: bold;
+  background-color: #fadbd8;
+  border-radius: 4px;
+  margin: 20px 0;
+  display: none;
+  
+  &:not(:empty) {
+    display: block;
   }
-  .controls { display:none !important; }
-  .chart-container { height:400px; page-break-inside:avoid; }
+}
+
+.trend-info {
+  background-color: #f8f9fa;
+  border-left: 4px solid #75b6e7;
+  padding: 15px;
+  margin-top: 30px;
+  
+  p {
+    margin: 0;
+    color: #555;
+    line-height: 1.6;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .chart-controls {
+    flex-direction: column;
+    align-items: center;
+    
+    select {
+      margin: 5px 0;
+      width: 100%;
+      max-width: 300px;
+    }
+  }
+  
+  #chart-container {
+    padding: 10px;
+    min-height: 300px;
+  }
 }
