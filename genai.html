@@ -1,7 +1,7 @@
 ---
 layout: page
-title: GenAI Trends
-permalink: /genai/
+title: GenAI Talks
+permalink: /genaitalks/
 description: Interactive visualization of US corporate GenAI exposure and sentiment trends
 nav: true
 ---
@@ -158,21 +158,19 @@ html[data-theme="dark"] .genai-chart-container {
 
 <div class="genai-container">
     <div class="genai-header">
-        <h1>GenAI Exposure Analysis</h1>
-        <p class="genai-subtitle">Interactive visualization of US corporate GenAI exposure and sentiment trends</p>
         <div class="genai-paper-link">
-            Data and indicators from our research paper:<br>
+            Data and indicators from our ECB research paper:<br>
             <a href="https://www.ecb.europa.eu/pub/pdf/scpwps/ecb.wp3093~458d28b4bc.en.pdf?35448d13078514c607eed78f10606c0d" target="_blank">
                 Michele Ca' Zorzi, Gianluigi Lopardo, Ana-Simona Manu, <em>Verba volant, transcripta manent: what corporate earnings calls reveal about the AI stock rally</em>
             </a>
         </div>
         <div class="genai-meta">
-            <strong>Last data update:</strong> January 2025
         </div>
         <div class="genai-definition">
-            <strong>Definitions:</strong><br>
             <strong>Exposure</strong> = share of a quarterly earnings call transcript devoted to GenAI (GenAI-related content / total transcript content)<br>
             <strong>Sentiment</strong> (Risk, Adoption, Opportunity) = shares of the GenAI-related portion classified into those categories; they partition the GenAI segment, not the whole call.
+             <br>
+            <strong>Last data update:</strong> January 2025
         </div>
     </div>
 
@@ -255,3 +253,4 @@ html[data-theme="dark"] .genai-chart-container {
 
 <!-- Load the GenAI visualization script -->
 <script src="{{ '/assets/js/genai-viz.js' | relative_url }}"></script>
+
