@@ -9,7 +9,14 @@ ninja.data = [{
     handler: () => {
       window.location.href = "/";
     },
-  },{id: "nav-publications",
+  },{id: "nav-genai-trends",
+          title: "GenAI Trends",
+          description: "Interactive visualization of US corporate GenAI exposure and sentiment trends",
+          section: "Navigation",
+          handler: () => {
+            window.location.href = "/genai/";
+          },
+        },{id: "nav-publications",
           title: "publications",
           description: "publications by year in reversed chronological order",
           section: "Navigation",
