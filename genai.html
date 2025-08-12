@@ -1,35 +1,46 @@
 ---
 layout: default
 title: GenAI Trends
+permalink: /genai/
 ---
 
 <div class="genai-container">
   <h1>GenAI Trends Analysis</h1>
   
   <div class="chart-controls">
-    <select id="chart-type">
-      <option value="line">Line Chart</option>
-      <option value="bar">Bar Chart</option>
-    </select>
-    <select id="data-period">
-      <option value="all">All Time</option>
-      <option value="year">Past Year</option>
-      <option value="month">Past Month</option>
-    </select>
+    <div class="control-group">
+      <label for="metric-select">Metric:</label>
+      <select id="metric-select">
+        <option value="GenAI_Exposure">GenAI Exposure</option>
+        <option value="GenAI_Risk">GenAI Risk</option>
+        <option value="GenAI_Adoption">GenAI Adoption</option>
+        <option value="GenAI_Opportunity">GenAI Opportunity</option>
+      </select>
+    </div>
+    
+    <div class="control-group">
+      <label for="filter-select">Filter:</label>
+      <select id="filter-select">
+        <option value="all">All Companies</option>
+        <option value="sector">By Sector</option>
+        <option value="industry">By Industry</option>
+      </select>
+    </div>
   </div>
   
-  <div id="chart-container"></div>
-  <div id="loading">Loading data...</div>
+  <div id="chart-container" class="chart-container"></div>
+  <div id="loading" class="loading-indicator">Loading data...</div>
   <div id="error-message" class="error-text"></div>
   
   <div class="trend-info">
-    <p>This visualization shows GenAI trends based on various metrics over time.</p>
+    <h3>About This Visualization</h3>
+    <p>This chart displays GenAI metrics across companies and time periods. Select different metrics and filters to explore the data.</p>
   </div>
 </div>
 
 <!-- External libraries -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
 <!-- Custom resources -->
 <script src="{{ '/assets/js/genai.js' | relative_url }}"></script>
