@@ -4,44 +4,51 @@ title: GenAI Trends
 permalink: /genai/
 ---
 
-<div class="genai-container">
-  <h1>GenAI Trends Analysis</h1>
+<div class="container mt-5">
+  <h1 class="mb-4">GenAI Trends Analysis</h1>
   
-  <div class="chart-controls">
-    <div class="control-group">
-      <label for="metric-select">Metric:</label>
-      <select id="metric-select">
-        <option value="GenAI_Exposure">GenAI Exposure</option>
-        <option value="GenAI_Risk">GenAI Risk</option>
-        <option value="GenAI_Adoption">GenAI Adoption</option>
-        <option value="GenAI_Opportunity">GenAI Opportunity</option>
-      </select>
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="companySelect">Select Company:</label>
+        <select class="form-control" id="companySelect">
+          <option value="all">All Companies</option>
+          <!-- Companies will be dynamically added here -->
+        </select>
+      </div>
     </div>
-    
-    <div class="control-group">
-      <label for="filter-select">Filter:</label>
-      <select id="filter-select">
-        <option value="all">All Companies</option>
-        <option value="sector">By Sector</option>
-        <option value="industry">By Industry</option>
-      </select>
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="metricSelect">Select Metric:</label>
+        <select class="form-control" id="metricSelect">
+          <option value="GenAI_Exposure">GenAI Exposure</option>
+          <option value="GenAI_Risk">GenAI Risk</option>
+          <option value="GenAI_Adoption">GenAI Adoption</option>
+          <option value="GenAI_Opportunity">GenAI Opportunity</option>
+        </select>
+      </div>
     </div>
   </div>
   
-  <div id="chart-container" class="chart-container"></div>
-  <div id="loading" class="loading-indicator">Loading data...</div>
-  <div id="error-message" class="error-text"></div>
-  
-  <div class="trend-info">
-    <h3>About This Visualization</h3>
-    <p>This chart displays GenAI metrics across companies and time periods. Select different metrics and filters to explore the data.</p>
+  <div class="card mb-4">
+    <div class="card-body">
+      <canvas id="trendsChart"></canvas>
+    </div>
   </div>
+  
+  <div id="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    <p class="mt-2">Loading data...</p>
+  </div>
+  
+  <div id="error-message" class="alert alert-danger" style="display: none;"></div>
 </div>
 
 <!-- External libraries -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"></script>
 
 <!-- Custom resources -->
 <script src="{{ '/assets/js/genai.js' | relative_url }}"></script>
-<link rel="stylesheet" href="{{ '/assets/css/genai.css' | relative_url }}">
