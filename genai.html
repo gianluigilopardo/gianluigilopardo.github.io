@@ -141,7 +141,9 @@
         /* Meta line */
         .meta-line { margin-top: 10px; font-size: 12px; color: #666; letter-spacing: 0.3px; }
         .meta-line span { font-weight: 500; }
-
+        .definition-note { margin-top:12px; font-size:12px; line-height:1.35; color:#555; max-width:880px; }
+        @media (prefers-color-scheme: dark){ .definition-note{ color:#9aa0a6; } }
+        
         /* Chart */
         .chart-container {
             height: 520px;
@@ -230,6 +232,7 @@
                 </a>
             </p>
             <div class="meta-line"><span id="lastUpdate">Last data update: January 2025</span></div>
+            <div class="definition-note">Exposure = share of a quarterly earnings call transcript devoted to GenAI (GenAI-related content / total transcript content).<br>Sentiment (Risk, Adoption, Opportunity) = shares of the GenAI-related portion classified into those categories; they partition the GenAI segment, not the whole call.</div>
         </div>
         
         <div class="content">
@@ -367,7 +370,7 @@
                 });
             } catch (error) {
                 console.error('Error reading file:', error);
-                document.getElementById('loading').innerHTML = 'Error reading exposure/genai_trends.csv file. Please ensure the _exposure folder is in the same directory.';
+                document.getElementById('loading').innerHTML = 'Error reading _exposure/genai_trends.csv file. Please ensure the _exposure folder is in the same directory.';
             }
         }
 
