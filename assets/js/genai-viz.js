@@ -292,7 +292,8 @@
                 borderWidth: 2,
                 pointRadius: 3,
                 pointHoverRadius: 5,
-                tension: 0.1
+                tension: 0.1,
+                fill: false // <-- stops fill in sentiment mode
             }));
             
         } else {
