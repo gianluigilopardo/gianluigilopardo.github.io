@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function loadData() {
     try {
-      const response = await fetch('https://gianluigilopardo.github.io/exposure/genai_trends.csv');
+      const response = await fetch('../exposure/genai_trends.csv');
       if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
       const csvContent = await response.text();
       Papa.parse(csvContent, {
