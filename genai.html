@@ -1,96 +1,36 @@
 ---
 layout: default
-title: GenAI Exposure Analysis
-permalink: /genai/
+title: GenAI Trends
 ---
 
-<div class="genai-wrapper">
-  <header class="genai-header">
-    <h1>GenAI Exposure Analysis</h1>
-    <p>Interactive visualization of US corporate GenAI exposure and sentiment trends</p>
-    <p class="paper-ref">
-      Data and indicators from our research paper:<br>
-      <a href="https://www.ecb.europa.eu/pub/pdf/scpwps/ecb.wp3093~458d28b4bc.en.pdf?35448d13078514c607eed78f10606c0d" target="_blank">
-        Michele Ca’ Zorzi, Gianluigi Lopardo, Ana-Simona Manu,
-        <em>Verba volant, transcripta manent: what corporate earnings calls reveal about the AI stock rally</em>
-      </a>
-    </p>
-    <div class="meta-line"><span id="lastUpdate">Last data update: January 2025</span></div>
-    <div class="definition-note">
-      Exposure = share of a quarterly earnings call transcript devoted to GenAI (GenAI-related content / total transcript content).<br>
-      Sentiment (Risk, Adoption, Opportunity) reflects the directional tone of GenAI-related discussion segments.
-    </div>
-  </header>
-
-  <section class="genai-controls">
-    <div class="controls">
-      <div class="control-group">
-        <label for="filterType">Filter By</label>
-        <select id="filterType">
-          <option value="all">All Companies</option>
-          <option value="sector">Sector</option>
-          <option value="industry">Industry</option>
-          <option value="firm">Firm</option>
-        </select>
-      </div>
-
-      <div class="control-group" id="filterValueGroup" style="display:none;">
-        <label for="filterValue">Select Values</label>
-        <div class="search-container">
-          <input type="text" id="searchInput" class="search-input" placeholder="Search..." />
-        </div>
-        <select id="filterValue" multiple class="filtered-select"></select>
-        <div class="filter-info">Hold Ctrl/Cmd to select multiple</div>
-      </div>
-
-      <div class="control-group">
-        <label for="selectedMetric">Metric</label>
-        <select id="selectedMetric">
-          <option value="GenAI_Exposure" selected>Overall Exposure</option>
-          <option value="GenAI_Risk">Risk</option>
-            <option value="GenAI_Adoption">Adoption</option>
-          <option value="GenAI_Opportunity">Opportunity</option>
-          <option value="sentiment" id="sentimentOption" style="display:none;">Sentiment (Risk, Adoption, Opportunity)</option>
-        </select>
-      </div>
-
-      <div class="control-group">
-        <label>&nbsp;</label>
-        <button id="updateChart">Update Chart</button>
-      </div>
-    </div>
-  </section>
-
-  <section class="genai-stats">
-    <div class="stats" id="stats">
-      <div class="stat-item">
-        <div class="stat-value" id="companyCount">-</div>
-        <div class="stat-label">Companies</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-value" id="quarterCount">-</div>
-        <div class="stat-label">Quarters</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-value" id="dataPoints">-</div>
-        <div class="stat-label">Data Points</div>
-      </div>
-    </div>
-  </section>
-
-  <section class="genai-chart">
-    <div class="chart-container">
-      <canvas id="chart"></canvas>
-    </div>
-    <div class="loading" id="loading">Loading data...</div>
-  </section>
+<div class="genai-container">
+  <h1>GenAI Trends Analysis</h1>
+  
+  <div class="chart-controls">
+    <select id="chart-type">
+      <option value="line">Line Chart</option>
+      <option value="bar">Bar Chart</option>
+    </select>
+    <select id="data-period">
+      <option value="all">All Time</option>
+      <option value="year">Past Year</option>
+      <option value="month">Past Month</option>
+    </select>
+  </div>
+  
+  <div id="chart-container"></div>
+  <div id="loading">Loading data...</div>
+  <div id="error-message" class="error-text"></div>
+  
+  <div class="trend-info">
+    <p>This visualization shows GenAI trends based on various metrics over time.</p>
+  </div>
 </div>
 
-<!-- Include required libraries (you can move these into your layout with a conditional) -->
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
-<script defer src="{{ '../assets/js/genai.js' | relative_url }}"></script>
-<link rel="stylesheet" href="{{ '../assets/css/genai.css' | relative_url }}">
+<!-- External libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
 
-
-
+<!-- Custom resources -->
+<script src="{{ '/assets/js/genai.js' | relative_url }}"></script>
+<link rel="stylesheet" href="{{ '/assets/css/genai.css' | relative_url }}">
