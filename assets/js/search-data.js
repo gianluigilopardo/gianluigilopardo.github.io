@@ -11,7 +11,7 @@ ninja.data = [{
     },
   },{id: "nav-corporate-talks",
           title: "Corporate Talks",
-          description: "Interactive visualization of US corporate earnings call topic exposures",
+          description: "Interactive visualization of US corporate earnings call topic exposures. See GenAI Talks (/genaitalks/) for Generative AI–specific exposure and sentiment measures.",
           section: "Navigation",
           handler: () => {
             window.location.href = "/corporatetalks/";
