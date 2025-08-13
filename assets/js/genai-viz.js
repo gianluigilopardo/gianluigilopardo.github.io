@@ -427,8 +427,12 @@
         const gridColor=isDark?'rgba(255,255,255,0.1)':'rgba(0,0,0,0.1)';
         const textColor=isDark?'#e5e7eb':'#333';
         const yAxisLabel=getYAxisLabel(metric);
+        // responsive padding
+        const small = window.innerWidth < 600;
+        const leftPad = small ? 28 : 55;
+        const yOffset = small ? 28 : 40;
         const ctx=document.getElementById('chart')?.getContext('2d'); if(!ctx) return;
-        chart=new Chart(ctx,{type:'line',data:{labels:quarters,datasets},plugins:[yAxisTitlePlugin,canvasBackgroundPlugin],options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},layout:{padding:{left:55,right:10,top:5,bottom:0}},plugins:{legend:{display:true,position:'top',labels:{boxWidth:12,padding:15,font:{size:12},color:textColor,usePointStyle:true,pointStyle:'line'},onHover:(evt,it)=>{if(it&&it.datasetIndex!=null){evt.native&&(evt.native.target.style.cursor='pointer'); highlightDataset(it.datasetIndex);}},onLeave:(evt)=>{evt.native&&(evt.native.target.style.cursor='default'); resetHighlight();}},tooltip:{backgroundColor:isDark?'rgba(255,255,255,0.9)':'rgba(0,0,0,0.8)',titleColor:isDark?'#000':'#fff',bodyColor:isDark?'#000':'#fff',padding:12,cornerRadius:4,titleFont:{size:12},bodyFont:{size:12},callbacks:{label:ctx=>ctx.dataset.label+': '+(ctx.parsed.y!=null?ctx.parsed.y.toFixed(3):'N/A')}},yAxisTitlePlugin:{text:yAxisLabel,color:textColor,fontSize:12,offset:40},canvasBackgroundPlugin:{color:isDark?'#1c1c1c':'#ffffff'}},scales:{x:{grid:{display:false,color:gridColor},ticks:{font:{size:11},maxRotation:45,minRotation:45,color:textColor}},y:{grid:{color:gridColor,drawBorder:false},ticks:{font:{size:11},callback:v=>Number(v).toFixed(3),color:textColor},title:{display:true,text:yAxisLabel,font:{size:12,weight:'normal'},color:textColor}}}}});
+        chart=new Chart(ctx,{type:'line',data:{labels:quarters,datasets},plugins:[yAxisTitlePlugin,canvasBackgroundPlugin],options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},layout:{padding:{left:leftPad,right:10,top:5,bottom:0}},plugins:{legend:{display:true,position:'top',labels:{boxWidth:12,padding:15,font:{size:12},color:textColor,usePointStyle:true,pointStyle:'line'},onHover:(evt,it)=>{if(it&&it.datasetIndex!=null){evt.native&&(evt.native.target.style.cursor='pointer'); highlightDataset(it.datasetIndex);}},onLeave:(evt)=>{evt.native&&(evt.native.target.style.cursor='default'); resetHighlight();}},tooltip:{backgroundColor:isDark?'rgba(255,255,255,0.9)':'rgba(0,0,0,0.8)',titleColor:isDark?'#000':'#fff',bodyColor:isDark?'#000':'#fff',padding:12,cornerRadius:4,titleFont:{size:12},bodyFont:{size:12},callbacks:{label:ctx=>ctx.dataset.label+': '+(ctx.parsed.y!=null?ctx.parsed.y.toFixed(3):'N/A')}},yAxisTitlePlugin:{text:yAxisLabel,color:textColor,fontSize:12,offset:yOffset},canvasBackgroundPlugin:{color:isDark?'#1c1c1c':'#ffffff'}},scales:{x:{grid:{display:false,color:gridColor},ticks:{font:{size:11},maxRotation:45,minRotation:45,color:textColor}},y:{grid:{color:gridColor,drawBorder:false},ticks:{font:{size:11},callback:v=>Number(v).toFixed(3),color:textColor},title:{display:true,text:yAxisLabel,font:{size:12,weight:'normal'},color:textColor}}}}});
         createDownloadButtonIfNeeded();
     }
 
@@ -534,4 +538,5 @@
         createDownloadButtonIfNeeded();
         loadData();
     });
+    window.addEventListener('resize',()=>{ if(chart) updateChart(); });
 })();
