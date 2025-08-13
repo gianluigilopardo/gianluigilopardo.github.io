@@ -576,6 +576,8 @@
         const ctx = document.getElementById('chart')?.getContext('2d');
         if (!ctx) return;
         chart = new Chart(ctx, chartConfig);
+        // Ensure download button exists after chart render
+        createDownloadButtonIfNeeded();
     }
     
     function updateStats(filteredData, quarters) {
@@ -592,9 +594,12 @@
 
     // Download button
     function createDownloadButtonIfNeeded() {
-        const existing = document.getElementById('downloadChart');
-        if (existing) existing.remove();
-        const chartContainer = document.querySelector('.chart-container');
+        // If already present, do nothing
+        if (document.getElementById('downloadChart')) return;
+        // Prefer explicit container, else fallback to canvas parent
+        let chartContainer = document.querySelector('.chart-container');
+        const chartCanvas = document.getElementById('chart');
+        if (!chartContainer && chartCanvas) chartContainer = chartCanvas.parentElement;
         if (!chartContainer) return;
         const wrapper = document.createElement('div');
         wrapper.style.margin = '10px 0 0';
