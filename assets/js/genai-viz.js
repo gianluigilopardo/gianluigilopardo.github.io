@@ -1,15 +1,11 @@
 // GenAI Visualization Script for Jekyll al-folio theme
-// This script handles the interactive GenAI exposure & sentiment analysis chart
-
 
 (function() {
     'use strict';
     
-    // Global variables
     let data = [];
     let chart = null;
     
-    // Color palette (base line colors)
     const colors = {
         'GenAI_Exposure': 'rgb(0, 0, 0)',
         'GenAI_Risk': 'rgb(220, 53, 69)',
@@ -24,12 +20,39 @@
         'GenAI_Opportunity': 'Opportunity'
     };
 
-    // Helper: add alpha to an rgb() string
     function withAlpha(rgbString, alpha = 0.15) {
-        return rgbString.replace(/^rgb\(/, 'rgba(').replace(/\)$/, `, ${alpha})`);
+        if (!rgbString) return rgbString;
+        if (!rgbString.startsWith('rgb(')) return rgbString; // simple guard
+        // Convert 'rgb(r, g, b)' to 'rgba(r, g, b, alpha)'
+        return rgbString.replace(/^rgb\(/,'rgba(').replace(/\)$/ , `, ${alpha})`);
+    }
+    
+    function applyAlpha(color, alpha) {
+        if (!color) return color;
+        if (color.startsWith('rgba(')) {
+            return color.replace(/rgba\(([^,]+),([^,]+),([^,]+),\s*([^)]+)\)/, (m,r,g,b) => `rgba(${r.trim()},${g.trim()},${b.trim()},${alpha})`);
+        }
+        if (color.startsWith('rgb(')) {
+            return color.replace(/^rgb\((.*)\)$/,'rgba($1, '+alpha+')');
+        }
+        if (color.startsWith('hsla(')) {
+            return color.replace(/hsla\(([^,]+),([^,]+),([^,]+),\s*([^)]+)\)/, (m,h,s,l) => `hsla(${h.trim()},${s.trim()},${l.trim()},${alpha})`);
+        }
+        if (color.startsWith('hsl(')) {
+            return color.replace(/^hsl\((.*)\)$/,'hsla($1, '+alpha+')');
+        }
+        if (color.startsWith('#')) {
+            let hex = color.slice(1);
+            if (hex.length === 3) hex = hex.split('').map(c => c+c).join('');
+            const num = parseInt(hex,16);
+            const r = (num >> 16) & 255;
+            const g = (num >> 8) & 255;
+            const b = num & 255;
+            return `rgba(${r},${g},${b},${alpha})`;
+        }
+        return color;
     }
 
-    // Helper: Y-axis label text
     function getYAxisLabel(metric) {
         if (metric === 'sentiment') return 'GenAI Sentiment (%)';
         switch (metric) {
@@ -41,33 +64,22 @@
         }
     }
 
-    // Fallback plugin to FORCE drawing the Y axis title (covers cases where Chart.js axis title not rendering)
     const yAxisTitlePlugin = {
         id: 'yAxisTitlePlugin',
         afterDraw(chart, args, opts) {
             const pluginOpts = chart.config.options.plugins.yAxisTitlePlugin;
             if (!pluginOpts || !pluginOpts.text) return;
-
-            // Always draw (so label shows regardless), but position it so it does not clash much.
             const { ctx, chartArea, scales } = chart;
             if (!chartArea) return;
-
-            // Compute left margin taking into account tick label widths
             let leftMost = chartArea.left;
-            if (scales && scales.y) {
-                leftMost = scales.y.left;
-            }
-
+            if (scales && scales.y) leftMost = scales.y.left;
             ctx.save();
             ctx.font = (pluginOpts.fontSize || 12) + 'px ' + (pluginOpts.fontFamily || 'sans-serif');
             ctx.fillStyle = pluginOpts.color || '#333';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-
-            // Position slightly left of axis ticks
             const x = leftMost - (pluginOpts.offset || 40);
             const y = (chartArea.top + chartArea.bottom) / 2;
-
             ctx.translate(x, y);
             ctx.rotate(-Math.PI / 2);
             ctx.fillText(pluginOpts.text, 0, 0);
@@ -75,20 +87,18 @@
         }
     };
 
-    // Background plugin to ensure non-transparent PNG export
     const canvasBackgroundPlugin = {
         id: 'canvasBackgroundPlugin',
         beforeDraw(chart, args, opts) {
             const { ctx, width, height } = chart;
             ctx.save();
             ctx.globalCompositeOperation = 'destination-over';
-            ctx.fillStyle = opts && opts.color ? opts.color : '#ffffff';
+            ctx.fillStyle = (opts && opts.color) || '#ffffff';
             ctx.fillRect(0, 0, width, height);
             ctx.restore();
         }
     };
     
-    // Load data from CSV
     async function loadData() {
         try {
             const possiblePaths = [
@@ -97,10 +107,8 @@
                 '/genai_html/exposure/genai_trends.csv',
                 'exposure/genai_trends.csv'
             ];
-            
             let csvContent = null;
             let successPath = null;
-            
             for (const path of possiblePaths) {
                 try {
                     const response = await fetch(path);
@@ -109,17 +117,12 @@
                         successPath = path;
                         break;
                     }
-                } catch (e) {
-                    continue;
-                }
+                } catch (_) { /* ignore */ }
             }
-            
             if (!csvContent) {
                 throw new Error('Could not find genai_trends.csv file. Please ensure it is uploaded to /assets/data/ or /exposure/ directory.');
             }
-            
             console.log(`Successfully loaded data from: ${successPath}`);
-            
             Papa.parse(csvContent, {
                 header: true,
                 dynamicTyping: true,
@@ -127,18 +130,12 @@
                 delimitersToGuess: [',', '\t', '|', ';'],
                 complete: function(results) {
                     data = results.data;
-                    
                     data = data.filter(row => row.quarter && row.ticker);
-                    
                     data.sort((a, b) => {
-                        if (a.quarter !== b.quarter) {
-                            return a.quarter.localeCompare(b.quarter);
-                        }
+                        if (a.quarter !== b.quarter) return a.quarter.localeCompare(b.quarter);
                         return a.ticker.localeCompare(b.ticker);
                     });
-                    
                     console.log(`Processing ${data.length} valid rows`);
-                    
                     initializeFilters();
                     updateChart();
                     const loadingEl = document.getElementById('loading');
@@ -170,9 +167,7 @@
         const filterValueGroup = document.getElementById('filterValueGroup');
         const filterValue = document.getElementById('filterValue');
         const searchInput = document.getElementById('searchInput');
-        
         if (!filterType) return;
-        
         filterType.addEventListener('change', function() {
             if (this.value === 'all') {
                 if (filterValueGroup) filterValueGroup.style.display = 'none';
@@ -182,17 +177,12 @@
             }
             updateSentimentOption();
         });
-        
-        if (filterValue) {
-            filterValue.addEventListener('change', updateSentimentOption);
-        }
-        
+        if (filterValue) filterValue.addEventListener('change', updateSentimentOption);
         if (searchInput) {
             searchInput.addEventListener('input', function() {
                 filterOptions(this.value.toLowerCase());
             });
         }
-        
         updateSentimentOption();
     }
     
@@ -200,7 +190,6 @@
         const filterValue = document.getElementById('filterValue');
         if (!filterValue) return;
         const options = filterValue.querySelectorAll('option');
-        
         options.forEach(option => {
             const text = option.textContent.toLowerCase();
             option.style.display = text.includes(searchTerm) ? '' : 'none';
@@ -212,9 +201,7 @@
         const filterValue = document.getElementById('filterValue');
         const sentimentOption = document.getElementById('sentimentOption');
         const selectedMetricEl = document.getElementById('selectedMetric');
-        
         if (!sentimentOption || !selectedMetricEl) return;
-        
         if (filterTypeVal === 'all' || (filterValue && filterValue.selectedOptions.length === 1)) {
             sentimentOption.style.display = 'block';
         } else {
@@ -231,7 +218,6 @@
         if (!filterValue) return;
         filterValue.innerHTML = '';
         if (searchInput) searchInput.value = '';
-        
         let values = [];
         if (type === 'sector') {
             values = [...new Set(data.map(d => d.sector))].filter(v => v).sort();
@@ -240,35 +226,29 @@
         } else if (type === 'firm') {
             values = [...new Set(data.map(d => d.firm))].filter(v => v).sort();
         }
-        
         values.forEach(value => {
             const option = document.createElement('option');
             option.value = value;
             option.textContent = value;
             filterValue.appendChild(option);
         });
-        
         if (values.length > 0) {
             filterValue.selectedIndex = 0;
             if (values.length > 1) filterValue.options[1].selected = true;
         }
-        
         updateSentimentOption();
     }
     
     function getFilteredData() {
         const filterType = document.getElementById('filterType')?.value;
         const filterValue = document.getElementById('filterValue');
-        
         let filtered = data;
-        
         if (filterType && filterType !== 'all' && filterValue) {
             const selectedValues = Array.from(filterValue.selectedOptions).map(opt => opt.value);
             if (selectedValues.length > 0) {
                 filtered = data.filter(row => selectedValues.includes(row[filterType]));
             }
         }
-        
         return filtered;
     }
     
@@ -276,20 +256,17 @@
         const quarters = [...new Set(filteredData.map(d => d.quarter))].sort();
         const entities = [...new Set(filteredData.map(d => d[filterType]))].filter(e => e).sort();
         const aggregated = {};
-        
         entities.forEach(entity => {
             aggregated[entity] = {};
             quarters.forEach(quarter => {
                 const quarterData = filteredData.filter(d => d.quarter === quarter && d[filterType] === entity);
-                const values = quarterData
-                    .map(d => d[metric])
-                    .filter(v => v !== null && v !== undefined && !isNaN(v));
+                const values = quarterData.map(d => d[metric]).filter(v => v !== null && v !== undefined && !isNaN(v));
                 if (values.length > 0) {
-                    aggregated[entity][quarter] = values.reduce((a, b) => a + b, 0) / values.length;
+                    const avg = values.reduce((a, b) => a + b, 0) / values.length;
+                    aggregated[entity][quarter] = parseFloat(avg.toFixed(3));
                 }
             });
         });
-        
         return { quarters, aggregated, entities };
     }
     
@@ -306,17 +283,70 @@
             'rgb(76, 175, 80)',
             'rgb(33, 150, 243)'
         ];
-        
-        if (count <= baseColors.length) {
-            return baseColors.slice(0, count);
-        }
-        
+        if (count <= baseColors.length) return baseColors.slice(0, count);
         const extended = [...baseColors];
         for (let i = baseColors.length; i < count; i++) {
             const hue = (i * 137.508) % 360;
             extended.push(`hsl(${hue}, 70%, 50%)`);
         }
         return extended;
+    }
+
+    // Legend hover highlight helpers
+    function storeOriginalDatasetStyles(ds) {
+        if (!ds._originalStyle) {
+            ds._originalStyle = {
+                borderColor: ds.borderColor,
+                backgroundColor: ds.backgroundColor,
+                borderWidth: ds.borderWidth,
+                pointRadius: ds.pointRadius,
+                pointBackgroundColor: ds.pointBackgroundColor,
+                tension: ds.tension
+            };
+        }
+    }
+
+    function restoreDatasetStyles(ds) {
+        if (ds._originalStyle) {
+            Object.assign(ds, ds._originalStyle);
+        }
+    }
+
+    function highlightDataset(index) {
+        if (!chart) return;
+        chart.data.datasets.forEach((ds, i) => {
+            storeOriginalDatasetStyles(ds);
+            if (chart.isDatasetVisible(i)) {
+                if (i === index) {
+                    ds.borderWidth = (ds._originalStyle.borderWidth || 2) + 1;
+                    ds.pointRadius = (ds._originalStyle.pointRadius || 3) + 1;
+                    ds.tension = 0.25;
+                    // Keep original vivid colors
+                    ds.borderColor = ds._originalStyle.borderColor;
+                    ds.pointBackgroundColor = ds._originalStyle.pointBackgroundColor;
+                    ds.backgroundColor = applyAlpha(ds._originalStyle.backgroundColor || ds.borderColor, 0.25);
+                } else {
+                    // Fade others
+                    ds.borderColor = applyAlpha(ds._originalStyle.borderColor, 0.25);
+                    ds.pointBackgroundColor = applyAlpha(ds._originalStyle.pointBackgroundColor, 0.25);
+                    ds.backgroundColor = applyAlpha(ds._originalStyle.backgroundColor || ds.borderColor, 0.05);
+                    ds.pointRadius = Math.max(1, (ds._originalStyle.pointRadius || 3) - 1);
+                    ds.borderWidth = Math.max(1, (ds._originalStyle.borderWidth || 2) - 1);
+                    ds.tension = 0.1;
+                }
+            }
+        });
+        chart.update('none');
+    }
+
+    function resetHighlight() {
+        if (!chart) return;
+        chart.data.datasets.forEach(ds => {
+            if (ds._originalStyle) {
+                restoreDatasetStyles(ds);
+            }
+        });
+        chart.update('none');
     }
     
     function updateChart() {
@@ -333,7 +363,6 @@
             quarters = [...new Set(filteredData.map(d => d.quarter))].sort();
             const sentimentMetrics = ['GenAI_Risk', 'GenAI_Adoption', 'GenAI_Opportunity'];
             aggregated = {};
-            
             if (filterType === 'all') {
                 sentimentMetrics.forEach(sentimentMetric => {
                     aggregated[sentimentMetric] = {};
@@ -343,7 +372,8 @@
                             .map(d => d[sentimentMetric])
                             .filter(v => v !== null && v !== undefined && !isNaN(v));
                         if (values.length > 0) {
-                            aggregated[sentimentMetric][quarter] = values.reduce((a, b) => a + b, 0) / values.length;
+                            const avg = values.reduce((a, b) => a + b, 0) / values.length;
+                            aggregated[sentimentMetric][quarter] = parseFloat(avg.toFixed(3));
                         }
                     });
                 });
@@ -357,12 +387,12 @@
                             .map(d => d[sentimentMetric])
                             .filter(v => v !== null && v !== undefined && !isNaN(v));
                         if (values.length > 0) {
-                            aggregated[sentimentMetric][quarter] = values.reduce((a, b) => a + b, 0) / values.length;
+                            const avg = values.reduce((a, b) => a + b, 0) / values.length;
+                            aggregated[sentimentMetric][quarter] = parseFloat(avg.toFixed(3));
                         }
                     });
                 });
             }
-            
             datasets = ['GenAI_Risk', 'GenAI_Adoption', 'GenAI_Opportunity'].map(sentimentMetric => ({
                 label: metricLabels[sentimentMetric],
                 data: quarters.map(q => aggregated[sentimentMetric][q] !== undefined ? aggregated[sentimentMetric][q] : null),
@@ -375,20 +405,19 @@
                 tension: 0.1,
                 fill: false
             }));
-            
         } else {
             if (filterType === 'all') {
                 quarters = [...new Set(filteredData.map(d => d.quarter))].sort();
                 aggregated = { 'All Companies': {} };
                 entities = ['All Companies'];
-                
                 quarters.forEach(quarter => {
                     const quarterData = filteredData.filter(d => d.quarter === quarter);
                     const values = quarterData
                         .map(d => d[metric])
                         .filter(v => v !== null && v !== undefined && !isNaN(v));
                     if (values.length > 0) {
-                        aggregated['All Companies'][quarter] = values.reduce((a, b) => a + b, 0) / values.length;
+                        const avg = values.reduce((a, b) => a + b, 0) / values.length;
+                        aggregated['All Companies'][quarter] = parseFloat(avg.toFixed(3));
                     }
                 });
             } else {
@@ -397,7 +426,6 @@
                 aggregated = result.aggregated;
                 entities = result.entities;
             }
-            
             const entityColors = generateColors(entities.length);
             datasets = entities.map((entity, index) => ({
                 label: entity,
@@ -415,7 +443,6 @@
         
         updateStats(filteredData, quarters);
         
-        // Theme colors
         const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
         const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
         const textColor = isDarkMode ? '#e5e7eb' : '#333333';
@@ -450,6 +477,17 @@
                             color: textColor,
                             usePointStyle: true,
                             pointStyle: 'line'
+                        },
+                        // Hover highlight handlers
+                        onHover: (evt, legendItem, legend) => {
+                            if (!legendItem || legendItem.datasetIndex == null) return;
+                            const ci = legend.chart;
+                            evt.native && (evt.native.target.style.cursor = 'pointer');
+                            highlightDataset(legendItem.datasetIndex);
+                        },
+                        onLeave: (evt, legendItem, legend) => {
+                            evt.native && (evt.native.target.style.cursor = 'default');
+                            resetHighlight();
                         }
                     },
                     tooltip: {
@@ -482,10 +520,7 @@
         if (majorVersion >= 3) {
             chartConfig.options.scales = {
                 x: {
-                    grid: {
-                        display: false,
-                        color: gridColor
-                    },
+                    grid: { display: false, color: gridColor },
                     ticks: {
                         font: { size: 11 },
                         maxRotation: 45,
@@ -494,15 +529,10 @@
                     }
                 },
                 y: {
-                    grid: {
-                        color: gridColor,
-                        drawBorder: false
-                    },
+                    grid: { color: gridColor, drawBorder: false },
                     ticks: {
                         font: { size: 11 },
-                        callback: function(value) {
-                            return Number(value).toFixed(2);
-                        },
+                        callback: value => Number(value).toFixed(3),
                         color: textColor
                     },
                     title: {
@@ -517,10 +547,7 @@
         } else {
             chartConfig.options.scales = {
                 xAxes: [{
-                    gridLines: {
-                        display: false,
-                        color: gridColor
-                    },
+                    gridLines: { display: false, color: gridColor },
                     ticks: {
                         fontSize: 11,
                         fontColor: textColor,
@@ -529,16 +556,11 @@
                     }
                 }],
                 yAxes: [{
-                    gridLines: {
-                        color: gridColor,
-                        drawBorder: false
-                    },
+                    gridLines: { color: gridColor, drawBorder: false },
                     ticks: {
                         fontSize: 11,
                         fontColor: textColor,
-                        callback: function(value) {
-                            return Number(value).toFixed(2);
-                        }
+                        callback: value => Number(value).toFixed(3)
                     },
                     scaleLabel: {
                         display: true,
@@ -550,10 +572,7 @@
             };
         }
         
-        if (chart) {
-            chart.destroy();
-        }
-        
+        if (chart) chart.destroy();
         const ctx = document.getElementById('chart')?.getContext('2d');
         if (!ctx) return;
         chart = new Chart(ctx, chartConfig);
@@ -563,83 +582,58 @@
         const companies = [...new Set(filteredData.map(d => d.firm))].length;
         const quarterCount = quarters.length;
         const dataPoints = filteredData.length;
-        
         const companyCountEl = document.getElementById('companyCount');
         const quarterCountEl = document.getElementById('quarterCount');
         const dataPointsEl = document.getElementById('dataPoints');
-        
         if (companyCountEl) companyCountEl.textContent = companies.toLocaleString();
         if (quarterCountEl) quarterCountEl.textContent = quarterCount;
         if (dataPointsEl) dataPointsEl.textContent = dataPoints.toLocaleString();
     }
 
-    // --- Download Button Feature ------------------------------------------------
-
+    // Download button
     function createDownloadButtonIfNeeded() {
-        if (document.getElementById('downloadChart')) return;
-
-        // Prefer placing it next to the update button if present
-        const updateButton = document.getElementById('updateChart');
-        let container = null;
-        if (updateButton && updateButton.parentElement) {
-            container = updateButton.parentElement;
-        } else {
-            // Fallback: place after chart canvas container
-            const chartEl = document.getElementById('chart');
-            container = chartEl ? chartEl.parentElement : document.body;
-        }
-        if (!container) return;
-
+        const existing = document.getElementById('downloadChart');
+        if (existing) existing.remove();
+        const chartContainer = document.querySelector('.chart-container');
+        if (!chartContainer) return;
+        const wrapper = document.createElement('div');
+        wrapper.style.margin = '10px 0 0';
+        wrapper.style.textAlign = 'right';
         const btn = document.createElement('button');
         btn.id = 'downloadChart';
         btn.type = 'button';
-        // Bootstrap / al-folio style classes (adjust if a different primary style is preferred)
-        btn.className = 'btn btn-sm btn-outline-secondary ms-2';
-        btn.innerHTML = '<i class="fas fa-download"></i> Download Chart';
-
+        btn.className = 'btn btn-sm btn-outline-secondary';
+        btn.textContent = 'Download Chart (PNG)';
         btn.addEventListener('click', () => {
             if (!chart) return;
             try {
-                // Construct a meaningful filename
                 const metric = document.getElementById('selectedMetric')?.value || 'GenAI_Exposure';
                 const filterType = document.getElementById('filterType')?.value || 'all';
                 let filterSnippet = filterType;
-
                 if (filterType !== 'all') {
-                    const selectedVals = Array
-                        .from(document.getElementById('filterValue')?.selectedOptions || [])
-                        .map(o => o.value)
-                        .slice(0, 3) // limit length
-                        .join('_')
-                        .replace(/[^a-zA-Z0-9_-]/g, '');
+                    const selectedVals = Array.from(document.getElementById('filterValue')?.selectedOptions || [])
+                        .map(o => o.value).slice(0,3).join('_').replace(/[^a-zA-Z0-9_-]/g,'');
                     if (selectedVals) filterSnippet += '-' + selectedVals;
                 }
-
                 const dateStamp = new Date().toISOString().slice(0,10);
                 const filename = `genai_${metric}_${filterSnippet}_${dateStamp}.png`;
-
+                chart.update('none');
                 const link = document.createElement('a');
                 link.download = filename;
-                // Ensure latest render (esp. after hover) before export
-                chart.update('none');
-                // Use built-in export
                 link.href = chart.toBase64Image('image/png', 1);
                 link.click();
             } catch (e) {
                 console.error('Error exporting chart:', e);
-                alert('Unable to download chart image. See console for details.');
+                alert('Unable to download chart image.');
             }
         });
-
-        container.appendChild(btn);
+        wrapper.appendChild(btn);
+        chartContainer.insertAdjacentElement('afterend', wrapper);
     }
 
-    // Initialize when DOM is ready
     document.addEventListener('DOMContentLoaded', function() {
         const updateButton = document.getElementById('updateChart');
-        if (updateButton) {
-            updateButton.addEventListener('click', updateChart);
-        }
+        if (updateButton) updateButton.addEventListener('click', updateChart);
         createDownloadButtonIfNeeded();
         loadData();
     });
