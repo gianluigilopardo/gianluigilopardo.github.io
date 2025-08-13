@@ -180,7 +180,9 @@
             updateSentimentOption();
             updateToggle();
         });
-        if (filterValue) filterValue.addEventListener('change', updateSentimentOption);
+        if (filterValue) {
+            filterValue.addEventListener('change', () => { updateSentimentOption(); updateToggle(); });
+        }
         if (searchInput) {
             searchInput.addEventListener('input', function() {
                 filterOptions(this.value.toLowerCase());
