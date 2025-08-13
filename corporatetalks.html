@@ -1,0 +1,234 @@
+---
+layout: page
+title: Corporate Talks
+permalink: /corporatetalks/
+description: Interactive visualization of US corporate topic exposures
+nav: true
+---
+
+<style>
+/* Custom styles for GenAI visualization - adapted for al-folio theme */
+.genai-container {
+    margin-top: 2rem;
+}
+
+.genai-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--global-divider-color);
+}
+
+.genai-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.genai-subtitle {
+    font-size: 1.1rem;
+    color: var(--global-text-color-light);
+    margin-bottom: 1rem;
+}
+
+.genai-paper-link {
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.genai-meta {
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    color: var(--global-text-color-light);
+}
+
+.genai-definition {
+    margin-top: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--global-text-color-light);
+    line-height: 1.5;
+    padding: 1rem;
+    background: var(--global-bg-color);
+    border-left: 3px solid var(--global-theme-color);
+}
+
+.genai-controls {
+    margin-bottom: 2rem;
+}
+
+.genai-control-group {
+    margin-bottom: 1.5rem;
+}
+
+.genai-control-group label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--global-text-color-light);
+    margin-bottom: 0.5rem;
+}
+
+.genai-stats {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.genai-stat-item {
+    flex: 1;
+    min-width: 150px;
+    padding: 1.25rem;
+    background: var(--global-card-bg-color);
+    border: 1px solid var(--global-divider-color);
+    border-radius: 0.5rem;
+    text-align: center;
+}
+
+.genai-stat-value {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--global-theme-color);
+    margin-bottom: 0.25rem;
+}
+
+.genai-stat-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--global-text-color-light);
+}
+
+.genai-chart-container {
+    background: var(--global-card-bg-color);
+    border: 1px solid var(--global-divider-color);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    height: 500px;
+    position: relative;
+}
+
+.genai-loading {
+    text-align: center;
+    padding: 3rem;
+    color: var(--global-text-color-light);
+}
+
+.genai-search-input {
+    margin-bottom: 0.5rem;
+}
+
+.genai-filter-info {
+    font-size: 0.75rem;
+    color: var(--global-text-color-light);
+    margin-top: 0.25rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .genai-header h1 {
+        font-size: 2rem;
+    }
+    
+    .genai-stats {
+        gap: 1rem;
+    }
+    
+    .genai-stat-item {
+        min-width: 100px;
+        padding: 1rem;
+    }
+    
+    .genai-chart-container {
+        height: 400px;
+    }
+}
+
+/* Dark mode adjustments */
+html[data-theme="dark"] .genai-stat-item {
+    background: var(--global-card-bg-color);
+    border-color: var(--global-divider-color);
+}
+
+html[data-theme="dark"] .genai-chart-container {
+    background: var(--global-card-bg-color);
+    border-color: var(--global-divider-color);
+}
+</style>
+
+<div class="genai-container">
+    <div class="genai-header">
+        <div class="genai-paper-link">
+            Corporate earnings call transcript topic analytics (multi-topic exposure). Data structure: quarter, tic, topic, exposure, firm, sector, industry.
+        </div>
+        <div class="genai-definition">
+            <strong>Exposure</strong> = share of a quarterly earnings call transcript devoted to the selected topic (topic-related content / total transcript content)<br>
+            <strong>Last data update:</strong> January 2025
+        </div>
+    </div>
+
+    <div class="genai-controls">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="genai-control-group">
+                    <label for="filterType">Filter By</label>
+                    <select id="filterType" class="form-control form-control-sm">
+                        <option value="all">All Companies</option>
+                        <option value="sector">Sector</option>
+                        <option value="industry">Industry</option>
+                        <option value="firm">Firm</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3" id="filterValueGroup" style="display:none;">
+                <div class="genai-control-group">
+                    <label for="filterValue">Select Values</label>
+                    <input type="text" id="searchInput" class="form-control form-control-sm genai-search-input" placeholder="Search...">
+                    <select id="filterValue" multiple class="form-control form-control-sm" size="6"></select>
+                    <div class="genai-filter-info">Hold Ctrl/Cmd to select multiple</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="genai-control-group">
+                    <label for="selectedTopic">Topic</label>
+                    <select id="selectedTopic" class="form-control form-control-sm">
+                        <!-- populated dynamically -->
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="genai-control-group">
+                    <label>&nbsp;</label>
+                    <button id="updateChart" class="btn btn-primary btn-sm btn-block">Update Chart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="genai-stats">
+        <div class="genai-stat-item">
+            <div class="genai-stat-value" id="companyCount">-</div>
+            <div class="genai-stat-label">Companies</div>
+        </div>
+        <div class="genai-stat-item">
+            <div class="genai-stat-value" id="quarterCount">-</div>
+            <div class="genai-stat-label">Quarters</div>
+        </div>
+        <div class="genai-stat-item">
+            <div class="genai-stat-value" id="dataPoints">-</div>
+            <div class="genai-stat-label">Data Points</div>
+        </div>
+    </div>
+
+    <div class="genai-chart-container">
+        <canvas id="chart"></canvas>
+    </div>
+    <div class="genai-loading" id="loading">
+        <div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div>
+        <p>Loading data...</p>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
+<script src="{{ '/assets/js/corporatetalks-viz.js' | relative_url }}"></script>
