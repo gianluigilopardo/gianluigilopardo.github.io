@@ -16,13 +16,6 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/corporatetalks/";
           },
-        },{id: "nav-genai-talks",
-          title: "GenAI Talks",
-          description: "Interactive visualization of US corporate GenAI exposure and sentiment trends",
-          section: "Navigation",
-          handler: () => {
-            window.location.href = "/genaitalks/";
-          },
         },{id: "nav-publications",
           title: "publications",
           description: "publications by year in reversed chronological order",
