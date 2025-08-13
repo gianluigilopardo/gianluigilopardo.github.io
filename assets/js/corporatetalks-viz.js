@@ -81,7 +81,7 @@
  function aggregateTopicsAll(filtered){
      // Efficient pre-aggregation by topic & quarter
      const topicQuarterMap=new Map();
-     filtered.forEach(r=>{const key=r.topic+'|'+r.quarter; let arr=topicQuarterMap.get(key); if(!arr){arr=[]; topicQuarterMap.set(key,arr);} arr.push(r.exposure);});
+     filtered.forEach(r=>{const key=r.topic+'|'+r.quarter; let arr=topicQuarterMap.get(key); if(!arr){arr=[]; topicQuarterMap.set(key,arr);} arr.push(r.exposure*100);});
      const topics=[...new Set(filtered.map(d=>d.topic))].filter(Boolean);
      // compute overall averages for ranking
      const topicAvg=topics.map(t=>{let sum=0,count=0; topicQuarterMap.forEach((vals,k)=>{if(k.startsWith(t+'|')){vals.forEach(v=>{if(v!=null&&!isNaN(v)){sum+=v; count++;}});}}); return {t,avg: count? sum/count:0};}).sort((a,b)=>b.avg-a.avg);
@@ -100,7 +100,7 @@
      if(ft==='all'){
          aggregated['All Companies']={}; entities=['All Companies'];
          quarters.forEach(q=>{
-             const vals=topicFiltered.filter(d=>d.quarter===q).map(d=>d.exposure).filter(v=>v!=null&&!isNaN(v));
+             const vals=topicFiltered.filter(d=>d.quarter===q).map(d=>d.exposure*100).filter(v=>v!=null&&!isNaN(v));
              if(vals.length){const avg=vals.reduce((a,b)=>a+b,0)/vals.length; aggregated['All Companies'][q]=parseFloat(avg.toFixed(3));}
          });
      } else {
@@ -115,18 +115,18 @@
              let firms=[...new Set(topicFiltered.filter(d=>selectedGroups.includes(d[ft])).map(d=>d.firm))];
              // compute avg exposure per firm across quarters (topicFiltered already respects topic selection or all topics)
              const firmAvg= firms.map(f=>{
-                 const vals=topicFiltered.filter(r=>r.firm===f).map(r=>r.exposure).filter(v=>v!=null&&!isNaN(v));
+                 const vals=topicFiltered.filter(r=>r.firm===f).map(r=>r.exposure*100).filter(v=>v!=null&&!isNaN(v));
                  const avg=vals.length? vals.reduce((a,b)=>a+b,0)/vals.length : 0; return {firm:f,avg};
              }).sort((a,b)=>b.avg-a.avg).slice(0,10).map(o=>o.firm);
              entities=firmAvg; aggregated={};
-             entities.forEach(firm=>{aggregated[firm]={}; quarters.forEach(q=>{const vals=topicFiltered.filter(d=>d.quarter===q && d.firm===firm).map(d=>d.exposure).filter(v=>v!=null&&!isNaN(v)); if(vals.length){const avg=vals.reduce((a,b)=>a+b,0)/vals.length; aggregated[firm][q]=parseFloat(avg.toFixed(3));}});});
+             entities.forEach(firm=>{aggregated[firm]={}; quarters.forEach(q=>{const vals=topicFiltered.filter(d=>d.quarter===q && d.firm===firm).map(d=>d.exposure*100).filter(v=>v!=null&&!isNaN(v)); if(vals.length){const avg=vals.reduce((a,b)=>a+b,0)/vals.length; aggregated[firm][q]=parseFloat(avg.toFixed(3));}});});
          } else {
              // aggregate by selected grouping dimension (sector/industry/firm) with top-10 trimming
              entities=[...new Set(topicFiltered.map(d=>d[ft]))].filter(e=>e).sort();
              // compute averages to rank
-             const averages=entities.map(ent=>{const vals=topicFiltered.filter(r=>r[ft]===ent).map(r=>r.exposure).filter(v=>v!=null&&!isNaN(v)); const avg=vals.length? vals.reduce((a,b)=>a+b,0)/vals.length:0; return {ent,avg};}).sort((a,b)=>b.avg-a.avg).slice(0,10).map(o=>o.ent);
+             const averages=entities.map(ent=>{const vals=topicFiltered.filter(r=>r[ft]===ent).map(r=>r.exposure*100).filter(v=>v!=null&&!isNaN(v)); const avg=vals.length? vals.reduce((a,b)=>a+b,0)/vals.length:0; return {ent,avg};}).sort((a,b)=>b.avg-a.avg).slice(0,10).map(o=>o.ent);
              entities=averages; aggregated={};
-             entities.forEach(ent=>{aggregated[ent]={}; quarters.forEach(q=>{const vals=topicFiltered.filter(d=>d.quarter===q && d[ft]===ent).map(d=>d.exposure).filter(v=>v!=null&&!isNaN(v)); if(vals.length){const avg=vals.reduce((a,b)=>a+b,0)/vals.length; aggregated[ent][q]=parseFloat(avg.toFixed(3));}});});
+             entities.forEach(ent=>{aggregated[ent]={}; quarters.forEach(q=>{const vals=topicFiltered.filter(d=>d.quarter===q && d[ft]===ent).map(d=>d.exposure*100).filter(v=>v!=null&&!isNaN(v)); if(vals.length){const avg=vals.reduce((a,b)=>a+b,0)/vals.length; aggregated[ent][q]=parseFloat(avg.toFixed(3));}});});
          }
      }
      return {quarters,aggregated,entities};
