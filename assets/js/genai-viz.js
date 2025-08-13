@@ -1,5 +1,5 @@
 // GenAI Visualization Script for Jekyll al-folio theme
-// This script handles the interactive GenAI exposure analysis chart
+// This script handles the interactive GenAI exposure & sentiment analysis chart
 
 (function() {
     'use strict';
@@ -8,7 +8,7 @@
     let data = [];
     let chart = null;
     
-    // Color palette
+    // Color palette (base line colors)
     const colors = {
         'GenAI_Exposure': 'rgb(0, 0, 0)',
         'GenAI_Risk': 'rgb(220, 53, 69)',
@@ -22,11 +22,28 @@
         'GenAI_Adoption': 'Adoption',
         'GenAI_Opportunity': 'Opportunity'
     };
+
+    // Helper: add alpha to an rgb() string
+    function withAlpha(rgbString, alpha = 0.15) {
+        // Expects 'rgb(r, g, b)'
+        return rgbString.replace(/^rgb\(/, 'rgba(').replace(/\)$/, `, ${alpha})`);
+    }
+
+    // Helper: Y-axis label text
+    function getYAxisLabel(metric) {
+        if (metric === 'sentiment') return 'GenAI Sentiment (%)';
+        switch (metric) {
+            case 'GenAI_Exposure': return 'GenAI Exposure (%)';
+            case 'GenAI_Risk': return 'GenAI Risk (%)';
+            case 'GenAI_Adoption': return 'GenAI Adoption (%)';
+            case 'GenAI_Opportunity': return 'GenAI Opportunity (%)';
+            default: return 'Value (%)';
+        }
+    }
     
     // Load data from CSV
     async function loadData() {
         try {
-            // Try different possible paths for the CSV file
             const possiblePaths = [
                 '/exposure/genai_trends.csv',
                 '/assets/data/genai_trends.csv',
@@ -56,7 +73,6 @@
             
             console.log(`Successfully loaded data from: ${successPath}`);
             
-            // Parse CSV
             Papa.parse(csvContent, {
                 header: true,
                 dynamicTyping: true,
@@ -68,7 +84,7 @@
                     // Clean and validate data
                     data = data.filter(row => row.quarter && row.ticker);
                     
-                    // Sort by quarter and ticker
+                    // Sort by quarter then ticker
                     data.sort((a, b) => {
                         if (a.quarter !== b.quarter) {
                             return a.quarter.localeCompare(b.quarter);
@@ -80,7 +96,8 @@
                     
                     initializeFilters();
                     updateChart();
-                    document.getElementById('loading').style.display = 'none';
+                    const loadingEl = document.getElementById('loading');
+                    if (loadingEl) loadingEl.style.display = 'none';
                 },
                 error: function(error) {
                     console.error('Error parsing CSV:', error);
@@ -94,7 +111,9 @@
     }
     
     function showError(message) {
-        document.getElementById('loading').innerHTML = `
+        const loadingEl = document.getElementById('loading');
+        if (!loadingEl) return;
+        loadingEl.innerHTML = `
             <div class="alert alert-danger" role="alert">
                 <strong>Error:</strong> ${message}
             </div>
@@ -107,50 +126,56 @@
         const filterValue = document.getElementById('filterValue');
         const searchInput = document.getElementById('searchInput');
         
+        if (!filterType) return;
+        
         filterType.addEventListener('change', function() {
             if (this.value === 'all') {
-                filterValueGroup.style.display = 'none';
+                if (filterValueGroup) filterValueGroup.style.display = 'none';
             } else {
-                filterValueGroup.style.display = 'block';
+                if (filterValueGroup) filterValueGroup.style.display = 'block';
                 populateFilterValues(this.value);
             }
             updateSentimentOption();
         });
         
-        filterValue.addEventListener('change', updateSentimentOption);
+        if (filterValue) {
+            filterValue.addEventListener('change', updateSentimentOption);
+        }
         
-        searchInput.addEventListener('input', function() {
-            filterOptions(this.value.toLowerCase());
-        });
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                filterOptions(this.value.toLowerCase());
+            });
+        }
         
         updateSentimentOption();
     }
     
     function filterOptions(searchTerm) {
         const filterValue = document.getElementById('filterValue');
+        if (!filterValue) return;
         const options = filterValue.querySelectorAll('option');
         
         options.forEach(option => {
             const text = option.textContent.toLowerCase();
-            if (text.includes(searchTerm)) {
-                option.style.display = '';
-            } else {
-                option.style.display = 'none';
-            }
+            option.style.display = text.includes(searchTerm) ? '' : 'none';
         });
     }
     
     function updateSentimentOption() {
-        const filterType = document.getElementById('filterType').value;
+        const filterTypeVal = document.getElementById('filterType')?.value;
         const filterValue = document.getElementById('filterValue');
         const sentimentOption = document.getElementById('sentimentOption');
+        const selectedMetricEl = document.getElementById('selectedMetric');
         
-        if (filterType === 'all' || (filterValue.selectedOptions.length === 1)) {
+        if (!sentimentOption || !selectedMetricEl) return;
+        
+        if (filterTypeVal === 'all' || (filterValue && filterValue.selectedOptions.length === 1)) {
             sentimentOption.style.display = 'block';
         } else {
             sentimentOption.style.display = 'none';
-            if (document.getElementById('selectedMetric').value === 'sentiment') {
-                document.getElementById('selectedMetric').value = 'GenAI_Exposure';
+            if (selectedMetricEl.value === 'sentiment') {
+                selectedMetricEl.value = 'GenAI_Exposure';
             }
         }
     }
@@ -158,8 +183,9 @@
     function populateFilterValues(type) {
         const filterValue = document.getElementById('filterValue');
         const searchInput = document.getElementById('searchInput');
+        if (!filterValue) return;
         filterValue.innerHTML = '';
-        searchInput.value = '';
+        if (searchInput) searchInput.value = '';
         
         let values = [];
         if (type === 'sector') {
@@ -186,12 +212,12 @@
     }
     
     function getFilteredData() {
-        const filterType = document.getElementById('filterType').value;
+        const filterType = document.getElementById('filterType')?.value;
         const filterValue = document.getElementById('filterValue');
         
         let filtered = data;
         
-        if (filterType !== 'all') {
+        if (filterType && filterType !== 'all' && filterValue) {
             const selectedValues = Array.from(filterValue.selectedOptions).map(opt => opt.value);
             if (selectedValues.length > 0) {
                 filtered = data.filter(row => selectedValues.includes(row[filterType]));
@@ -210,7 +236,9 @@
             aggregated[entity] = {};
             quarters.forEach(quarter => {
                 const quarterData = filteredData.filter(d => d.quarter === quarter && d[filterType] === entity);
-                const values = quarterData.map(d => d[metric]).filter(v => v !== null && v !== undefined && !isNaN(v));
+                const values = quarterData
+                    .map(d => d[metric])
+                    .filter(v => v !== null && v !== undefined && !isNaN(v));
                 if (values.length > 0) {
                     aggregated[entity][quarter] = values.reduce((a, b) => a + b, 0) / values.length;
                 }
@@ -238,45 +266,51 @@
             return baseColors.slice(0, count);
         }
         
-        const colors = [...baseColors];
+        const extended = [...baseColors];
         for (let i = baseColors.length; i < count; i++) {
             const hue = (i * 137.508) % 360;
-            colors.push(`hsl(${hue}, 70%, 50%)`);
+            extended.push(`hsl(${hue}, 70%, 50%)`);
         }
-        return colors;
+        return extended;
     }
     
     function updateChart() {
         const filteredData = getFilteredData();
-        const metric = document.getElementById('selectedMetric').value;
-        const filterType = document.getElementById('filterType').value;
+        const metric = document.getElementById('selectedMetric')?.value || 'GenAI_Exposure';
+        const filterType = document.getElementById('filterType')?.value || 'all';
         
-        let quarters, aggregated, entities, datasets;
+        let quarters = [];
+        let aggregated = {};
+        let entities = [];
+        let datasets = [];
         
         if (metric === 'sentiment') {
             quarters = [...new Set(filteredData.map(d => d.quarter))].sort();
             const sentimentMetrics = ['GenAI_Risk', 'GenAI_Adoption', 'GenAI_Opportunity'];
+            aggregated = {};
             
             if (filterType === 'all') {
-                aggregated = {};
                 sentimentMetrics.forEach(sentimentMetric => {
                     aggregated[sentimentMetric] = {};
                     quarters.forEach(quarter => {
                         const quarterData = filteredData.filter(d => d.quarter === quarter);
-                        const values = quarterData.map(d => d[sentimentMetric]).filter(v => v !== null && v !== undefined && !isNaN(v));
+                        const values = quarterData
+                            .map(d => d[sentimentMetric])
+                            .filter(v => v !== null && v !== undefined && !isNaN(v));
                         if (values.length > 0) {
                             aggregated[sentimentMetric][quarter] = values.reduce((a, b) => a + b, 0) / values.length;
                         }
                     });
                 });
             } else {
-                const selectedValue = document.getElementById('filterValue').selectedOptions[0].value;
-                aggregated = {};
+                const selectedValue = document.getElementById('filterValue')?.selectedOptions[0]?.value;
                 sentimentMetrics.forEach(sentimentMetric => {
                     aggregated[sentimentMetric] = {};
                     quarters.forEach(quarter => {
                         const quarterData = filteredData.filter(d => d.quarter === quarter && d[filterType] === selectedValue);
-                        const values = quarterData.map(d => d[sentimentMetric]).filter(v => v !== null && v !== undefined && !isNaN(v));
+                        const values = quarterData
+                            .map(d => d[sentimentMetric])
+                            .filter(v => v !== null && v !== undefined && !isNaN(v));
                         if (values.length > 0) {
                             aggregated[sentimentMetric][quarter] = values.reduce((a, b) => a + b, 0) / values.length;
                         }
@@ -284,16 +318,17 @@
                 });
             }
             
-            datasets = sentimentMetrics.map(sentimentMetric => ({
+            datasets = ['GenAI_Risk', 'GenAI_Adoption', 'GenAI_Opportunity'].map(sentimentMetric => ({
                 label: metricLabels[sentimentMetric],
                 data: quarters.map(q => aggregated[sentimentMetric][q] !== undefined ? aggregated[sentimentMetric][q] : null),
                 borderColor: colors[sentimentMetric],
-                backgroundColor: colors[sentimentMetric] + '20',
+                backgroundColor: withAlpha(colors[sentimentMetric], 0.15),
                 borderWidth: 2,
                 pointRadius: 3,
+                pointBackgroundColor: colors[sentimentMetric],
                 pointHoverRadius: 5,
                 tension: 0.1,
-                fill: false // <-- stops fill in sentiment mode
+                fill: false
             }));
             
         } else {
@@ -304,7 +339,9 @@
                 
                 quarters.forEach(quarter => {
                     const quarterData = filteredData.filter(d => d.quarter === quarter);
-                    const values = quarterData.map(d => d[metric]).filter(v => v !== null && v !== undefined && !isNaN(v));
+                    const values = quarterData
+                        .map(d => d[metric])
+                        .filter(v => v !== null && v !== undefined && !isNaN(v));
                     if (values.length > 0) {
                         aggregated['All Companies'][quarter] = values.reduce((a, b) => a + b, 0) / values.length;
                     }
@@ -317,31 +354,33 @@
             }
             
             const entityColors = generateColors(entities.length);
-
             datasets = entities.map((entity, index) => ({
                 label: entity,
                 data: quarters.map(q => aggregated[entity][q] ?? null),
                 borderColor: entityColors[index],
+                backgroundColor: withAlpha(entityColors[index], 0.15),
                 borderWidth: 2,
                 pointRadius: 3,
+                pointBackgroundColor: entityColors[index],
                 pointHoverRadius: 5,
                 tension: 0.1,
-                fill: false // <-- prevents area fill
+                fill: false
             }));
         }
         
         updateStats(filteredData, quarters);
         
-        // Get theme colors for the chart
+        // Theme colors
         const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
         const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
         const textColor = isDarkMode ? '#e5e7eb' : '#333333';
+        const yAxisLabel = getYAxisLabel(metric);
         
         const chartConfig = {
             type: 'line',
             data: {
                 labels: quarters,
-                datasets: datasets
+                datasets
             },
             options: {
                 responsive: true,
@@ -357,10 +396,10 @@
                         labels: {
                             boxWidth: 12,
                             padding: 15,
-                            font: {
-                                size: 12
-                            },
-                            color: textColor
+                            font: { size: 12 },
+                            color: textColor,
+                            usePointStyle: true,
+                            pointStyle: 'line'
                         }
                     },
                     tooltip: {
@@ -369,12 +408,8 @@
                         bodyColor: isDarkMode ? '#000' : '#fff',
                         padding: 12,
                         cornerRadius: 4,
-                        titleFont: {
-                            size: 12
-                        },
-                        bodyFont: {
-                            size: 12
-                        },
+                        titleFont: { size: 12 },
+                        bodyFont: { size: 12 },
                         callbacks: {
                             label: function(context) {
                                 return context.dataset.label + ': ' + (context.parsed.y !== null ? context.parsed.y.toFixed(3) : 'N/A');
@@ -389,9 +424,7 @@
                             color: gridColor
                         },
                         ticks: {
-                            font: {
-                                size: 11
-                            },
+                            font: { size: 11 },
                             maxRotation: 45,
                             minRotation: 45,
                             color: textColor
@@ -403,9 +436,7 @@
                             drawBorder: false
                         },
                         ticks: {
-                            font: {
-                                size: 11
-                            },
+                            font: { size: 11 },
                             callback: function(value) {
                                 return value.toFixed(2);
                             },
@@ -413,7 +444,7 @@
                         },
                         title: {
                             display: true,
-                            text: metric === 'sentiment' ? 'Sentiment Scores (%)' : metricLabels[metric] + ' (%)',
+                            text: yAxisLabel,
                             font: {
                                 size: 11,
                                 weight: 'normal'
@@ -429,7 +460,8 @@
             chart.destroy();
         }
         
-        const ctx = document.getElementById('chart').getContext('2d');
+        const ctx = document.getElementById('chart')?.getContext('2d');
+        if (!ctx) return;
         chart = new Chart(ctx, chartConfig);
     }
     
@@ -438,20 +470,21 @@
         const quarterCount = quarters.length;
         const dataPoints = filteredData.length;
         
-        document.getElementById('companyCount').textContent = companies.toLocaleString();
-        document.getElementById('quarterCount').textContent = quarterCount;
-        document.getElementById('dataPoints').textContent = dataPoints.toLocaleString();
+        const companyCountEl = document.getElementById('companyCount');
+        const quarterCountEl = document.getElementById('quarterCount');
+        const dataPointsEl = document.getElementById('dataPoints');
+        
+        if (companyCountEl) companyCountEl.textContent = companies.toLocaleString();
+        if (quarterCountEl) quarterCountEl.textContent = quarterCount;
+        if (dataPointsEl) dataPointsEl.textContent = dataPoints.toLocaleString();
     }
     
     // Initialize when DOM is ready
     document.addEventListener('DOMContentLoaded', function() {
-        // Add event listener for update button
         const updateButton = document.getElementById('updateChart');
         if (updateButton) {
             updateButton.addEventListener('click', updateChart);
         }
-        
-        // Load data
         loadData();
     });
 })();
