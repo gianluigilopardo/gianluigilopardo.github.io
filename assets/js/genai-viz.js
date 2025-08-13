@@ -29,7 +29,7 @@
         return rgbString.replace(/^rgb\(/, 'rgba(').replace(/\)$/, `, ${alpha})`);
     }
 
-    // Helper: Y-axis label text
+    // Helper: Y-axis label text (this is the ONLY place to change the wording)
     function getYAxisLabel(metric) {
         if (metric === 'sentiment') return 'GenAI Sentiment (%)';
         switch (metric) {
@@ -375,6 +375,7 @@
         const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
         const textColor = isDarkMode ? '#e5e7eb' : '#333333';
         const yAxisLabel = getYAxisLabel(metric);
+        const majorVersion = (typeof Chart !== 'undefined' && Chart.version) ? parseInt(Chart.version.split('.')[0], 10) : 4;
         
         const chartConfig = {
             type: 'line',
@@ -388,6 +389,9 @@
                 interaction: {
                     intersect: false,
                     mode: 'index'
+                },
+                layout: {
+                    padding: { left: 8, right: 10, top: 5, bottom: 0 }
                 },
                 plugins: {
                     legend: {
@@ -416,45 +420,84 @@
                             }
                         }
                     }
-                },
-                scales: {
-                    x: {
-                        grid: {
-                            display: false,
-                            color: gridColor
-                        },
-                        ticks: {
-                            font: { size: 11 },
-                            maxRotation: 45,
-                            minRotation: 45,
-                            color: textColor
-                        }
-                    },
-                    y: {
-                        grid: {
-                            color: gridColor,
-                            drawBorder: false
-                        },
-                        ticks: {
-                            font: { size: 11 },
-                            callback: function(value) {
-                                return value.toFixed(2);
-                            },
-                            color: textColor
-                        },
-                        title: {
-                            display: true,
-                            text: yAxisLabel,
-                            font: {
-                                size: 11,
-                                weight: 'normal'
-                            },
-                            color: textColor
-                        }
-                    }
                 }
             }
         };
+        
+        // Scales configuration depending on Chart.js major version
+        if (majorVersion >= 3) {
+            chartConfig.options.scales = {
+                x: {
+                    grid: {
+                        display: false,
+                        color: gridColor
+                    },
+                    ticks: {
+                        font: { size: 11 },
+                        maxRotation: 45,
+                        minRotation: 45,
+                        color: textColor
+                    }
+                },
+                y: {
+                    grid: {
+                        color: gridColor,
+                        drawBorder: false
+                    },
+                    ticks: {
+                        font: { size: 11 },
+                        callback: function(value) {
+                            return Number(value).toFixed(2);
+                        },
+                        color: textColor
+                    },
+                    title: {
+                        display: true,
+                        text: yAxisLabel,
+                        font: {
+                            size: 11,
+                            weight: 'normal'
+                        },
+                        color: textColor
+                    }
+                }
+            };
+        } else {
+            // Backwards compatible (Chart.js 2.x)
+            chartConfig.options.scales = {
+                xAxes: [{
+                    gridLines: {
+                        display: false,
+                        color: gridColor
+                    },
+                    ticks: {
+                        fontSize: 11,
+                        fontColor: textColor,
+                        maxRotation: 45,
+                        minRotation: 45
+                    }
+                }],
+                yAxes: [{
+                    gridLines: {
+                        color: gridColor,
+                        drawBorder: false
+                    },
+                    ticks: {
+                        fontSize: 11,
+                        fontColor: textColor,
+                        callback: function(value) {
+                            return Number(value).toFixed(2);
+                        }
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: yAxisLabel,
+                        fontSize: 11,
+                        fontColor: textColor
+                    }
+                }]
+            };
+        }
         
         if (chart) {
             chart.destroy();
