@@ -2,7 +2,7 @@
 layout: page
 title: Corporate Talks
 permalink: /corporatetalks/
-description: Interactive visualization of US corporate topic exposures
+description: Interactive visualization of US corporate earnings call topic exposures
 nav: true
 ---
 
@@ -159,7 +159,10 @@ html[data-theme="dark"] .genai-chart-container {
 <div class="genai-container">
     <div class="genai-header">
         <div class="genai-paper-link">
-            Corporate earnings call transcript topic analytics (multi-topic exposure). Data structure: quarter, tic, topic, exposure, firm, sector, industry.
+            Data and indicators from our ECB research paper:<br>
+            <a href="https://www.ecb.europa.eu/pub/pdf/scpwps/ecb.wp3093~458d28b4bc.en.pdf?35448d13078514c607eed78f10606c0d" target="_blank">
+                Michele Ca' Zorzi, Gianluigi Lopardo, Ana-Simona Manu, <em>Verba volant, transcripta manent: what corporate earnings calls reveal about the AI stock rally</em>
+            </a>
         </div>
         <div class="genai-definition">
             <strong>Exposure</strong> = share of a quarterly earnings call transcript devoted to the selected topic (topic-related content / total transcript content)<br>
@@ -179,6 +182,11 @@ html[data-theme="dark"] .genai-chart-container {
                         <option value="firm">Firm</option>
                     </select>
                 </div>
+                <div class="genai-control-group" id="groupCompaniesToggle" style="display:none;">
+                    <label style="cursor:pointer; font-weight:400; text-transform:none; letter-spacing:normal;">
+                        <input type="checkbox" id="showGroupCompanies"> Show Companies in Group (Top 10)
+                    </label>
+                </div>
             </div>
             <div class="col-md-3" id="filterValueGroup" style="display:none;">
                 <div class="genai-control-group">
@@ -192,7 +200,7 @@ html[data-theme="dark"] .genai-chart-container {
                 <div class="genai-control-group">
                     <label for="selectedTopic">Topic</label>
                     <select id="selectedTopic" class="form-control form-control-sm">
-                        <!-- populated dynamically -->
+                        <!-- populated dynamically; includes All Topics option -->
                     </select>
                 </div>
             </div>
