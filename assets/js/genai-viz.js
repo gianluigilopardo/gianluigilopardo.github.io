@@ -258,11 +258,14 @@
             option.textContent = value;
             filterValue.appendChild(option);
         });
+        // Select only the first value by default (avoid multi-select that hides the toggle)
         if (values.length > 0) {
-            filterValue.selectedIndex = 0;
-            if (values.length > 1) filterValue.options[1].selected = true;
+            [...filterValue.options].forEach(o => o.selected = false);
+            filterValue.options[0].selected = true;
         }
         updateSentimentOption();
+        // Re-evaluate toggle visibility after repopulating
+        updateToggle();
     }
     
     function getFilteredData() {
