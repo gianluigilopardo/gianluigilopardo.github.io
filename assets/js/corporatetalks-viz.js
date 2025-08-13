@@ -24,24 +24,29 @@
      const groupToggle=document.getElementById('groupCompaniesToggle');
      const showGroupCompanies=document.getElementById('showGroupCompanies');
      const topicSel=document.getElementById('selectedTopic');
+     const fv=document.getElementById('filterValue');
      if(!ft) return;
      function updateToggleVisibility(){
          const topicVal=topicSel?.value;
-         if(ft.value==='all'){
-             if(fvg) fvg.style.display='none';
-         } else {
-             if(fvg) fvg.style.display='block';
+         if(ft.value==='all'){ if(fvg) fvg.style.display='none'; } else { if(fvg) fvg.style.display='block'; }
+         // hide toggle if All Topics selected always
+         if(topicVal==='__ALL_TOPICS__'){ if(groupToggle){groupToggle.style.display='none'; if(showGroupCompanies) showGroupCompanies.checked=false;} return; }
+         // show only when exactly one sector/industry selected
+         let single=false;
+         if(ft.value==='sector' || ft.value==='industry'){
+             const selCount = fv? Array.from(fv.selectedOptions).length : 0;
+             single = selCount===1; // exactly one selection
          }
-         // Show toggle if sector/industry OR All Topics selected
-         if((ft.value==='sector'||ft.value==='industry'|| topicVal==='__ALL_TOPICS__')){
+         if(single){
              if(groupToggle) groupToggle.style.display='block';
-         } else if(groupToggle){
-             groupToggle.style.display='none';
+         } else {
+             if(groupToggle) groupToggle.style.display='none';
              if(showGroupCompanies) showGroupCompanies.checked=false;
          }
      }
      ft.addEventListener('change',()=>{populateFilterValues(ft.value); updateToggleVisibility();});
      topicSel?.addEventListener('change',()=>{updateToggleVisibility();});
+     fv?.addEventListener('change',()=>{updateToggleVisibility();});
      const si=document.getElementById('searchInput');
      if(si){si.addEventListener('input',function(){filterOptions(this.value.toLowerCase());});}
  }
@@ -73,22 +78,22 @@
      }
      return filtered;
  }
- function aggregateTopicsAll(filtered, ft){
-     // returns per-topic aggregated exposure (similar to entity lines)
-     const topics=[...new Set(filtered.map(d=>d.topic))].filter(v=>v);
-     // rank topics by average exposure overall
-     const ranked=topics.map(t=>{const vals=filtered.filter(r=>r.topic===t).map(r=>r.exposure).filter(v=>v!=null&&!isNaN(v)); const avg=vals.length? vals.reduce((a,b)=>a+b,0)/vals.length:0; return {t,avg};}).sort((a,b)=>b.avg-a.avg).slice(0,10).map(o=>o.t);
+ function aggregateTopicsAll(filtered){
+     // Efficient pre-aggregation by topic & quarter
+     const topicQuarterMap=new Map();
+     filtered.forEach(r=>{const key=r.topic+'|'+r.quarter; let arr=topicQuarterMap.get(key); if(!arr){arr=[]; topicQuarterMap.set(key,arr);} arr.push(r.exposure);});
+     const topics=[...new Set(filtered.map(d=>d.topic))].filter(Boolean);
+     // compute overall averages for ranking
+     const topicAvg=topics.map(t=>{let sum=0,count=0; topicQuarterMap.forEach((vals,k)=>{if(k.startsWith(t+'|')){vals.forEach(v=>{if(v!=null&&!isNaN(v)){sum+=v; count++;}});}}); return {t,avg: count? sum/count:0};}).sort((a,b)=>b.avg-a.avg);
+     const ranked=topicAvg.slice(0,10).map(o=>o.t);
      const quarters=[...new Set(filtered.map(d=>d.quarter))].sort();
      const aggregated={};
-     ranked.forEach(topic=>{aggregated[topic]={}; quarters.forEach(q=>{const vals=filtered.filter(d=>d.quarter===q && d.topic===topic).map(d=>d.exposure).filter(v=>v!=null&&!isNaN(v)); if(vals.length){const avg=vals.reduce((a,b)=>a+b,0)/vals.length; aggregated[topic][q]=parseFloat(avg.toFixed(3));}});});
-     return {quarters,aggregated,entities:ranked,notice: topics.length>10? `Showing top 10 topics by average exposure out of ${topics.length}.` : ''};
+     ranked.forEach(t=>{aggregated[t]={}; quarters.forEach(q=>{const key=t+'|'+q; const vals=topicQuarterMap.get(key)||[]; if(vals.length){const avg=vals.reduce((a,b)=>a+b,0)/vals.length; aggregated[t][q]=parseFloat(avg.toFixed(3));}});});
+     const notice= topics.length>10? `Showing top 10 topics by average exposure out of ${topics.length}.` : '';
+     return {quarters,aggregated,entities:ranked,notice};
  }
  function aggregate(filtered, topic, ft){
-     if(topic==='__ALL_TOPICS__'){
-         // For All Topics we ignore group company toggle and treat each topic as a line (top 10)
-         const result=aggregateTopicsAll(filtered, ft);
-         return result;
-     }
+     if(topic==='__ALL_TOPICS__') return aggregateTopicsAll(filtered);
      const topicFiltered = topic==='__ALL_TOPICS__'? filtered : filtered.filter(d=>d.topic===topic);
      const quarters=[...new Set(topicFiltered.map(d=>d.quarter))].sort();
      let entities=[]; let aggregated={};
@@ -128,7 +133,10 @@
  }
  function generateColors(n){const base=['rgb(0,123,255)','rgb(220,53,69)','rgb(40,167,69)','rgb(255,193,7)','rgb(108,117,125)','rgb(111,66,193)','rgb(255,87,34)','rgb(76,175,80)','rgb(33,150,243)']; if(n<=base.length) return base.slice(0,n); const ext=[...base]; for(let i=base.length;i<n;i++){const hue=(i*137.508)%360; ext.push(`hsl(${hue},70%,50%)`);} return ext; }
  function updateChart(){const filtered=getFilteredData(); const topic=document.getElementById('selectedTopic')?.value; if(!topic){populateTopics(); return;} const ft=document.getElementById('filterType')?.value||'all'; const {quarters,aggregated,entities,notice}=aggregate(filtered,topic,ft); const colors=generateColors(entities.length); const datasets=entities.map((e,i)=>({label:e,data:quarters.map(q=>aggregated[e][q]??null),borderColor:colors[i],backgroundColor:withAlpha(colors[i],0.15),borderWidth:2,pointRadius:3,pointBackgroundColor:colors[i],pointHoverRadius:5,tension:0.1,fill:false})); updateStats(filtered,quarters); const limitNote=document.getElementById('limitNote'); if(limitNote){
-         if(notice) limitNote.textContent=notice; else limitNote.textContent='';
+         // Add trimming notice for entity lists >10 when not provided (firms/sectors/industries)
+         if(notice){ limitNote.textContent=notice; }
+         else if(entities.length===10){ limitNote.textContent='Showing top 10 lines by average exposure.'; }
+         else { limitNote.textContent=''; }
      }
      const dark=document.documentElement.getAttribute('data-theme')==='dark'; const gridColor=dark?'rgba(255,255,255,0.1)':'rgba(0,0,0,0.1)'; const textColor=dark?'#e5e7eb':'#333'; const yLabel=getYAxisLabel(); const major= (typeof Chart!=='undefined'&&Chart.version)? parseInt(Chart.version.split('.')[0],10):4; const cfg={type:'line',data:{labels:quarters,datasets},plugins:[yAxisTitlePlugin,canvasBackgroundPlugin],options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},layout:{padding:{left:55,right:10,top:5,bottom:0}},plugins:{legend:{display:true,position:'top',labels:{boxWidth:12,padding:15,font:{size:12},color:textColor,usePointStyle:true,pointStyle:'line'},onHover:(evt,it,leg)=>{if(!it||it.datasetIndex==null)return; evt.native&&(evt.native.target.style.cursor='pointer'); highlightDataset(it.datasetIndex);},onLeave:(evt)=>{evt.native&&(evt.native.target.style.cursor='default'); resetHighlight();}},tooltip:{backgroundColor:dark?'rgba(255,255,255,0.9)':'rgba(0,0,0,0.8)',titleColor:dark?'#000':'#fff',bodyColor:dark?'#000':'#fff',padding:12,cornerRadius:4,titleFont:{size:12},bodyFont:{size:12},callbacks:{label:(ctx)=> ctx.dataset.label+': '+(ctx.parsed.y!=null?ctx.parsed.y.toFixed(3):'N/A')}},yAxisTitlePlugin:{text:yLabel,color:textColor,fontSize:12,offset:40},canvasBackgroundPlugin:{color:dark?'#1c1c1c':'#ffffff'}}}}; if(major>=3){cfg.options.scales={x:{grid:{display:false,color:gridColor},ticks:{font:{size:11},maxRotation:45,minRotation:45,color:textColor}},y:{grid:{color:gridColor,drawBorder:false},ticks:{font:{size:11},callback:v=>Number(v).toFixed(3),color:textColor},title:{display:true,text:yLabel,font:{size:12,weight:'normal'},color:textColor,padding:{top:0,bottom:0}}}};} else {/* v2 fallback omitted for brevity */}
  if(chart) chart.destroy(); const ctx=document.getElementById('chart')?.getContext('2d'); if(!ctx) return; chart=new Chart(ctx,cfg); createDownloadButtonIfNeeded(); }

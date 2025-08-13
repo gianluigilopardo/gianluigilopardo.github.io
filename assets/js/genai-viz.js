@@ -1,4 +1,4 @@
-// GenAI Visualization Script for Jekyll al-folio theme
+// GenAI Visualization Script (enhanced with top-10 & group company logic)
 
 (function() {
     'use strict';
@@ -167,6 +167,8 @@
         const filterValueGroup = document.getElementById('filterValueGroup');
         const filterValue = document.getElementById('filterValue');
         const searchInput = document.getElementById('searchInput');
+        const groupToggle = document.getElementById('groupCompaniesToggle');
+        const showGroupCompanies = document.getElementById('showGroupCompanies');
         if (!filterType) return;
         filterType.addEventListener('change', function() {
             if (this.value === 'all') {
@@ -176,6 +178,7 @@
                 populateFilterValues(this.value);
             }
             updateSentimentOption();
+            updateToggle();
         });
         if (filterValue) filterValue.addEventListener('change', updateSentimentOption);
         if (searchInput) {
@@ -183,9 +186,30 @@
                 filterOptions(this.value.toLowerCase());
             });
         }
+        showGroupCompanies?.addEventListener('change',()=>updateChart());
         updateSentimentOption();
+        updateToggle();
     }
     
+    function updateToggle(){
+        const filterType = document.getElementById('filterType');
+        const groupToggle = document.getElementById('groupCompaniesToggle');
+        const showGroupCompanies = document.getElementById('showGroupCompanies');
+        const filterValue = document.getElementById('filterValue');
+        if(!filterType) return;
+        let show=false;
+        if(filterType.value==='sector' || filterType.value==='industry'){
+            const selCount = filterValue? Array.from(filterValue.selectedOptions).length : 0;
+            show = selCount===1; // exactly one selection only
+        }
+        if(show){
+            if(groupToggle) groupToggle.style.display='block';
+        } else {
+            if(groupToggle) groupToggle.style.display='none';
+            if(showGroupCompanies) showGroupCompanies.checked=false;
+        }
+    }
+
     function filterOptions(searchTerm) {
         const filterValue = document.getElementById('filterValue');
         if (!filterValue) return;
@@ -354,226 +378,61 @@
         const metric = document.getElementById('selectedMetric')?.value || 'GenAI_Exposure';
         const filterType = document.getElementById('filterType')?.value || 'all';
         const showGroupCompanies = document.getElementById('showGroupCompanies')?.checked;
-        let quarters=[]; let datasets=[]; let limitFlag=false; let limitNoteEl=document.getElementById('limitNote');
-        if(metric==='sentiment') { // unchanged sentiment path
-            quarters = [...new Set(filteredData.map(d => d.quarter))].sort();
-            const sentimentMetrics = ['GenAI_Risk', 'GenAI_Adoption', 'GenAI_Opportunity'];
-            aggregated = {};
-            if (filterType === 'all') {
-                sentimentMetrics.forEach(sentimentMetric => {
-                    aggregated[sentimentMetric] = {};
-                    quarters.forEach(quarter => {
-                        const quarterData = filteredData.filter(d => d.quarter === quarter);
-                        const values = quarterData
-                            .map(d => d[sentimentMetric])
-                            .filter(v => v !== null && v !== undefined && !isNaN(v));
-                        if (values.length > 0) {
-                            const avg = values.reduce((a, b) => a + b, 0) / values.length;
-                            aggregated[sentimentMetric][quarter] = parseFloat(avg.toFixed(3));
-                        }
-                    });
-                });
+        const limitNoteEl=document.getElementById('limitNote');
+        let quarters=[]; let datasets=[]; let limited=false; let aggregated={}; let entities=['All Companies'];
+
+        if(metric==='sentiment'){
+            quarters=[...new Set(filteredData.map(d=>d.quarter))].sort();
+            const sentimentMetrics=['GenAI_Risk','GenAI_Adoption','GenAI_Opportunity'];
+            aggregated={};
+            sentimentMetrics.forEach(m=> aggregated[m]={});
+            if(filterType==='all'){
+                quarters.forEach(q=>{sentimentMetrics.forEach(m=>{const vals=filteredData.filter(d=>d.quarter===q).map(d=>d[m]).filter(v=>v!=null&&!isNaN(v)); if(vals.length){const avg=vals.reduce((a,b)=>a+b,0)/vals.length; aggregated[m][q]=parseFloat(avg.toFixed(3));}});});
             } else {
-                const selectedValue = document.getElementById('filterValue')?.selectedOptions[0]?.value;
-                sentimentMetrics.forEach(sentimentMetric => {
-                    aggregated[sentimentMetric] = {};
-                    quarters.forEach(quarter => {
-                        const quarterData = filteredData.filter(d => d.quarter === quarter && d[filterType] === selectedValue);
-                        const values = quarterData
-                            .map(d => d[sentimentMetric])
-                            .filter(v => v !== null && v !== undefined && !isNaN(v));
-                        if (values.length > 0) {
-                            const avg = values.reduce((a, b) => a + b, 0) / values.length;
-                            aggregated[sentimentMetric][quarter] = parseFloat(avg.toFixed(3));
-                        }
-                    });
-                });
+                const selectedValue=document.getElementById('filterValue')?.selectedOptions[0]?.value;
+                quarters.forEach(q=>{sentimentMetrics.forEach(m=>{const vals=filteredData.filter(d=>d.quarter===q && d[filterType]===selectedValue).map(d=>d[m]).filter(v=>v!=null&&!isNaN(v)); if(vals.length){const avg=vals.reduce((a,b)=>a+b,0)/vals.length; aggregated[m][q]=parseFloat(avg.toFixed(3));}});});
             }
-            datasets = ['GenAI_Risk', 'GenAI_Adoption', 'GenAI_Opportunity'].map(sentimentMetric => ({
-                label: metricLabels[sentimentMetric],
-                data: quarters.map(q => aggregated[sentimentMetric][q] !== undefined ? aggregated[sentimentMetric][q] : null),
-                borderColor: colors[sentimentMetric],
-                backgroundColor: withAlpha(colors[sentimentMetric], 0.15),
-                borderWidth: 2,
-                pointRadius: 3,
-                pointBackgroundColor: colors[sentimentMetric],
-                pointHoverRadius: 5,
-                tension: 0.1,
-                fill: false
-            }));
+            entities=sentimentMetrics;
+            datasets=sentimentMetrics.map(m=>({label:metricLabels[m],data:quarters.map(q=>aggregated[m][q]??null),borderColor:colors[m],backgroundColor:withAlpha(colors[m],0.15),borderWidth:2,pointRadius:3,pointBackgroundColor:colors[m],pointHoverRadius:5,tension:0.1,fill:false}));
         } else {
-            if (filterType === 'all') {
-                quarters = [...new Set(filteredData.map(d => d.quarter))].sort();
-                aggregated = { 'All Companies': {} };
-                entities = ['All Companies'];
-                quarters.forEach(quarter => {
-                    const quarterData = filteredData.filter(d => d.quarter === quarter);
-                    const values = quarterData
-                        .map(d => d[metric])
-                        .filter(v => v !== null && v !== undefined && !isNaN(v));
-                    if (values.length > 0) {
-                        const avg = values.reduce((a, b) => a + b, 0) / values.length;
-                        aggregated['All Companies'][quarter] = parseFloat(avg.toFixed(3));
-                    }
-                });
+            if(filterType==='all'){
+                quarters=[...new Set(filteredData.map(d=>d.quarter))].sort();
+                aggregated={'All Companies':{}};
+                quarters.forEach(q=>{const vals=filteredData.filter(d=>d.quarter===q).map(d=>d[metric]).filter(v=>v!=null&&!isNaN(v)); if(vals.length){const avg=vals.reduce((a,b)=>a+b,0)/vals.length; aggregated['All Companies'][q]=parseFloat(avg.toFixed(3));}});
+                entities=['All Companies'];
             } else {
                 let result;
-                if(showGroupCompanies && (filterType==='sector' || filterType==='industry')){
-                    // expand into firms inside selected groups
+                if(showGroupCompanies && (filterType==='sector'||filterType==='industry')){
                     const selectedValues = Array.from(document.getElementById('filterValue')?.selectedOptions||[]).map(o=>o.value);
-                    const subset = selectedValues.length? filteredData.filter(r=>selectedValues.includes(r[filterType])) : filteredData;
-                    result = aggregateGroupCompanies(subset, metric, filterType);
+                    const subset = selectedValues.length? filteredData.filter(r=>selectedValues.includes(r[filterType])): filteredData;
+                    result=aggregateGroupCompanies(subset,metric);
                 } else {
-                    result = aggregateDataByEntity(filteredData, metric, filterType);
+                    result=aggregateDataByEntity(filteredData,metric,filterType);
                 }
-                quarters = result.quarters;
-                const aggregated = result.aggregated;
-                const entities = result.entities;
-                limitFlag = result.limited || limitFlag;
-                const entityColors = generateColors(entities.length);
-                datasets = entities.map((entity,index)=>({label:entity,data:quarters.map(q=>aggregated[entity][q]??null),borderColor:entityColors[index],backgroundColor:withAlpha(entityColors[index],0.15),borderWidth:2,pointRadius:3,pointBackgroundColor:entityColors[index],pointHoverRadius:5,tension:0.1,fill:false}));
+                quarters=result.quarters; aggregated=result.aggregated; entities=result.entities; limited=result.limited;
             }
+            const entityColors=generateColors(entities.length);
+            datasets=entities.map((ent,i)=>({label:ent,data:quarters.map(q=>aggregated[ent][q]??null),borderColor:entityColors[i],backgroundColor:withAlpha(entityColors[i],0.15),borderWidth:2,pointRadius:3,pointBackgroundColor:entityColors[i],pointHoverRadius:5,tension:0.1,fill:false}));
         }
-        
-        updateStats(filteredData, quarters);
-        
-        const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
-        const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
-        const textColor = isDarkMode ? '#e5e7eb' : '#333333';
-        const yAxisLabel = getYAxisLabel(metric);
-        const majorVersion = (typeof Chart !== 'undefined' && Chart.version) ? parseInt(Chart.version.split('.')[0], 10) : 4;
-        
-        const chartConfig = {
-            type: 'line',
-            data: {
-                labels: quarters,
-                datasets
-            },
-            plugins: [yAxisTitlePlugin, canvasBackgroundPlugin],
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: {
-                    intersect: false,
-                    mode: 'index'
-                },
-                layout: {
-                    padding: { left: 55, right: 10, top: 5, bottom: 0 }
-                },
-                plugins: {
-                    legend: {
-                        display: true,
-                        position: 'top',
-                        labels: {
-                            boxWidth: 12,
-                            padding: 15,
-                            font: { size: 12 },
-                            color: textColor,
-                            usePointStyle: true,
-                            pointStyle: 'line'
-                        },
-                        // Hover highlight handlers
-                        onHover: (evt, legendItem, legend) => {
-                            if (!legendItem || legendItem.datasetIndex == null) return;
-                            const ci = legend.chart;
-                            evt.native && (evt.native.target.style.cursor = 'pointer');
-                            highlightDataset(legendItem.datasetIndex);
-                        },
-                        onLeave: (evt, legendItem, legend) => {
-                            evt.native && (evt.native.target.style.cursor = 'default');
-                            resetHighlight();
-                        }
-                    },
-                    tooltip: {
-                        backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-                        titleColor: isDarkMode ? '#000' : '#fff',
-                        bodyColor: isDarkMode ? '#000' : '#fff',
-                        padding: 12,
-                        cornerRadius: 4,
-                        titleFont: { size: 12 },
-                        bodyFont: { size: 12 },
-                        callbacks: {
-                            label: function(context) {
-                                return context.dataset.label + ': ' + (context.parsed.y !== null ? context.parsed.y.toFixed(3) : 'N/A');
-                            }
-                        }
-                    },
-                    yAxisTitlePlugin: {
-                        text: yAxisLabel,
-                        color: textColor,
-                        fontSize: 12,
-                        offset: 40
-                    },
-                    canvasBackgroundPlugin: {
-                        color: isDarkMode ? '#1c1c1c' : '#ffffff'
-                    }
-                }
-            }
-        };
-        
-        if (majorVersion >= 3) {
-            chartConfig.options.scales = {
-                x: {
-                    grid: { display: false, color: gridColor },
-                    ticks: {
-                        font: { size: 11 },
-                        maxRotation: 45,
-                        minRotation: 45,
-                        color: textColor
-                    }
-                },
-                y: {
-                    grid: { color: gridColor, drawBorder: false },
-                    ticks: {
-                        font: { size: 11 },
-                        callback: value => Number(value).toFixed(3),
-                        color: textColor
-                    },
-                    title: {
-                        display: true,
-                        text: yAxisLabel,
-                        font: { size: 12, weight: 'normal' },
-                        color: textColor,
-                        padding: { top: 0, bottom: 0 }
-                    }
-                }
-            };
-        } else {
-            chartConfig.options.scales = {
-                xAxes: [{
-                    gridLines: { display: false, color: gridColor },
-                    ticks: {
-                        fontSize: 11,
-                        fontColor: textColor,
-                        maxRotation: 45,
-                        minRotation: 45
-                    }
-                }],
-                yAxes: [{
-                    gridLines: { color: gridColor, drawBorder: false },
-                    ticks: {
-                        fontSize: 11,
-                        fontColor: textColor,
-                        callback: value => Number(value).toFixed(3)
-                    },
-                    scaleLabel: {
-                        display: true,
-                        labelString: yAxisLabel,
-                        fontSize: 12,
-                        fontColor: textColor
-                    }
-                }]
-            };
-        }
-        
-        if (chart) chart.destroy();
-        const ctx = document.getElementById('chart')?.getContext('2d');
-        if (!ctx) return;
-        chart = new Chart(ctx, chartConfig);
-        // Ensure download button exists after chart render
+
+        if(limitNoteEl) limitNoteEl.textContent = limited? 'Showing top 10 lines by average value.' : '';
+
+        updateStats(filteredData,quarters);
+
+        // reuse existing rendering logic (simplified)
+        if(chart) chart.destroy();
+        const isDark = document.documentElement.getAttribute('data-theme')==='dark';
+        const gridColor=isDark?'rgba(255,255,255,0.1)':'rgba(0,0,0,0.1)';
+        const textColor=isDark?'#e5e7eb':'#333';
+        const yAxisLabel=getYAxisLabel(metric);
+        const ctx=document.getElementById('chart')?.getContext('2d'); if(!ctx) return;
+        chart=new Chart(ctx,{type:'line',data:{labels:quarters,datasets},plugins:[yAxisTitlePlugin,canvasBackgroundPlugin],options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},layout:{padding:{left:55,right:10,top:5,bottom:0}},plugins:{legend:{display:true,position:'top',labels:{boxWidth:12,padding:15,font:{size:12},color:textColor,usePointStyle:true,pointStyle:'line'},onHover:(evt,it)=>{if(it&&it.datasetIndex!=null){evt.native&&(evt.native.target.style.cursor='pointer'); highlightDataset(it.datasetIndex);}},onLeave:(evt)=>{evt.native&&(evt.native.target.style.cursor='default'); resetHighlight();}},tooltip:{backgroundColor:isDark?'rgba(255,255,255,0.9)':'rgba(0,0,0,0.8)',titleColor:isDark?'#000':'#fff',bodyColor:isDark?'#000':'#fff',padding:12,cornerRadius:4,titleFont:{size:12},bodyFont:{size:12},callbacks:{label:ctx=>ctx.dataset.label+': '+(ctx.parsed.y!=null?ctx.parsed.y.toFixed(3):'N/A')}},yAxisTitlePlugin:{text:yAxisLabel,color:textColor,fontSize:12,offset:40},canvasBackgroundPlugin:{color:isDark?'#1c1c1c':'#ffffff'}},scales:{x:{grid:{display:false,color:gridColor},ticks:{font:{size:11},maxRotation:45,minRotation:45,color:textColor}},y:{grid:{color:gridColor,drawBorder:false},ticks:{font:{size:11},callback:v=>Number(v).toFixed(3),color:textColor},title:{display:true,text:yAxisLabel,font:{size:12,weight:'normal'},color:textColor}}}}});
         createDownloadButtonIfNeeded();
     }
-    
+
+    // Expose new updateChart
+    window.updateChart=updateChart;
+
     function updateStats(filteredData, quarters) {
         const companies = [...new Set(filteredData.map(d => d.firm))].length;
         const quarterCount = quarters.length;
@@ -601,28 +460,26 @@
         const quarters = [...new Set(filteredData.map(d=>d.quarter))].sort();
         const entities = [...new Set(filteredData.map(d=>d[filterType]))].filter(e=>e).sort();
         const aggregated = {};
-        entities.forEach(entity => {
-            aggregated[entity] = {};
-            quarters.forEach(q => {
-                const vals = filteredData.filter(d=>d.quarter===q && d[filterType]===entity).map(d=>d[metric]).filter(v=>v!=null&&!isNaN(v));
-                if(vals.length){const avg= vals.reduce((a,b)=>a+b,0)/vals.length; aggregated[entity][q]=parseFloat(avg.toFixed(3));}
-            });
-        });
-        const limited = rankAndLimitEntities(entities, aggregated);
-        // prune others
-        Object.keys(aggregated).forEach(k=>{ if(!limited.includes(k)) delete aggregated[k]; });
-        return {quarters, aggregated, entities: limited, limited: entities.length>10};
+        entities.forEach(ent=>{aggregated[ent]={}; quarters.forEach(q=>{const vals=filteredData.filter(d=>d.quarter===q && d[filterType]===ent).map(d=>d[metric]).filter(v=>v!=null&&!isNaN(v)); if(vals.length){const avg= vals.reduce((a,b)=>a+b,0)/vals.length; aggregated[ent][q]=parseFloat(avg.toFixed(3));}});});
+        const ranked = entities.map(e=>{const vals=Object.values(aggregated[e]); const avg=vals.length? vals.reduce((a,b)=>a+b,0)/vals.length:0; return {e,avg};}).sort((a,b)=>b.avg-a.avg);
+        const limitedEntities = ranked.slice(0,10).map(o=>o.e);
+        const limitedFlag = entities.length>10;
+        // prune
+        Object.keys(aggregated).forEach(k=>{if(!limitedEntities.includes(k)) delete aggregated[k];});
+        return {quarters, aggregated, entities: limitedEntities, limited: limitedFlag};
     }
 
     // Add group company logic for sector/industry when checkbox ticked
-    function aggregateGroupCompanies(filteredData, metric, groupField) {
+    function aggregateGroupCompanies(filteredData, metric){
         const quarters=[...new Set(filteredData.map(d=>d.quarter))].sort();
         const firms=[...new Set(filteredData.map(d=>d.firm))];
         const aggregated={};
-        firms.forEach(firm=>{aggregated[firm]={}; quarters.forEach(q=>{const vals=filteredData.filter(d=>d.quarter===q && d.firm===firm).map(d=>d[metric]).filter(v=>v!=null&&!isNaN(v)); if(vals.length){const avg=vals.reduce((a,b)=>a+b,0)/vals.length; aggregated[firm][q]=parseFloat(avg.toFixed(3));}});});
-        const limitedFirms=rankAndLimitEntities(firms, aggregated);
-        Object.keys(aggregated).forEach(k=>{ if(!limitedFirms.includes(k)) delete aggregated[k]; });
-        return {quarters, aggregated, entities: limitedFirms, limited: firms.length>10};
+        firms.forEach(f=>{aggregated[f]={}; quarters.forEach(q=>{const vals=filteredData.filter(d=>d.quarter===q && d.firm===f).map(d=>d[metric]).filter(v=>v!=null&&!isNaN(v)); if(vals.length){const avg=vals.reduce((a,b)=>a+b,0)/vals.length; aggregated[f][q]=parseFloat(avg.toFixed(3));}});});
+        const ranked=firms.map(f=>{const vals=Object.values(aggregated[f]); const avg=vals.length? vals.reduce((a,b)=>a+b,0)/vals.length:0; return {f,avg};}).sort((a,b)=>b.avg-a.avg);
+        const limitedFirms=ranked.slice(0,10).map(o=>o.f);
+        const limitedFlag = firms.length>10;
+        Object.keys(aggregated).forEach(k=>{if(!limitedFirms.includes(k)) delete aggregated[k];});
+        return {quarters, aggregated, entities: limitedFirms, limited: limitedFlag};
     }
     
     // Download button
