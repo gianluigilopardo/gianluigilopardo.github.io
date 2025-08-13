@@ -8,152 +8,27 @@ nav: true
 
 <style>
 /* Custom styles for GenAI visualization - adapted for al-folio theme */
-.genai-container {
-    margin-top: 2rem;
-}
-
-.genai-header {
-    margin-bottom: 2rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid var(--global-divider-color);
-}
-
-.genai-header h1 {
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
-}
-
-.genai-subtitle {
-    font-size: 1.1rem;
-    color: var(--global-text-color-light);
-    margin-bottom: 1rem;
-}
-
-.genai-paper-link {
-    font-size: 0.9rem;
-    line-height: 1.6;
-}
-
-.genai-meta {
-    margin-top: 1rem;
-    font-size: 0.85rem;
-    color: var(--global-text-color-light);
-}
-
-.genai-definition {
-    margin-top: 0.75rem;
-    font-size: 0.85rem;
-    color: var(--global-text-color-light);
-    line-height: 1.5;
-    padding: 1rem;
-    background: var(--global-bg-color);
-    border-left: 3px solid var(--global-theme-color);
-}
-
-.genai-controls {
-    margin-bottom: 2rem;
-}
-
-.genai-control-group {
-    margin-bottom: 1.5rem;
-}
-
-.genai-control-group label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: var(--global-text-color-light);
-    margin-bottom: 0.5rem;
-}
-
-.genai-stats {
-    display: flex;
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-}
-
-.genai-stat-item {
-    flex: 1;
-    min-width: 150px;
-    padding: 1.25rem;
-    background: var(--global-card-bg-color);
-    border: 1px solid var(--global-divider-color);
-    border-radius: 0.5rem;
-    text-align: center;
-}
-
-.genai-stat-value {
-    font-size: 1.75rem;
-    font-weight: 600;
-    color: var(--global-theme-color);
-    margin-bottom: 0.25rem;
-}
-
-.genai-stat-label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: var(--global-text-color-light);
-}
-
-.genai-chart-container {
-    background: var(--global-card-bg-color);
-    border: 1px solid var(--global-divider-color);
-    border-radius: 0.5rem;
-    padding: 1.5rem;
-    height: 500px;
-    position: relative;
-}
-
-.genai-loading {
-    text-align: center;
-    padding: 3rem;
-    color: var(--global-text-color-light);
-}
-
-.genai-search-input {
-    margin-bottom: 0.5rem;
-}
-
-.genai-filter-info {
-    font-size: 0.75rem;
-    color: var(--global-text-color-light);
-    margin-top: 0.25rem;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .genai-header h1 {
-        font-size: 2rem;
-    }
-    
-    .genai-stats {
-        gap: 1rem;
-    }
-    
-    .genai-stat-item {
-        min-width: 100px;
-        padding: 1rem;
-    }
-    
-    .genai-chart-container {
-        height: 400px;
-    }
-}
-
-/* Dark mode adjustments */
-html[data-theme="dark"] .genai-stat-item {
-    background: var(--global-card-bg-color);
-    border-color: var(--global-divider-color);
-}
-
-html[data-theme="dark"] .genai-chart-container {
-    background: var(--global-card-bg-color);
-    border-color: var(--global-divider-color);
-}
+.genai-container { margin-top: 2rem; }
+.genai-header { margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--global-divider-color); }
+.genai-header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+.genai-subtitle { font-size: 1.1rem; color: var(--global-text-color-light); margin-bottom: 1rem; }
+.genai-paper-link { font-size: 0.9rem; line-height: 1.6; }
+.genai-meta { margin-top: 1rem; font-size: 0.85rem; color: var(--global-text-color-light); }
+.genai-definition { margin-top: 0.75rem; font-size: 0.85rem; color: var(--global-text-color-light); line-height: 1.5; padding: 1rem; background: var(--global-bg-color); border-left: 3px solid var(--global-theme-color); }
+.genai-controls { margin-bottom: 2rem; }
+.genai-control-group { margin-bottom: 1.5rem; }
+.genai-control-group label { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--global-text-color-light); margin-bottom: 0.5rem; }
+.genai-stats { display: flex; gap: 1.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+.genai-stat-item { flex: 1; min-width: 150px; padding: 1.25rem; background: var(--global-card-bg-color); border: 1px solid var(--global-divider-color); border-radius: 0.5rem; text-align: center; }
+.genai-stat-value { font-size: 1.75rem; font-weight: 600; color: var(--global-theme-color); margin-bottom: 0.25rem; }
+.genai-stat-label { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--global-text-color-light); }
+.genai-chart-container { background: var(--global-card-bg-color); border: 1px solid var(--global-divider-color); border-radius: 0.5rem; padding: 1.5rem; height: 500px; position: relative; }
+.genai-loading { text-align: center; padding: 3rem; color: var(--global-text-color-light); }
+.genai-search-input { margin-bottom: 0.5rem; }
+.genai-filter-info { font-size: 0.75rem; color: var(--global-text-color-light); margin-top: 0.25rem; }
+@media (max-width: 768px) { .genai-header h1 { font-size: 2rem; } .genai-stats { gap: 1rem; } .genai-stat-item { min-width: 100px; padding: 1rem; } .genai-chart-container { height: 400px; } }
+html[data-theme="dark"] .genai-stat-item { background: var(--global-card-bg-color); border-color: var(--global-divider-color); }
+html[data-theme="dark"] .genai-chart-container { background: var(--global-card-bg-color); border-color: var(--global-divider-color); }
 </style>
 
 <div class="genai-container">
@@ -165,8 +40,31 @@ html[data-theme="dark"] .genai-chart-container {
             </a>
         </div>
         <div class="genai-definition">
-            <strong>Exposure</strong> = share of a quarterly earnings call transcript devoted to the selected topic (topic-related content / total transcript content)<br>
-            <strong>Last data update:</strong> January 2025
+            <h2 style="margin:0 0 .5rem; font-size:1.05rem;">Overview</h2>
+            <p style="margin:0 0 .6rem;">The Corporate Talks dashboard measures thematic discussion in S&amp;P 500 earnings call transcripts from 2014 Q1 to present (updated quarterly). It reports the share of each transcript devoted to selected topics (Exposure). The “All Topics” view displays the top 10 topics by average exposure.</p>
+            <p style="margin:0 0 .6rem;">
+                <strong>Exposure</strong>: Percentage of transcript paragraphs devoted to a given topic.
+            </p>
+            <p style="margin:0 0 .6rem;">
+                <strong>Method</strong>: Topic detection via zero‑shot classification (<a href="https://huggingface.co/facebook/bart-large-mnli" target="_blank">BART-large-MNLI</a>) applied to 22,590+ transcripts. Exposure = topic paragraphs / total transcript paragraphs (length-normalised).</p>
+            <p style="margin:0 0 .6rem;">
+                <strong>How to cite</strong>: Ca’ Zorzi, M., G. Lopardo &amp; A.-S. Manu (2025). <em>Verba Volant, Transcripta Manent: What Corporate Earnings Calls Reveal About the AI Stock Rally</em>, ECB Working Paper No. 3093.
+            </p>
+            <details style="margin:0 0 .6rem; font-size:0.7rem;">
+                <summary style="cursor:pointer;">BibTeX</summary>
+<pre style="white-space:pre-wrap; margin:.4rem 0 0; font-size:0.65rem;">@article{ecb2025genai,
+  title        = {Verba Volant, Transcripta Manent: What Corporate Earnings Calls Reveal About the AI Stock Rally},
+  author       = {Ca’ Zorzi, Michele and Lopardo, Gianluigi and Manu, Ana-Simona},
+  year         = 2025,
+  institution  = {European Central Bank},
+  number       = {3093},
+  type         = {Working Paper Series},
+  bibtex_show  = {true},
+  pdf          = {https://www.ecb.europa.eu/pub/pdf/scpwps/ecb.wp3093%7E458d28b4bc.en.pdf},
+  html         = {https://glopardo.com/corporatetalks/},
+}</pre>
+            </details>
+            <p style="margin:0;"><strong>Last data update:</strong> January 2025</p>
         </div>
     </div>
 
@@ -235,6 +133,10 @@ html[data-theme="dark"] .genai-chart-container {
     <div class="genai-loading" id="loading">
         <div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div>
         <p>Loading data...</p>
+    </div>
+
+    <div style="font-size:0.65rem; margin-top:0.75rem; color:var(--global-text-color-light);">
+        Data & derived indicators © Ca’ Zorzi, Lopardo & Manu (2025), ECB Working Paper No. 3093. Licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a> (please attribute the paper when using the data).
     </div>
 </div>
 
