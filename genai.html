@@ -167,9 +167,32 @@ html[data-theme="dark"] .genai-chart-container {
         <div class="genai-meta">
         </div>
         <div class="genai-definition">
-            <strong>Exposure</strong> = share of a quarterly earnings call transcript devoted to GenAI (GenAI-related content / total transcript content)<br>
-            <strong>Sentiment</strong> (Risk, Adoption, Opportunity) = shares of the GenAI-related portion classified into those categories<br>
-            <strong>Last data update:</strong> January 2025
+            <h2 style="margin:0 0 .5rem; font-size:1.05rem;">Overview</h2>
+            <p style="margin:0 0 .6rem;">The GenAI Talks dashboard measures Generative AI discussion in S&amp;P 500 earnings call transcripts from 2014 Q1 to present (updated quarterly). We compute the share of transcript content classified as Generative AI (Exposure) and classify that content into Risk, Adoption, and Opportunity (Sentiment).</p>
+            <p style="margin:0 0 .6rem;">
+                <strong>Exposure</strong>: Percentage of transcript paragraphs devoted to Generative AI topics.<br>
+                <strong>Sentiment</strong>: Classification of GenAI content as Risk, Adoption, or Opportunity.
+            </p>
+            <p style="margin:0 0 .6rem;">
+                <strong>Method</strong>: Zero-shot topic detection using <a href="https://huggingface.co/facebook/bart-large-mnli" target="_blank">BART-large-MNLI</a>; sentiment classification of detected GenAI segments with <a href="https://openai.com/index/gpt-4o-system-card/" target="_blank">GPT-4o</a> across 22,590+ transcripts. Exposure = GenAI paragraphs / total transcript paragraphs (length-normalised).</p>
+            <p style="margin:0 0 .6rem;">
+                <strong>How to cite</strong>: Ca’ Zorzi, M., G. Lopardo &amp; A.-S. Manu (2025). <em>Verba Volant, Transcripta Manent: What Corporate Earnings Calls Reveal About the AI Stock Rally</em>, ECB Working Paper No. 3093.
+            </p>
+            <details style="margin:0 0 .6rem; font-size:0.7rem;">
+                <summary style="cursor:pointer;">BibTeX</summary>
+<pre style="white-space:pre-wrap; margin:.4rem 0 0; font-size:0.65rem;">@article{ecb2025genai,
+  title        = {{Verba Volant, Transcripta Manent: What Corporate Earnings Calls Reveal About the AI Stock Rally}},
+  author       = {Ca’ Zorzi, Michele and Lopardo, Gianluigi and Manu, Ana-Simona},
+  year         = 2025,
+  institution  = {European Central Bank},
+  number       = {3093},
+  type         = {Working Paper Series},
+  bibtex_show  = {true},
+  pdf          = {https://www.ecb.europa.eu/pub/pdf/scpwps/ecb.wp3093%7E458d28b4bc.en.pdf},
+  html         = {https://glopardo.com/genaitalks/},
+}</pre>
+            </details>
+            <p style="margin:0;"><strong>Last data update:</strong> January 2025</p>
         </div>
     </div>
 
@@ -249,6 +272,10 @@ html[data-theme="dark"] .genai-chart-container {
             <span class="sr-only">Loading...</span>
         </div>
         <p>Loading data...</p>
+    </div>
+
+    <div style="font-size:0.65rem; margin-top:0.75rem; color:var(--global-text-color-light);">
+        Data & derived indicators © Ca’ Zorzi, Lopardo & Manu (2025), ECB Working Paper No. 3093. Licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a> (please attribute the paper when using the data).
     </div>
 </div>
 
