@@ -1,6 +1,7 @@
 // GenAI Visualization Script for Jekyll al-folio theme
 // This script handles the interactive GenAI exposure & sentiment analysis chart
 
+
 (function() {
     'use strict';
     
@@ -47,19 +48,12 @@
             const pluginOpts = chart.config.options.plugins.yAxisTitlePlugin;
             if (!pluginOpts || !pluginOpts.text) return;
 
-            // If Chart.js already rendered a title (v3/4) and user can now see it, you can disable this plugin.
-            // We only draw if native title is missing (simple heuristic: look for scales.y.options.title.display AND Chart._metasets length)
-            const hasNativeTitle = chart.config.options.scales &&
-                ((chart.config.options.scales.y && chart.config.options.scales.y.title && chart.config.options.scales.y.title.display) ||
-                 (chart.config.options.scales.yAxes && chart.config.options.scales.yAxes[0] && chart.config.options.scales.yAxes[0].scaleLabel && chart.config.options.scales.yAxes[0].scaleLabel.display));
-
             // Always draw (so label shows regardless), but position it so it does not clash much.
             const { ctx, chartArea, scales } = chart;
             if (!chartArea) return;
 
             // Compute left margin taking into account tick label widths
             let leftMost = chartArea.left;
-            // If we have a left axis, extend leftMost a bit
             if (scales && scales.y) {
                 leftMost = scales.y.left;
             }
@@ -77,6 +71,19 @@
             ctx.translate(x, y);
             ctx.rotate(-Math.PI / 2);
             ctx.fillText(pluginOpts.text, 0, 0);
+            ctx.restore();
+        }
+    };
+
+    // Background plugin to ensure non-transparent PNG export
+    const canvasBackgroundPlugin = {
+        id: 'canvasBackgroundPlugin',
+        beforeDraw(chart, args, opts) {
+            const { ctx, width, height } = chart;
+            ctx.save();
+            ctx.globalCompositeOperation = 'destination-over';
+            ctx.fillStyle = opts && opts.color ? opts.color : '#ffffff';
+            ctx.fillRect(0, 0, width, height);
             ctx.restore();
         }
     };
@@ -421,7 +428,7 @@
                 labels: quarters,
                 datasets
             },
-            plugins: [yAxisTitlePlugin], // register plugin locally
+            plugins: [yAxisTitlePlugin, canvasBackgroundPlugin],
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -430,7 +437,6 @@
                     mode: 'index'
                 },
                 layout: {
-                    // More left padding to ensure space for custom y label
                     padding: { left: 55, right: 10, top: 5, bottom: 0 }
                 },
                 plugins: {
@@ -460,18 +466,19 @@
                             }
                         }
                     },
-                    // Options for our custom plugin
                     yAxisTitlePlugin: {
                         text: yAxisLabel,
                         color: textColor,
                         fontSize: 12,
                         offset: 40
+                    },
+                    canvasBackgroundPlugin: {
+                        color: isDarkMode ? '#1c1c1c' : '#ffffff'
                     }
                 }
             }
         };
         
-        // Native axis title (will show if Chart.js supports it; plugin ensures fallback)
         if (majorVersion >= 3) {
             chartConfig.options.scales = {
                 x: {
@@ -565,13 +572,75 @@
         if (quarterCountEl) quarterCountEl.textContent = quarterCount;
         if (dataPointsEl) dataPointsEl.textContent = dataPoints.toLocaleString();
     }
-    
+
+    // --- Download Button Feature ------------------------------------------------
+
+    function createDownloadButtonIfNeeded() {
+        if (document.getElementById('downloadChart')) return;
+
+        // Prefer placing it next to the update button if present
+        const updateButton = document.getElementById('updateChart');
+        let container = null;
+        if (updateButton && updateButton.parentElement) {
+            container = updateButton.parentElement;
+        } else {
+            // Fallback: place after chart canvas container
+            const chartEl = document.getElementById('chart');
+            container = chartEl ? chartEl.parentElement : document.body;
+        }
+        if (!container) return;
+
+        const btn = document.createElement('button');
+        btn.id = 'downloadChart';
+        btn.type = 'button';
+        // Bootstrap / al-folio style classes (adjust if a different primary style is preferred)
+        btn.className = 'btn btn-sm btn-outline-secondary ms-2';
+        btn.innerHTML = '<i class="fas fa-download"></i> Download Chart';
+
+        btn.addEventListener('click', () => {
+            if (!chart) return;
+            try {
+                // Construct a meaningful filename
+                const metric = document.getElementById('selectedMetric')?.value || 'GenAI_Exposure';
+                const filterType = document.getElementById('filterType')?.value || 'all';
+                let filterSnippet = filterType;
+
+                if (filterType !== 'all') {
+                    const selectedVals = Array
+                        .from(document.getElementById('filterValue')?.selectedOptions || [])
+                        .map(o => o.value)
+                        .slice(0, 3) // limit length
+                        .join('_')
+                        .replace(/[^a-zA-Z0-9_-]/g, '');
+                    if (selectedVals) filterSnippet += '-' + selectedVals;
+                }
+
+                const dateStamp = new Date().toISOString().slice(0,10);
+                const filename = `genai_${metric}_${filterSnippet}_${dateStamp}.png`;
+
+                const link = document.createElement('a');
+                link.download = filename;
+                // Ensure latest render (esp. after hover) before export
+                chart.update('none');
+                // Use built-in export
+                link.href = chart.toBase64Image('image/png', 1);
+                link.click();
+            } catch (e) {
+                console.error('Error exporting chart:', e);
+                alert('Unable to download chart image. See console for details.');
+            }
+        });
+
+        container.appendChild(btn);
+    }
+
     // Initialize when DOM is ready
     document.addEventListener('DOMContentLoaded', function() {
         const updateButton = document.getElementById('updateChart');
         if (updateButton) {
             updateButton.addEventListener('click', updateChart);
         }
+        createDownloadButtonIfNeeded();
         loadData();
     });
 })();
