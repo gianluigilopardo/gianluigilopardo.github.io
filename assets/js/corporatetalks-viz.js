@@ -23,23 +23,25 @@
      const fvg=document.getElementById('filterValueGroup');
      const groupToggle=document.getElementById('groupCompaniesToggle');
      const showGroupCompanies=document.getElementById('showGroupCompanies');
+     const topicSel=document.getElementById('selectedTopic');
      if(!ft) return;
-     ft.addEventListener('change',function(){
-         if(this.value==='all'){
+     function updateToggleVisibility(){
+         const topicVal=topicSel?.value;
+         if(ft.value==='all'){
              if(fvg) fvg.style.display='none';
-             if(groupToggle) groupToggle.style.display='none';
-             if(showGroupCompanies) showGroupCompanies.checked=false;
          } else {
              if(fvg) fvg.style.display='block';
-             populateFilterValues(this.value);
-             if(this.value==='sector' || this.value==='industry'){
-                 if(groupToggle) groupToggle.style.display='block';
-             } else if (groupToggle) {
-                 groupToggle.style.display='none';
-                 if(showGroupCompanies) showGroupCompanies.checked=false;
-             }
          }
-     });
+         // Show toggle if sector/industry OR All Topics selected
+         if((ft.value==='sector'||ft.value==='industry'|| topicVal==='__ALL_TOPICS__')){
+             if(groupToggle) groupToggle.style.display='block';
+         } else if(groupToggle){
+             groupToggle.style.display='none';
+             if(showGroupCompanies) showGroupCompanies.checked=false;
+         }
+     }
+     ft.addEventListener('change',()=>{populateFilterValues(ft.value); updateToggleVisibility();});
+     topicSel?.addEventListener('change',()=>{updateToggleVisibility();});
      const si=document.getElementById('searchInput');
      if(si){si.addEventListener('input',function(){filterOptions(this.value.toLowerCase());});}
  }
@@ -50,14 +52,16 @@
      // All Topics option (multi-line)
      const allOpt=document.createElement('option'); allOpt.value='__ALL_TOPICS__'; allOpt.textContent='All Topics (Top 10)'; sel.appendChild(allOpt);
      topics.forEach(t=>{const o=document.createElement('option'); o.value=t; o.textContent=t; sel.appendChild(o);});
+     // Default later will set to last topic
  }
  function populateFilterValues(type){const fv=document.getElementById('filterValue'); const si=document.getElementById('searchInput'); if(!fv) return; fv.innerHTML=''; if(si) si.value=''; let vals=[]; if(type==='sector') vals=[...new Set(data.map(d=>d.sector))]; else if(type==='industry') vals=[...new Set(data.map(d=>d.industry))]; else if(type==='firm') vals=[...new Set(data.map(d=>d.firm))]; vals=vals.filter(v=>v).sort(); vals.forEach(v=>{const o=document.createElement('option'); o.value=v; o.textContent=v; fv.appendChild(o);}); if(vals.length){fv.selectedIndex=0; if(vals.length>1 && fv.options[1]) fv.options[1].selected=true;} }
  function filterOptions(term){const fv=document.getElementById('filterValue'); if(!fv) return; fv.querySelectorAll('option').forEach(o=>{o.style.display=o.textContent.toLowerCase().includes(term)?'':'none';}); }
  function setDefaultSelections(){
-     const ft=document.getElementById('filterType');
-     if(ft) ft.value='all';
+     const ft=document.getElementById('filterType'); if(ft) ft.value='all';
      const topicSel=document.getElementById('selectedTopic');
-     if(topicSel) topicSel.selectedIndex=0; // All Topics
+     if(topicSel && topicSel.options.length>1){ // pick last real topic
+         topicSel.selectedIndex=topicSel.options.length-1;
+     }
  }
  function getFilteredData(){
      const ft=document.getElementById('filterType')?.value;

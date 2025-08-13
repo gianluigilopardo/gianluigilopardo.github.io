@@ -353,13 +353,9 @@
         const filteredData = getFilteredData();
         const metric = document.getElementById('selectedMetric')?.value || 'GenAI_Exposure';
         const filterType = document.getElementById('filterType')?.value || 'all';
-        
-        let quarters = [];
-        let aggregated = {};
-        let entities = [];
-        let datasets = [];
-        
-        if (metric === 'sentiment') {
+        const showGroupCompanies = document.getElementById('showGroupCompanies')?.checked;
+        let quarters=[]; let datasets=[]; let limitFlag=false; let limitNoteEl=document.getElementById('limitNote');
+        if(metric==='sentiment') { // unchanged sentiment path
             quarters = [...new Set(filteredData.map(d => d.quarter))].sort();
             const sentimentMetrics = ['GenAI_Risk', 'GenAI_Adoption', 'GenAI_Opportunity'];
             aggregated = {};
@@ -421,24 +417,22 @@
                     }
                 });
             } else {
-                const result = aggregateDataByEntity(filteredData, metric, filterType);
+                let result;
+                if(showGroupCompanies && (filterType==='sector' || filterType==='industry')){
+                    // expand into firms inside selected groups
+                    const selectedValues = Array.from(document.getElementById('filterValue')?.selectedOptions||[]).map(o=>o.value);
+                    const subset = selectedValues.length? filteredData.filter(r=>selectedValues.includes(r[filterType])) : filteredData;
+                    result = aggregateGroupCompanies(subset, metric, filterType);
+                } else {
+                    result = aggregateDataByEntity(filteredData, metric, filterType);
+                }
                 quarters = result.quarters;
-                aggregated = result.aggregated;
-                entities = result.entities;
+                const aggregated = result.aggregated;
+                const entities = result.entities;
+                limitFlag = result.limited || limitFlag;
+                const entityColors = generateColors(entities.length);
+                datasets = entities.map((entity,index)=>({label:entity,data:quarters.map(q=>aggregated[entity][q]??null),borderColor:entityColors[index],backgroundColor:withAlpha(entityColors[index],0.15),borderWidth:2,pointRadius:3,pointBackgroundColor:entityColors[index],pointHoverRadius:5,tension:0.1,fill:false}));
             }
-            const entityColors = generateColors(entities.length);
-            datasets = entities.map((entity, index) => ({
-                label: entity,
-                data: quarters.map(q => aggregated[entity][q] ?? null),
-                borderColor: entityColors[index],
-                backgroundColor: withAlpha(entityColors[index], 0.15),
-                borderWidth: 2,
-                pointRadius: 3,
-                pointBackgroundColor: entityColors[index],
-                pointHoverRadius: 5,
-                tension: 0.1,
-                fill: false
-            }));
         }
         
         updateStats(filteredData, quarters);
@@ -592,6 +586,45 @@
         if (dataPointsEl) dataPointsEl.textContent = dataPoints.toLocaleString();
     }
 
+    // NEW helper: rank & limit entities to top 10 by average metric
+    function rankAndLimitEntities(entities, aggregated) {
+        const avgs = entities.map(e => {
+            const vals = Object.values(aggregated[e]||{}).filter(v=>v!=null&&!isNaN(v));
+            const avg = vals.length? vals.reduce((a,b)=>a+b,0)/vals.length : 0; return {e,avg};
+        }).sort((a,b)=>b.avg-a.avg).slice(0,10).map(o=>o.e);
+        return avgs;
+    }
+
+    // Modify aggregateDataByEntity to apply top-10 logic
+    const _origAggregate = aggregateDataByEntity; // keep reference if needed
+    function aggregateDataByEntity(filteredData, metric, filterType) {
+        const quarters = [...new Set(filteredData.map(d=>d.quarter))].sort();
+        const entities = [...new Set(filteredData.map(d=>d[filterType]))].filter(e=>e).sort();
+        const aggregated = {};
+        entities.forEach(entity => {
+            aggregated[entity] = {};
+            quarters.forEach(q => {
+                const vals = filteredData.filter(d=>d.quarter===q && d[filterType]===entity).map(d=>d[metric]).filter(v=>v!=null&&!isNaN(v));
+                if(vals.length){const avg= vals.reduce((a,b)=>a+b,0)/vals.length; aggregated[entity][q]=parseFloat(avg.toFixed(3));}
+            });
+        });
+        const limited = rankAndLimitEntities(entities, aggregated);
+        // prune others
+        Object.keys(aggregated).forEach(k=>{ if(!limited.includes(k)) delete aggregated[k]; });
+        return {quarters, aggregated, entities: limited, limited: entities.length>10};
+    }
+
+    // Add group company logic for sector/industry when checkbox ticked
+    function aggregateGroupCompanies(filteredData, metric, groupField) {
+        const quarters=[...new Set(filteredData.map(d=>d.quarter))].sort();
+        const firms=[...new Set(filteredData.map(d=>d.firm))];
+        const aggregated={};
+        firms.forEach(firm=>{aggregated[firm]={}; quarters.forEach(q=>{const vals=filteredData.filter(d=>d.quarter===q && d.firm===firm).map(d=>d[metric]).filter(v=>v!=null&&!isNaN(v)); if(vals.length){const avg=vals.reduce((a,b)=>a+b,0)/vals.length; aggregated[firm][q]=parseFloat(avg.toFixed(3));}});});
+        const limitedFirms=rankAndLimitEntities(firms, aggregated);
+        Object.keys(aggregated).forEach(k=>{ if(!limitedFirms.includes(k)) delete aggregated[k]; });
+        return {quarters, aggregated, entities: limitedFirms, limited: firms.length>10};
+    }
+    
     // Download button
     function createDownloadButtonIfNeeded() {
         // If already present, do nothing

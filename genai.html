@@ -185,6 +185,11 @@ html[data-theme="dark"] .genai-chart-container {
                         <option value="firm">Firm</option>
                     </select>
                 </div>
+                <div class="genai-control-group" id="groupCompaniesToggle" style="display:none;">
+                    <label style="cursor:pointer; font-weight:400; text-transform:none; letter-spacing:normal;">
+                        <input type="checkbox" id="showGroupCompanies"> Show Companies in Group (Top 10)
+                    </label>
+                </div>
             </div>
             
             <div class="col-md-3" id="filterValueGroup" style="display: none;">
@@ -233,6 +238,7 @@ html[data-theme="dark"] .genai-chart-container {
             <div class="genai-stat-label">Data Points</div>
         </div>
     </div>
+    <div id="limitNote" style="font-size:0.7rem; color:var(--global-text-color-light); margin-top:-0.75rem; margin-bottom:1rem; min-height:0.9rem;"></div>
 
     <div class="genai-chart-container">
         <canvas id="chart"></canvas>
