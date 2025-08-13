@@ -25,11 +25,10 @@
 
     // Helper: add alpha to an rgb() string
     function withAlpha(rgbString, alpha = 0.15) {
-        // Expects 'rgb(r, g, b)'
         return rgbString.replace(/^rgb\(/, 'rgba(').replace(/\)$/, `, ${alpha})`);
     }
 
-    // Helper: Y-axis label text (this is the ONLY place to change the wording)
+    // Helper: Y-axis label text
     function getYAxisLabel(metric) {
         if (metric === 'sentiment') return 'GenAI Sentiment (%)';
         switch (metric) {
@@ -40,6 +39,47 @@
             default: return 'Value (%)';
         }
     }
+
+    // Fallback plugin to FORCE drawing the Y axis title (covers cases where Chart.js axis title not rendering)
+    const yAxisTitlePlugin = {
+        id: 'yAxisTitlePlugin',
+        afterDraw(chart, args, opts) {
+            const pluginOpts = chart.config.options.plugins.yAxisTitlePlugin;
+            if (!pluginOpts || !pluginOpts.text) return;
+
+            // If Chart.js already rendered a title (v3/4) and user can now see it, you can disable this plugin.
+            // We only draw if native title is missing (simple heuristic: look for scales.y.options.title.display AND Chart._metasets length)
+            const hasNativeTitle = chart.config.options.scales &&
+                ((chart.config.options.scales.y && chart.config.options.scales.y.title && chart.config.options.scales.y.title.display) ||
+                 (chart.config.options.scales.yAxes && chart.config.options.scales.yAxes[0] && chart.config.options.scales.yAxes[0].scaleLabel && chart.config.options.scales.yAxes[0].scaleLabel.display));
+
+            // Always draw (so label shows regardless), but position it so it does not clash much.
+            const { ctx, chartArea, scales } = chart;
+            if (!chartArea) return;
+
+            // Compute left margin taking into account tick label widths
+            let leftMost = chartArea.left;
+            // If we have a left axis, extend leftMost a bit
+            if (scales && scales.y) {
+                leftMost = scales.y.left;
+            }
+
+            ctx.save();
+            ctx.font = (pluginOpts.fontSize || 12) + 'px ' + (pluginOpts.fontFamily || 'sans-serif');
+            ctx.fillStyle = pluginOpts.color || '#333';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            // Position slightly left of axis ticks
+            const x = leftMost - (pluginOpts.offset || 40);
+            const y = (chartArea.top + chartArea.bottom) / 2;
+
+            ctx.translate(x, y);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText(pluginOpts.text, 0, 0);
+            ctx.restore();
+        }
+    };
     
     // Load data from CSV
     async function loadData() {
@@ -81,10 +121,8 @@
                 complete: function(results) {
                     data = results.data;
                     
-                    // Clean and validate data
                     data = data.filter(row => row.quarter && row.ticker);
                     
-                    // Sort by quarter then ticker
                     data.sort((a, b) => {
                         if (a.quarter !== b.quarter) {
                             return a.quarter.localeCompare(b.quarter);
@@ -383,6 +421,7 @@
                 labels: quarters,
                 datasets
             },
+            plugins: [yAxisTitlePlugin], // register plugin locally
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -391,7 +430,8 @@
                     mode: 'index'
                 },
                 layout: {
-                    padding: { left: 8, right: 10, top: 5, bottom: 0 }
+                    // More left padding to ensure space for custom y label
+                    padding: { left: 55, right: 10, top: 5, bottom: 0 }
                 },
                 plugins: {
                     legend: {
@@ -419,12 +459,19 @@
                                 return context.dataset.label + ': ' + (context.parsed.y !== null ? context.parsed.y.toFixed(3) : 'N/A');
                             }
                         }
+                    },
+                    // Options for our custom plugin
+                    yAxisTitlePlugin: {
+                        text: yAxisLabel,
+                        color: textColor,
+                        fontSize: 12,
+                        offset: 40
                     }
                 }
             }
         };
         
-        // Scales configuration depending on Chart.js major version
+        // Native axis title (will show if Chart.js supports it; plugin ensures fallback)
         if (majorVersion >= 3) {
             chartConfig.options.scales = {
                 x: {
@@ -454,16 +501,13 @@
                     title: {
                         display: true,
                         text: yAxisLabel,
-                        font: {
-                            size: 11,
-                            weight: 'normal'
-                        },
-                        color: textColor
+                        font: { size: 12, weight: 'normal' },
+                        color: textColor,
+                        padding: { top: 0, bottom: 0 }
                     }
                 }
             };
         } else {
-            // Backwards compatible (Chart.js 2.x)
             chartConfig.options.scales = {
                 xAxes: [{
                     gridLines: {
@@ -492,7 +536,7 @@
                     scaleLabel: {
                         display: true,
                         labelString: yAxisLabel,
-                        fontSize: 11,
+                        fontSize: 12,
                         fontColor: textColor
                     }
                 }]
