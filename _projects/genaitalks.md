@@ -17,7 +17,7 @@ The **GenAI Talks** dashboard provides quarterly Generative AI exposure and sent
 **Method:** Zero‑shot topic detection (BART-large-MNLI) plus LLM sentiment classification of detected GenAI segments; exposure values length‑normalised.
 
 <div class="row justify-content-sm-center">
-  <div class="col-sm-12 mt-3 mt-md-0">
+  <div class="col-sm-12 mt-3 mt-md-0" style="max-width:640px;">
     <a href="/genaitalks/" target="_blank">
       {% include figure.liquid path="assets/img/genai_talks.png" title="GenAI Talks dashboard" class="img-fluid rounded z-depth-1" %}
     </a>

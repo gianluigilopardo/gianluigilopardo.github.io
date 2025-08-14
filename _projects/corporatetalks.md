@@ -17,7 +17,7 @@ The **Corporate Talks** dashboard tracks thematic discussion intensity (exposure
 **Method:** Zero‑shot topic classification (BART-large-MNLI) applied to 22,000+ transcripts; exposure = topic paragraphs / total paragraphs (length‑normalised); percentages shown.
 
 <div class="row justify-content-sm-center">
-  <div class="col-sm-12 mt-3 mt-md-0">
+  <div class="col-sm-12 mt-3 mt-md-0" style="max-width:640px;">
     <a href="/corporatetalks/" target="_blank">
       {% include figure.liquid path="assets/img/corporate_talks.png" title="Corporate Talks dashboard" class="img-fluid rounded z-depth-1" %}
     </a>
