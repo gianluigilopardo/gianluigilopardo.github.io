@@ -142,7 +142,17 @@ ninja.data = [{
           section: "News",},{id: "news-interactive-charts-are-now-live-track-genai-exposure-amp-amp-sentiment-across-us-firms-sectors-and-industries-over-time-genai-talks",
           title: 'Interactive charts are now live! 📊 Track GenAI exposure &amp;amp;amp; sentiment across US...',
           description: "",
-          section: "News",},{id: "projects-hack-the-act",
+          section: "News",},{id: "projects-corporate-talks-dashboard",
+          title: 'Corporate Talks Dashboard',
+          description: "Multi-topic exposure trends from S&amp;P 500 earnings call transcripts.",
+          section: "Projects",handler: () => {
+              window.location.href = "/projects/corporatetalks/";
+            },},{id: "projects-genai-talks-dashboard",
+          title: 'GenAI Talks Dashboard',
+          description: "Interactive dashboard tracking Generative AI discussion and sentiment in S&amp;P 500 earnings calls.",
+          section: "Projects",handler: () => {
+              window.location.href = "/projects/genaitalks/";
+            },},{id: "projects-hack-the-act",
           title: 'Hack the Act!',
           description: "An AI chatbot designed to demystify the EU AI Act",
           section: "Projects",handler: () => {
