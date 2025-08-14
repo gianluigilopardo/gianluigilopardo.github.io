@@ -30,4 +30,3 @@ The **GenAI Talks** dashboard provides quarterly Generative AI exposure and sent
 - Live dashboard: [GenAI Talks](/genaitalks/)
 - Working paper: <a href="https://www.ecb.europa.eu/pub/pdf/scpwps/ecb.wp3093~458d28b4bc.en.pdf" target="_blank">ECB WP 3093</a>
 
-> Replace `assets/img/genai_talks.png` with an appropriate screenshot (recommended width ~1200px).

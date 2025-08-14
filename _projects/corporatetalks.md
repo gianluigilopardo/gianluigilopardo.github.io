@@ -30,4 +30,3 @@ The **Corporate Talks** dashboard tracks thematic discussion intensity (exposure
 - Live dashboard: [Corporate Talks](/corporatetalks/)
 - Working paper: <a href="https://www.ecb.europa.eu/pub/pdf/scpwps/ecb.wp3093~458d28b4bc.en.pdf" target="_blank">ECB WP 3093</a>
 
-> Replace `assets/img/corporate_talks.png` with a screenshot (recommended width ~1200px).
