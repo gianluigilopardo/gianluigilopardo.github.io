@@ -4,7 +4,7 @@
     - name: Full Name
       value: Gianluigi Lopardo
     - name: Email
-      value: "<a href='mailto:gianluigilopardo@gmail.com'>gianluigilopardo@gmail.com</a>"
+      value: <a href='mailto:gianluigilopardo@gmail.com'>gianluigilopardo@gmail.com</a>
     - name: Location
       value: Frankfurt am Main, Germany
     - name: Languages
@@ -14,18 +14,24 @@
   type: time_table
   contents:
     - title: Research Analyst
-      institution: "<a href='https://www.ecb.europa.eu/'>European Central Bank</a>"
-      year: 2025-present
+      institution: <a href='https://www.ecb.europa.eu/pub/research/authors/profiles/gianluigi-lopardo.en.html'>European Central Bank</a>
+      year: Jul 2025-present
       location: Frankfurt, Germany
       description:
-        - Applying AI and machine learning to economic research within the International Policy Analysis Division
+        - Research and development of machine learning methods for macroeconomic forecasting and policy analysis, exploiting non-traditional data sources
+        - Leading oil price forecasting project using LLMs to analyze market reports and developing econometric framework for forecast evaluation
+        - Developing AI tools to strengthen the division's analytical framework
+        - Providing analytical support to multiple division projects, e.g., the analysis of US tariff threats and cross-border payment costs with stablecoins
 
-    - title: Data Science PhD Trainee
-      institution: "<a href='https://www.ecb.europa.eu/'>European Central Bank</a>"
-      year: 2024-2025
+    - title: PhD Trainee
+      institution: <a href='https://www.ecb.europa.eu/pub/research/authors/profiles/gianluigi-lopardo.en.html'>European Central Bank</a>
+      year: Oct 2024-May 2025
       location: Frankfurt, Germany
       description:
-        - Applying AI and machine learning to economic research within the International Policy Analysis Division
+        - Research and development of machine learning methods for financial markets and policy analysis, exploiting non-traditional data sources
+        - Led research project developing firm-level AI exposure measures using textual analysis, examining impact on financial performance
+        - Co-authored <a href='https://www.ecb.europa.eu/pub/pdf/scpwps/ecb.wp3093~458d28b4bc.en.pdf?35448d13078514c607eed78f10606c0d'>ECB Working Paper</a> (under journal submission) and <a href='https://cepr.org/voxeu/columns/what-corporate-earnings-calls-reveal-about-ai-stock-rally'>VoxEU column</a>, presenting findings at internal seminars
+        - Proposed and developed Trump Tariff Threats Index from analysis of tweets, subsequently integrated into division's policy analysis toolkit
 
     - title: Doctoral Researcher
       institution: <a href='https://inria.fr'>Inria</a> & <a href='https://univ-cotedazur.fr/'>Université Côte d'Azur</a>
@@ -36,69 +42,79 @@
       
     - title: Teaching Assistant
       institution: <a href='https://univ-cotedazur.fr/'>Université Côte d'Azur</a>
-      year: 2021-2024
+      year: Sep 2021-Aug 2024
       location: Nice, France
       description:
-        - Led lectures, supervised labs, and mentored students in math and statistics courses, including undergraduate and master's levels
+        - Led theoretical and practical instruction in mathematics and statistics
+        - Delivered lectures for undergraduate and graduate courses in French, including students from economics disciplines
+        - Supervised labs, developed teaching materials, managed assessments
       
     - title: AI Research Intern
-      institution: "<a href='https://inria.fr'>Inria</a> (<a href='https://team.inria.fr/maasai/team-members/'>Maasai team</a>)"
-      year: 2021
-      location: Nice, France
+      institution: <a href='https://team.inria.fr/maasai/'>Maasai Team</a>, <a href='https://www.inria.fr/en'>Inria</a>
+      year: Mar 2021-Sep 2021
+      location: Sophia Antipolis, France
       description:
-        - Researched AI interpretability to improve business decision-making
+        - Research on explainable AI for business decision-making
+        - Developed the <a href='https://link.springer.com/chapter/10.1007/978-3-031-26387-3_20'>SMACE</a> interpretability method and <a href='https://github.com/gianluigilopardo/smace'>Python package</a> for composite decision systems, resulting in a first-authored publication
       
-    - title: Machine Learning Engineer Intern
-      institution: "<a href='https://www.alten.com/'>ALTEN</a>"
-      year: 2020-2021
-      location: Nice, France
+    - title: ML Engineer Intern
+      institution: <a href='https://www.alten.com/'>Alten</a>
+      year: Sep 2020-Feb 2021
+      location: Sophia Antipolis, France
       description:
-        - Developed computer vision solutions to automate document processing
+        - R&D of computer vision solutions to automate document processing
+        - Developed and optimized computer vision pipelines to automate document digitization and information extraction
 
 - title: Education
   type: time_table
   contents:
     - title: Ph.D. in Applied Mathematics
-      institution: "<a href='https://inria.fr'>Inria</a> & <a href='https://univ-cotedazur.fr/'>Université Côte d'Azur</a>"
+      institution: <a href='https://inria.fr'>Inria</a> & <a href='https://univ-cotedazur.fr/'>Université Côte d'Azur</a>
       year: 2021-2024
       location: Nice, France
       description:
-        - "Thesis: <a href='https://theses.hal.science/tel-04917007/'>Foundations of Machine Learning Interpretability</a>"
-        - "Supervisors: Prof. <a href='https://sites.google.com/view/damien-garreau/home'>Damien Garreau</a> (<a href='https://univ-cotedazur.fr/'>UCA</a>/<a href='https://inria.fr'>Inria</a>), Prof. <a href='https://webusers.i3s.unice.fr/~precioso/'>Frédéric Precioso</a> (<a href='https://univ-cotedazur.fr/'>UCA</a>/<a href='https://inria.fr'>Inria</a>)"
+        - 'Thesis: <a href=''https://theses.hal.science/tel-04917007/''>Foundations of Machine Learning Interpretability</a>'
+        - 'Supervisors: Prof. <a href=''https://sites.google.com/view/damien-garreau/home''>Damien Garreau</a> (<a href=''https://univ-cotedazur.fr/''>UCA</a>/<a href=''https://inria.fr''>Inria</a>), Prof. <a href=''https://webusers.i3s.unice.fr/~precioso/''>Frédéric Precioso</a> (<a href=''https://univ-cotedazur.fr/''>UCA</a>/<a href=''https://inria.fr''>Inria</a>)'
+        - In-depth mathematical research on interpretability methods for machine learning models and algorithms
+        - Developed novel interpretability approaches resulting in high-quality publications in top venues, such as <a href='https://proceedings.mlr.press/v235/lopardo24a.html'>ICML</a>, <a href='https://proceedings.mlr.press/v206/lopardo23a.html'>AISTATS</a>, and <a href='https://link.springer.com/chapter/10.1007/978-3-031-26387-3_20'>ECML</a>
+        
     - title: M.Sc. in Mathematical Engineering
-      institution: "<a href='https://www.polito.it/'>Politecnico di Torino</a>"
+      institution: <a href='https://www.polito.it/'>Politecnico di Torino</a>
       year: 2019-2021
       location: Turin, Italy
       description:
-        - "Thesis: <a href='https://webthesis.biblio.polito.it/secure/19854/'>Explainable AI for business decision-making</a>"
-        - "Supervisors: Prof. <a href='https://www.polito.it/personale?p=elena.baralis'>Elena Maria Baralis</a> (<a href='https://www.polito.it/'>PoliTo</a>), Prof. <a href='https://sites.google.com/view/damien-garreau/home'>Damien Garreau</a> (<a href='https://univ-cotedazur.fr/'>UCA</a>/<a href='https://inria.fr'>Inria</a>), Prof. <a href='https://webusers.i3s.unice.fr/~precioso/'>Frédéric Precioso</a> (<a href='https://univ-cotedazur.fr/'>UCA</a>/<a href='https://inria.fr'>Inria</a>), Dr. <a href='https://fr.linkedin.com/in/gregerottosson'>Greger Ottosson</a> (<a href='https://www.ibm.com/'>IBM</a>)"
+        - 'Thesis: <a href=''https://webthesis.biblio.polito.it/secure/19854/''>Explainable AI for business decision-making</a>'
+        - 'Supervisors: Prof. <a href=''https://www.polito.it/personale?p=elena.baralis''>Elena Maria Baralis</a> (<a href=''https://www.polito.it/''>PoliTo</a>), Prof. <a href=''https://sites.google.com/view/damien-garreau/home''>Damien Garreau</a> (<a href=''https://univ-cotedazur.fr/''>UCA</a>/<a href=''https://inria.fr''>Inria</a>), Prof. <a href=''https://webusers.i3s.unice.fr/~precioso/''>Frédéric Precioso</a> (<a href=''https://univ-cotedazur.fr/''>UCA</a>/<a href=''https://inria.fr''>Inria</a>), Dr. <a href=''https://fr.linkedin.com/in/gregerottosson''>Greger Ottosson</a> (<a href=''https://www.ibm.com/''>IBM</a>)'
+        - M.Sc. focus on statistical data science, mathematical modeling and optimization, machine learning, risk management, financial engineering
+        
     - title: B.Sc. in Applied Mathematics
-      institution: "<a href='https://www.polito.it/'>Politecnico di Torino</a>"
+      institution: <a href='https://www.polito.it/'>Politecnico di Torino</a>
       year: 2016-2019
       location: Turin, Italy
       description:
-        - "Thesis: Quantitative and qualitative analysis on the relation between innovation and economic performances in companies"
-        - "Supervisor: Prof. <a href='https://www.polito.it/personale?p=federico.caviggioli'>Federico Caviggioli</a> (<a href='https://www.polito.it/'>PoliTo</a>)"
+        - 'Thesis: Quantitative and qualitative analysis on the relation between innovation and economic performances in companies'
+        - 'Supervisor: Prof. <a href=''https://www.polito.it/personale?p=federico.caviggioli''>Federico Caviggioli</a> (<a href=''https://www.polito.it/''>PoliTo</a>)'
+        - B.Sc. focus on core applied mathematical areas including probability, statistics, scientific computing, and programming
 
 - title: Teams
   type: time_table
   contents:
     - title: Data Analyst
-      institution: "<a href='https://orgvisionary.com/'>Visionary</a>"
+      institution: <a href='https://orgvisionary.com/'>Visionary</a>
       year: 2019-2020
       location: Turin, Italy
       description:
         - Provided data-driven insights, optimizations, and IT solutions for event management
       
     - title: Deputy Head of IT
-      institution: "<a href='https://jetop.com/'>JEToP</a>"
+      institution: <a href='https://jetop.com/'>JEToP</a>
       year: 2017-2018
       location: Turin, Italy
       description:
         - Directed IT projects and oversaw the IT team to support organizational goals
       
     - title: IT Consultant
-      institution: "<a href='https://jetop.com/'>JEToP</a>"
+      institution: <a href='https://jetop.com/'>JEToP</a>
       year: 2016-2018
       location: Turin, Italy
       description:
@@ -154,4 +170,4 @@
       year: 2021-2022
       location: Nice, France
       description:
-        - BSc, 1st year, 24 hours 
+        - BSc, 1st year, 24 hours

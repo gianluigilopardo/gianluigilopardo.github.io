@@ -2,7 +2,7 @@
 layout: about
 title: about 🤌
 permalink: /
-subtitle: Data Scientist | <a href='https://www.ecb.europa.eu/pub/research/authors/profiles/gianluigi-lopardo.en.html'>European Central Bank</a>
+subtitle: Research Analyst | <a href='https://www.ecb.europa.eu/pub/research/authors/profiles/gianluigi-lopardo.en.html'>European Central Bank</a>
 
 profile:
   align: right
