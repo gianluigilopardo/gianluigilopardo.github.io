@@ -10,7 +10,7 @@
     - name: Languages
       value: Italian, English, French
 
-- title: Work
+- title: Professional Experience
   type: time_table
   contents:
     - title: Research Analyst
@@ -38,7 +38,14 @@
       year: 2021-2024
       location: Nice, France
       description:
-        - Researched machine learning interpretability, analyzed and developed eXplainable AI methods
+        - 'Thesis: <a href=''https://theses.hal.science/tel-04917007/''>Foundations of Machine Learning Interpretability</a>, awarded the <a href="https://math.univ-cotedazur.fr/laboratoire/news/phd-awards-0">Young Researcher Prize</a> 2025 by Métropole Nice CdA for "high quality" PhD thesis'
+        - 'Supervisors: Prof. <a href=''https://sites.google.com/view/damien-garreau/home''>Damien Garreau</a> and Prof. <a href=''https://webusers.i3s.unice.fr/~precioso/''>Frédéric Precioso</a> (<a href=''https://univ-cotedazur.fr/''>UCA</a>/<a href=''https://inria.fr''>Inria</a>)'
+        - In-depth mathematical research on interpretability methods for machine learning models and algorithms
+        - Developed novel interpretability approaches resulting in high-quality publications in top venues, such as <a href='https://proceedings.mlr.press/v235/lopardo24a.html'>ICML</a>, <a href='https://proceedings.mlr.press/v206/lopardo23a.html'>AISTATS</a>, and <a href='https://link.springer.com/chapter/10.1007/978-3-031-26387-3_20'>ECML</a>
+        - Presented research at international ML conferences including ICML 2024 (Vienna), AISTATS 2023 (Valencia), ECML 2022 (Grenoble), XAIE @ ICPR 2022 (Montreal)
+        - Invited talks at <a href='https://www.cognizant.com/us/en/services/ai/ai-lab'>Cognizant AI</a>, <a href='https://team.inria.fr/maasai/'>Maasai</a> (Sophia Antipolis), <a href='https://www.ai4media.eu/'>AI4Media</a> (Florence)
+        - Reviewer for <a href='http://aistats.org/aistats2023/'>AISTATS</a>, <a href='https://ecmlpkdd.org/'>ECML</a>, <a href='https://kgml2023.github.io/'>KGML workshop</a>
+        - Co-organized <a href='https://sites.google.com/view/nwi2022/home'>NWI Workshop</a> on Interpretability (2022, 2023)
       
     - title: Teaching Assistant
       institution: <a href='https://univ-cotedazur.fr/'>Université Côte d'Azur</a>
@@ -73,8 +80,8 @@
       year: 2021-2024
       location: Nice, France
       description:
-        - 'Thesis: <a href=''https://theses.hal.science/tel-04917007/''>Foundations of Machine Learning Interpretability</a>'
-        - 'Supervisors: Prof. <a href=''https://sites.google.com/view/damien-garreau/home''>Damien Garreau</a> (<a href=''https://univ-cotedazur.fr/''>UCA</a>/<a href=''https://inria.fr''>Inria</a>), Prof. <a href=''https://webusers.i3s.unice.fr/~precioso/''>Frédéric Precioso</a> (<a href=''https://univ-cotedazur.fr/''>UCA</a>/<a href=''https://inria.fr''>Inria</a>)'
+        - 'Thesis: <a href=''https://theses.hal.science/tel-04917007/''>Foundations of Machine Learning Interpretability</a>, awarded the <a href="https://math.univ-cotedazur.fr/laboratoire/news/phd-awards-0">Young Researcher Prize</a> 2025 by Métropole Nice CdA for "high quality" PhD thesis'
+        - 'Supervisors: Prof. <a href=''https://sites.google.com/view/damien-garreau/home''>Damien Garreau</a> and Prof. <a href=''https://webusers.i3s.unice.fr/~precioso/''>Frédéric Precioso</a> (<a href=''https://univ-cotedazur.fr/''>UCA</a>/<a href=''https://inria.fr''>Inria</a>)'
         - In-depth mathematical research on interpretability methods for machine learning models and algorithms
         - Developed novel interpretability approaches resulting in high-quality publications in top venues, such as <a href='https://proceedings.mlr.press/v235/lopardo24a.html'>ICML</a>, <a href='https://proceedings.mlr.press/v206/lopardo23a.html'>AISTATS</a>, and <a href='https://link.springer.com/chapter/10.1007/978-3-031-26387-3_20'>ECML</a>
         
@@ -101,23 +108,24 @@
   contents:
     - title: Data Analyst
       institution: <a href='https://orgvisionary.com/'>Visionary</a>
-      year: 2019-2020
+      year: 2019-2022
       location: Turin, Italy
       description:
-        - Provided data-driven insights, optimizations, and IT solutions for event management
+        - Data-driven analysis and optimization for nonprofit event operations
       
     - title: Deputy Head of IT
       institution: <a href='https://jetop.com/'>JEToP</a>
-      year: 2017-2018
+      year: Nov 2017-Nov 2018
       location: Turin, Italy
       description:
         - Directed IT projects and oversaw the IT team to support organizational goals
       
     - title: IT Consultant
       institution: <a href='https://jetop.com/'>JEToP</a>
-      year: 2016-2018
+      year: Nov 2016-Nov 2017
       location: Turin, Italy
       description:
+        - Led IT projects and development for student-run Junior Enterprise
         - Created websites and applications for both internal use and clients
 
 - title: Teaching
@@ -171,3 +179,14 @@
       location: Nice, France
       description:
         - BSc, 1st year, 24 hours
+
+- title: Technical Skills
+  type: map
+  contents:
+    - name: Programming Languages
+      value: Python (advanced), R, MATLAB (proficient), Julia, Stata (intermediate), SQL, C, Java (base)
+    - name: Machine Learning & NLP
+      value: Language Models (OpenAI, Azure, Ollama), retrieval-augmented generation (LangChain, vector DBs), transformer architectures (PyTorch, Hugging Face), interpretability methods, sentiment analysis, topic modeling
+    - name: Econometrics & Statistics
+      value: Time-series analysis and forecasting, forecast evaluation, risk quantification, causal inference (DiD, panel methods, PSM), statistical inference and pre-asymptotic statistics
+
