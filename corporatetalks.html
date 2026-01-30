@@ -1,619 +1,145 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Corporate AI Exposure Analysis</title>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            line-height: 1.6;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        h1, h2 {
-            color: #333;
-        }
-        .chart-container {
-            height: 500px;
-            margin-bottom: 30px;
-        }
-        .controls {
-            margin-bottom: 20px;
-            padding: 10px;
-            background-color: #f5f5f5;
-            border-radius: 5px;
-        }
-        select, input {
-            padding: 5px;
-            margin-right: 10px;
-        }
-        button {
-            padding: 5px 10px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-            cursor: pointer;
-        }
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        .loading {
-            text-align: center;
-            font-size: 18px;
-            margin: 50px 0;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Corporate AI Exposure Analysis</h1>
-        <p>This dashboard analyzes corporate exposure to artificial intelligence topics over time based on quarterly data.</p>
-        
-        <div class="controls">
-            <h2>Filter Data</h2>
-            <div>
-                <label for="time-period">Time Period:</label>
-                <select id="time-period">
-                    <option value="all">All Periods</option>
-                </select>
-                
-                <label for="sector">Sector:</label>
-                <select id="sector">
-                    <option value="all">All Sectors</option>
-                </select>
-                
-                <label for="min-exposure">Min Exposure:</label>
-                <input type="number" id="min-exposure" min="0" max="1" step="0.01" value="0">
-                
-                <button id="apply-filters">Apply Filters</button>
-            </div>
+---
+layout: page
+title: Corporate Talks
+permalink: /corporatetalks/
+description: Interactive visualization of US corporate earnings call topic exposures. 
+nav: true
+---
+
+<div style="font-size:0.7rem; margin:.25rem 0 0.75rem; color:var(--global-text-color-light);">See <a href="/genaitalks/">GenAI Talks</a> for Generative AI–specific exposure and sentiment measures.</div>
+
+<style>
+/* Custom styles for GenAI visualization - adapted for al-folio theme */
+.genai-container { margin-top: 2rem; }
+.genai-header { margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--global-divider-color); }
+.genai-header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+.genai-subtitle { font-size: 1.1rem; color: var(--global-text-color-light); margin-bottom: 1rem; }
+.genai-paper-link { font-size: 0.9rem; line-height: 1.6; }
+.genai-meta { margin-top: 1rem; font-size: 0.85rem; color: var(--global-text-color-light); }
+.genai-definition { margin-top: 0.75rem; font-size: 0.85rem; color: var(--global-text-color-light); line-height: 1.5; padding: 1rem; background: var(--global-bg-color); border-left: 3px solid var(--global-theme-color); }
+.genai-controls { margin-bottom: 2rem; }
+.genai-control-group { margin-bottom: 1.5rem; }
+.genai-control-group label { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--global-text-color-light); margin-bottom: 0.5rem; }
+.genai-stats { display: flex; gap: 1.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+.genai-stat-item { flex: 1; min-width: 150px; padding: 1.25rem; background: var(--global-card-bg-color); border: 1px solid var(--global-divider-color); border-radius: 0.5rem; text-align: center; }
+.genai-stat-value { font-size: 1.75rem; font-weight: 600; color: var(--global-theme-color); margin-bottom: 0.25rem; }
+.genai-stat-label { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--global-text-color-light); }
+.genai-chart-container { background: var(--global-card-bg-color); border: 1px solid var(--global-divider-color); border-radius: 0.5rem; padding: 1.5rem; height: 500px; position: relative; }
+.genai-loading { text-align: center; padding: 3rem; color: var(--global-text-color-light); }
+.genai-search-input { margin-bottom: 0.5rem; }
+.genai-filter-info { font-size: 0.75rem; color: var(--global-text-color-light); margin-top: 0.25rem; }
+@media (max-width: 768px) { .genai-header h1 { font-size: 2rem; } .genai-stats { gap: 1rem; } .genai-stat-item { min-width: 100px; padding: 1rem; } .genai-chart-container { height: 400px; } }
+html[data-theme="dark"] .genai-stat-item { background: var(--global-card-bg-color); border-color: var(--global-divider-color); }
+html[data-theme="dark"] .genai-chart-container { background: var(--global-card-bg-color); border-color: var(--global-divider-color); }
+</style>
+
+<div class="genai-container">
+    <div class="genai-header">
+        <div class="genai-paper-link">
+            Data and indicators from our ECB research paper:<br>
+            <a href="https://www.ecb.europa.eu/pub/pdf/scpwps/ecb.wp3093~458d28b4bc.en.pdf?35448d13078514c607eed78f10606c0d" target="_blank">
+                Michele Ca' Zorzi, Gianluigi Lopardo, Ana-Simona Manu, <em>Verba volant, transcripta manent: what corporate earnings calls reveal about the AI stock rally</em>
+            </a>
         </div>
-        
-        <div class="chart-container">
-            <h2>AI Exposure by Sector and Time</h2>
-            <canvas id="sectorChart"></canvas>
-        </div>
-        
-        <div class="chart-container">
-            <h2>Top Companies by AI Exposure</h2>
-            <canvas id="companiesChart"></canvas>
-        </div>
-        
-        <h2>Data Table</h2>
-        <div id="table-container">
-            <p class="loading">Loading data...</p>
+        <div class="genai-definition">
+            <h2 style="margin:0 0 .5rem; font-size:1.05rem;">Overview</h2>
+            <p style="margin:0 0 .6rem;">The Corporate Talks dashboard measures thematic discussion in S&amp;P 500 earnings call transcripts from 2014 Q1 to present (updated quarterly). It reports the share of each transcript devoted to selected topics (Exposure). The “All Topics” view displays the top 10 topics by average exposure.</p>
+            <p style="margin:0 0 .6rem;">
+                <strong>Exposure</strong>: Percentage of transcript paragraphs devoted to a given topic.
+            </p>
+            <p style="margin:0 0 .6rem;">
+                <strong>Method</strong>: Topic detection via zero‑shot classification (<a href="https://huggingface.co/facebook/bart-large-mnli" target="_blank">BART-large-MNLI</a>) applied to 22,590+ transcripts. Exposure = topic paragraphs / total transcript paragraphs (length-normalised).</p>
+            <p style="margin:0 0 .6rem;">
+                <strong>How to cite</strong>: Ca’ Zorzi, M., G. Lopardo &amp; A.-S. Manu (2025). <em>Verba Volant, Transcripta Manent: What Corporate Earnings Calls Reveal About the AI Stock Rally</em>, ECB Working Paper No. 3093.
+            </p>
+            <details style="margin:0 0 .6rem; font-size:0.7rem;">
+                <summary style="cursor:pointer;">BibTeX</summary>
+<pre style="white-space:pre-wrap; margin:.4rem 0 0; font-size:0.65rem;">@article{ecb2025genai,
+  title        = {Verba Volant, Transcripta Manent: What Corporate Earnings Calls Reveal About the AI Stock Rally},
+  author       = {Ca’ Zorzi, Michele and Lopardo, Gianluigi and Manu, Ana-Simona},
+  year         = 2025,
+  institution  = {European Central Bank},
+  number       = {3093},
+  type         = {Working Paper Series},
+  pdf          = {https://www.ecb.europa.eu/pub/pdf/scpwps/ecb.wp3093%7E458d28b4bc.en.pdf},
+}</pre>
+            </details>
+            <p style="margin:0;"><strong>Last data update:</strong> January 2025</p>
         </div>
     </div>
 
-    <script>
-        // Global variables to store the data
-        let csvData = [];
-        let filteredData = [];
-        let timePeriods = [];
-        let sectors = [];
-        
-        // Function to load and parse CSV data
-        function loadCSVData() {
-            d3.csv('multitopics.csv')
-                .then(function(data) {
-                    csvData = data;
-                    
-                    // Extract unique time periods and sectors
-                    timePeriods = [...new Set(data.map(d => d.Time))];
-                    sectors = [...new Set(data.map(d => d['GICS Sector']))];
-                    
-                    // Populate filter dropdowns
-                    populateDropdown('time-period', timePeriods);
-                    populateDropdown('sector', sectors);
-                    
-                    // Initialize with all data
-                    filteredData = csvData;
-                    
-                    // Update visualizations
-                    updateCharts();
-                    renderTable();
-                })
-                .catch(function(error) {
-                    console.error("Error loading the CSV file:", error);
-                    document.getElementById('table-container').innerHTML = 
-                        '<p style="color: red;">Error loading data. Please check console for details.</p>';
-                });
-        }
-        
-        // Function to populate dropdown options
-        function populateDropdown(id, options) {
-            const dropdown = document.getElementById(id);
-            const currentValue = dropdown.value;
-            
-            // Clear existing options except the "All" option
-            while (dropdown.options.length > 1) {
-                dropdown.remove(1);
-            }
-            
-            // Add new options
-            options.sort().forEach(option => {
-                const optionElement = document.createElement('option');
-                optionElement.value = option;
-                optionElement.textContent = option;
-                dropdown.appendChild(optionElement);
-            });
-            
-            // Try to restore previous selection
-            if (options.includes(currentValue)) {
-                dropdown.value = currentValue;
-            }
-        }
-        
-        // Function to apply filters
-        function applyFilters() {
-            const timePeriod = document.getElementById('time-period').value;
-            const sector = document.getElementById('sector').value;
-            const minExposure = parseFloat(document.getElementById('min-exposure').value);
-            
-            filteredData = csvData.filter(d => {
-                return (timePeriod === 'all' || d.Time === timePeriod) &&
-                       (sector === 'all' || d['GICS Sector'] === sector) &&
-                       (parseFloat(d.Exposure) >= minExposure);
-            });
-            
-            updateCharts();
-            renderTable();
-        }
-        
-        // Function to update charts based on filtered data
-        function updateCharts() {
-            updateSectorChart();
-            updateCompaniesChart();
-        }
-        
-        // Function to update the sector chart
-        function updateSectorChart() {
-            const ctx = document.getElementById('sectorChart').getContext('2d');
-            
-            // Group data by sector and calculate average exposure
-            const sectorData = {};
-            filteredData.forEach(d => {
-                const sector = d['GICS Sector'];
-                if (!sectorData[sector]) {
-                    sectorData[sector] = { total: 0, count: 0 };
-                }
-                sectorData[sector].total += parseFloat(d.Exposure);
-                sectorData[sector].count += 1;
-            });
-            
-            const sectors = Object.keys(sectorData);
-            const averages = sectors.map(sector => 
-                sectorData[sector].total / sectorData[sector].count
-            );
-            
-            // Generate random colors for sectors
-            const backgroundColors = sectors.map(() => 
-                `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.6)`
-            );
-            
-            // Destroy previous chart if it exists
-            if (window.sectorChart) {
-                window.sectorChart.destroy();
-            }
-            
-            // Create new chart
-            window.sectorChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: sectors,
-                    datasets: [{
-                        label: 'Average AI Exposure',
-                        data: averages,
-                        backgroundColor: backgroundColors,
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Average AI Exposure Score'
-                            }
-                        },
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'GICS Sector'
-                            }
-                        }
-                    }
-                }
-            });
-        }
-        
-        // Function to update the top companies chart
-        function updateCompaniesChart() {
-            const ctx = document.getElementById('companiesChart').getContext('2d');
-            
-            // Sort companies by exposure and take top 20
-            const sortedCompanies = [...filteredData].sort((a, b) => 
-                parseFloat(b.Exposure) - parseFloat(a.Exposure)
-            ).slice(0, 20);
-            
-            const companies = sortedCompanies.map(d => d.Security);
-            const exposures = sortedCompanies.map(d => parseFloat(d.Exposure));
-            const sectors = sortedCompanies.map(d => d['GICS Sector']);
-            
-            // Generate colors based on sector
-            const uniqueSectors = [...new Set(sectors)];
-            const sectorColors = {};
-            uniqueSectors.forEach((sector, i) => {
-                sectorColors[sector] = `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.6)`;
-            });
-            
-            const backgroundColors = sectors.map(sector => sectorColors[sector]);
-            
-            // Destroy previous chart if it exists
-            if (window.companiesChart) {
-                window.companiesChart.destroy();
-            }
-            
-            // Create new chart
-            window.companiesChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: companies,
-                    datasets: [{
-                        label: 'AI Exposure',
-                        data: exposures,
-                        backgroundColor: backgroundColors,
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    indexAxis: 'y',
-                    scales: {
-                        x: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'AI Exposure Score'
-                            }
-                        },
-                        y: {
-                            title: {
-                                display: true,
-                                text: 'Company'
-                            }
-                        }
-                    }
-                });
-        }
-        
-        // Function to render the data table
-        function renderTable() {
-            const tableContainer = document.getElementById('table-container');
-            
-            if (filteredData.length === 0) {
-                tableContainer.innerHTML = '<p>No data matches the selected filters.</p>';
-                return;
-            }
-            
-            // Create table element
-            const table = document.createElement('table');
-            
-            // Create table header
-            const thead = document.createElement('thead');
-            const headerRow = document.createElement('tr');
-            const headers = ['Time', 'Symbol', 'Security', 'GICS Sector', 'GICS Sub-Industry', 'AI Exposure'];
-            headers.forEach(headerText => {
-                const th = document.createElement('th');
-                th.textContent = headerText;
-                th.addEventListener('click', () => sortTable(headerText));
-                headerRow.appendChild(th);
-            });
-            thead.appendChild(headerRow);
-            table.appendChild(thead);
-            
-            // Create table body
-            const tbody = document.createElement('tbody');
-            filteredData.forEach(d => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${d.Time}</td>
-                    <td>${d.Symbol}</td>
-                    <td>${d.Security}</td>
-                    <td>${d['GICS Sector']}</td>
-                    <td>${d['GICS Sub-Industry']}</td>
-                    <td>${parseFloat(d.Exposure).toFixed(4)}</td>
-                `;
-                tbody.appendChild(row);
-            });
-            table.appendChild(tbody);
-            
-            // Clear container and add table
-            tableContainer.innerHTML = '';
-            tableContainer.appendChild(table);
-        }
-        
-        // Function to sort the table data
-        function sortTable(column) {
-            // Map column name to data key
-            const columnMap = {
-                'Time': 'Time',
-                'Symbol': 'Symbol',
-                'Security': 'Security',
-                'GICS Sector': 'GICS Sector',
-                'GICS Sub-Industry': 'GICS Sub-Industry',
-                'AI Exposure': 'Exposure'
-            };
-            
-            const key = columnMap[column];
-            
-            // Sort function
-            if (key === 'Exposure') {
-                filteredData.sort((a, b) => parseFloat(a[key]) - parseFloat(b[key]));
-            } else {
-                filteredData.sort((a, b) => a[key].localeCompare(b[key]));
-            }
-            
-            // Toggle sort direction
-            if (window.lastSortedColumn === column) {
-                filteredData.reverse();
-                window.lastSortedColumn = null;
-            } else {
-                window.lastSortedColumn = column;
-            }
-            
-            // Re-render table
-            renderTable();
-        }
-        
-        // Add event listeners
-        document.getElementById('apply-filters').addEventListener('click', applyFilters);
-        
-        // Load data when page loads
-        window.onload = loadCSVData;
-    </script>
-</body>
-</html>
-            
-            // Update display
-            document.getElementById('totalCompanies').textContent = companies.size;
-            document.getElementById('timeRange').textContent = `${times[0]} - ${times[times.length - 1]}`;
-            document.getElementById('avgScore').textContent = avgScore;
-            document.getElementById('topCompany').textContent = topCompany ? topCompany.symbol : '-';
-        }
-        
-        function createTimeSeriesChart(data, topic) {
-            // Aggregate by time
-            const timeData = {};
-            data.forEach(row => {
-                if (!timeData[row.Time]) {
-                    timeData[row.Time] = [];
-                }
-                if (row[topic] > 0) {
-                    timeData[row.Time].push(row[topic]);
-                }
-            });
-            
-            const times = Object.keys(timeData).sort();
-            const avgScores = times.map(time => {
-                const scores = timeData[time];
-                return scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
-            });
-            
-            const trace = {
-                x: times,
-                y: avgScores,
-                type: 'scatter',
-                mode: 'lines+markers',
-                name: topic,
-                line: {
-                    color: '#667eea',
-                    width: 3
-                },
-                marker: {
-                    size: 8,
-                    color: '#764ba2'
-                }
-            };
-            
-            const layout = {
-                xaxis: { title: 'Quarter', tickangle: -45 },
-                yaxis: { title: 'Average Topic Score' },
-                margin: { t: 20, b: 100 },
-                hovermode: 'x unified'
-            };
-            
-            Plotly.newPlot('timeSeriesChart', [trace], layout, {responsive: true});
-        }
-        
-        function createTopCompaniesChart(data, topic) {
-            // Calculate average score per company
-            const companyScores = {};
-            data.forEach(row => {
-                if (!companyScores[row.Symbol]) {
-                    companyScores[row.Symbol] = {
-                        scores: [],
-                        name: row.Security
-                    };
-                }
-                companyScores[row.Symbol].scores.push(row[topic] || 0);
-            });
-            
-            const companyAvgs = Object.entries(companyScores)
-                .map(([symbol, data]) => ({
-                    symbol,
-                    name: data.name,
-                    avg: data.scores.reduce((a, b) => a + b, 0) / data.scores.length
-                }))
-                .sort((a, b) => b.avg - a.avg)
-                .slice(0, 15);
-            
-            const trace = {
-                x: companyAvgs.map(c => c.avg),
-                y: companyAvgs.map(c => c.symbol),
-                text: companyAvgs.map(c => c.name),
-                type: 'bar',
-                orientation: 'h',
-                marker: {
-                    color: companyAvgs.map((_, i) => `rgba(102, 126, 234, ${1 - i * 0.05})`),
-                },
-                hovertemplate: '%{text}<br>Score: %{x:.4f}<extra></extra>'
-            };
-            
-            const layout = {
-                xaxis: { title: 'Average Topic Score' },
-                yaxis: { automargin: true },
-                margin: { l: 60, t: 20 },
-                height: 400
-            };
-            
-            Plotly.newPlot('topCompaniesChart', [trace], layout, {responsive: true});
-        }
-        
-        function createSectorChart(data, topic) {
-            // Calculate average score per sector
-            const sectorScores = {};
-            data.forEach(row => {
-                const sector = row['GICS Sector'];
-                if (sector) {
-                    if (!sectorScores[sector]) sectorScores[sector] = [];
-                    sectorScores[sector].push(row[topic] || 0);
-                }
-            });
-            
-            const sectorAvgs = Object.entries(sectorScores)
-                .map(([sector, scores]) => ({
-                    sector,
-                    avg: scores.reduce((a, b) => a + b, 0) / scores.length
-                }))
-                .sort((a, b) => b.avg - a.avg);
-            
-            const trace = {
-                labels: sectorAvgs.map(s => s.sector),
-                values: sectorAvgs.map(s => s.avg),
-                type: 'pie',
-                hole: 0.4,
-                marker: {
-                    colors: [
-                        '#667eea', '#764ba2', '#f687b3', '#fc8181', '#f6ad55',
-                        '#f6e05e', '#68d391', '#4fd1c5', '#63b3ed', '#a78bfa'
-                    ]
-                },
-                textinfo: 'label+percent',
-                textposition: 'outside'
-            };
-            
-            const layout = {
-                margin: { t: 20 },
-                height: 400
-            };
-            
-            Plotly.newPlot('sectorChart', [trace], layout, {responsive: true});
-        }
-        
-        function createHeatmap(data) {
-            // Calculate correlation matrix for top 10 topics
-            const topicScores = {};
-            topicColumns.slice(0, 10).forEach(topic => {
-                topicScores[topic] = [];
-            });
-            
-            // Collect scores for each topic
-            data.forEach(row => {
-                topicColumns.slice(0, 10).forEach(topic => {
-                    topicScores[topic].push(row[topic] || 0);
-                });
-            });
-            
-            // Calculate correlations
-            const correlationMatrix = [];
-            const topics = Object.keys(topicScores);
-            
-            topics.forEach(topic1 => {
-                const row = [];
-                topics.forEach(topic2 => {
-                    const corr = calculateCorrelation(topicScores[topic1], topicScores[topic2]);
-                    row.push(corr);
-                });
-                correlationMatrix.push(row);
-            });
-            
-            const trace = {
-                z: correlationMatrix,
-                x: topics,
-                y: topics,
-                type: 'heatmap',
-                colorscale: 'Viridis',
-                showscale: true
-            };
-            
-            const layout = {
-                xaxis: { tickangle: -45 },
-                yaxis: { automargin: true },
-                margin: { b: 150, l: 150 },
-                height: 500
-            };
-            
-            Plotly.newPlot('heatmapChart', [trace], layout, {responsive: true});
-        }
-        
-        function calculateCorrelation(x, y) {
-            const n = x.length;
-            const sumX = x.reduce((a, b) => a + b, 0);
-            const sumY = y.reduce((a, b) => a + b, 0);
-            const sumXY = x.reduce((total, xi, i) => total + xi * y[i], 0);
-            const sumX2 = x.reduce((total, xi) => total + xi * xi, 0);
-            const sumY2 = y.reduce((total, yi) => total + yi * yi, 0);
-            
-            const correlation = (n * sumXY - sumX * sumY) / 
-                Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY));
-            
-            return isNaN(correlation) ? 0 : correlation;
-        }
-        
-        function filterByCompany(searchTerm) {
-            if (!searchTerm) {
-                updateCharts(document.getElementById('topicSelect').value);
-                return;
-            }
-            
-            const filtered = globalData.filter(row => 
-                row.Symbol.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                row.Security.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-            
-            if (filtered.length > 0) {
-                updateStats(filtered, document.getElementById('topicSelect').value);
-                createTimeSeriesChart(filtered, document.getElementById('topicSelect').value);
-                createTopCompaniesChart(filtered, document.getElementById('topicSelect').value);
-                createSectorChart(filtered, document.getElementById('topicSelect').value);
-            }
-        }
-    </script>
-</body>
-</html>
+    <div class="genai-controls">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="genai-control-group">
+                    <label for="filterType">Filter By</label>
+                    <select id="filterType" class="form-control form-control-sm">
+                        <option value="all">All Companies</option>
+                        <option value="sector">Sector</option>
+                        <option value="industry">Industry</option>
+                        <option value="firm">Firm</option>
+                    </select>
+                </div>
+                <div class="genai-control-group" id="groupCompaniesToggle" style="display:none;">
+                    <label style="cursor:pointer; font-weight:400; text-transform:none; letter-spacing:normal;">
+                        <input type="checkbox" id="showGroupCompanies"> Show Companies in Group (Top 10)
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-3" id="filterValueGroup" style="display:none;">
+                <div class="genai-control-group">
+                    <label for="filterValue">Select Values</label>
+                    <input type="text" id="searchInput" class="form-control form-control-sm genai-search-input" placeholder="Search...">
+                    <select id="filterValue" multiple class="form-control form-control-sm" size="6"></select>
+                    <div class="genai-filter-info">Hold Ctrl/Cmd to select multiple</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="genai-control-group">
+                    <label for="selectedTopic">Topic</label>
+                    <select id="selectedTopic" class="form-control form-control-sm">
+                        <!-- populated dynamically; includes All Topics option -->
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="genai-control-group">
+                    <label>&nbsp;</label>
+                    <button id="updateChart" class="btn btn-primary btn-sm btn-block">Update Chart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="genai-stats">
+        <div class="genai-stat-item">
+            <div class="genai-stat-value" id="companyCount">-</div>
+            <div class="genai-stat-label">Companies</div>
+        </div>
+        <div class="genai-stat-item">
+            <div class="genai-stat-value" id="quarterCount">-</div>
+            <div class="genai-stat-label">Quarters</div>
+        </div>
+        <div class="genai-stat-item">
+            <div class="genai-stat-value" id="dataPoints">-</div>
+            <div class="genai-stat-label">Data Points</div>
+        </div>
+    </div>
+    <div id="limitNote" style="font-size:0.7rem; color:var(--global-text-color-light); margin-top:-0.75rem; margin-bottom:1rem; min-height:0.9rem;"></div>
+
+    <div class="genai-chart-container">
+        <canvas id="chart"></canvas>
+    </div>
+    <div class="genai-loading" id="loading">
+        <div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div>
+        <p>Loading data...</p>
+    </div>
+
+    <div style="font-size:0.65rem; margin-top:0.75rem; color:var(--global-text-color-light);">
+        Data & derived indicators © Ca’ Zorzi, Lopardo & Manu (2025), ECB Working Paper No. 3093. Licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a> (please attribute the paper when using the data).
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
+<script src="{{ '/assets/js/corporatetalks-viz.js' | relative_url }}"></script>

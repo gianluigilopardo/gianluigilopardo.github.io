@@ -1,0 +1,154 @@
+// Corporate Talks Visualization Script (multi-topic exposure)
+(function(){
+ 'use strict';
+ let data=[]; let chart=null;
+ const defaultColor='rgb(0,123,255)';
+ function withAlpha(rgb,a){if(!rgb)return rgb; if(rgb.startsWith('rgb(')) return rgb.replace(/^rgb\(/,'rgba(').replace(/\)$/ ,`, ${a})`); return rgb;}
+ function applyAlpha(color,alpha){if(!color)return color; if(color.startsWith('rgba(')) return color.replace(/rgba\(([^,]+),([^,]+),([^,]+),[^)]+\)/,(m,r,g,b)=>`rgba(${r.trim()},${g.trim()},${b.trim()},${alpha})`); if(color.startsWith('rgb(')) return color.replace(/^rgb\((.*)\)$/,'rgba($1,'+alpha+')'); return color;}
+ function getYAxisLabel(){return 'Exposure (%)';}
+ const yAxisTitlePlugin={id:'yAxisTitlePlugin',afterDraw(c){const opts=c.config.options.plugins.yAxisTitlePlugin; if(!opts||!opts.text) return; const {ctx,chartArea,scales}=c; if(!chartArea) return; let left=chartArea.left; if(scales&&scales.y) left=scales.y.left; ctx.save(); ctx.font=(opts.fontSize||12)+'px '+(opts.fontFamily||'sans-serif'); ctx.fillStyle=opts.color||'#333'; ctx.textAlign='center'; ctx.textBaseline='middle'; const x=left-(opts.offset||40); const y=(chartArea.top+chartArea.bottom)/2; ctx.translate(x,y); ctx.rotate(-Math.PI/2); ctx.fillText(opts.text,0,0); ctx.restore(); }};
+ const canvasBackgroundPlugin={id:'canvasBackgroundPlugin',beforeDraw(c,a,o){const {ctx,width,height}=c; ctx.save(); ctx.globalCompositeOperation='destination-over'; ctx.fillStyle=(o&&o.color)||'#fff'; ctx.fillRect(0,0,width,height); ctx.restore();}};
+ async function loadData(){try{const paths=['/corporatetalks.csv','/exposure/corporatetalks.csv','assets/corporatetalks.csv','corporatetalks.csv']; let csv=null; for(const p of paths){try{const r=await fetch(p); if(r.ok){csv=await r.text(); break;}}catch(_){}} if(!csv) throw new Error('corporatetalks.csv not found in root or /exposure/.'); Papa.parse(csv,{header:true,dynamicTyping:true,skipEmptyLines:true,complete:(res)=>{
+         data=res.data.filter(r=>r.quarter&&r.tic&&r.topic && r.exposure!=null && !isNaN(r.exposure));
+         data.sort((a,b)=>a.quarter===b.quarter? a.tic.localeCompare(b.tic): a.quarter.localeCompare(b.quarter));
+         initFilters();
+         populateTopics();
+         setDefaultSelections();
+         updateChart();
+         const l=document.getElementById('loading'); if(l) l.style.display='none';
+     },error:(e)=>showError('Parsing error: '+e.message)});}catch(e){console.error(e); showError(e.message);} }
+ function showError(msg){const el=document.getElementById('loading'); if(!el) return; el.innerHTML='<div class="alert alert-danger" role="alert"><strong>Error:</strong> '+msg+'</div>';}
+ function initFilters(){
+     const ft=document.getElementById('filterType');
+     const fvg=document.getElementById('filterValueGroup');
+     const groupToggle=document.getElementById('groupCompaniesToggle');
+     const showGroupCompanies=document.getElementById('showGroupCompanies');
+     const topicSel=document.getElementById('selectedTopic');
+     const fv=document.getElementById('filterValue');
+     if(!ft) return;
+     function updateToggleVisibility(){
+         const topicVal=topicSel?.value;
+         if(ft.value==='all'){ if(fvg) fvg.style.display='none'; } else { if(fvg) fvg.style.display='block'; }
+         // hide toggle if All Topics selected always
+         if(topicVal==='__ALL_TOPICS__'){ if(groupToggle){groupToggle.style.display='none'; if(showGroupCompanies) showGroupCompanies.checked=false;} return; }
+         // show only when exactly one sector/industry selected
+         let single=false;
+         if(ft.value==='sector' || ft.value==='industry'){
+             const selCount = fv? Array.from(fv.selectedOptions).length : 0;
+             single = selCount===1; // exactly one selection
+         }
+         if(single){
+             if(groupToggle) groupToggle.style.display='block';
+         } else {
+             if(groupToggle) groupToggle.style.display='none';
+             if(showGroupCompanies) showGroupCompanies.checked=false;
+         }
+     }
+     ft.addEventListener('change',()=>{populateFilterValues(ft.value); updateToggleVisibility();});
+     topicSel?.addEventListener('change',()=>{updateToggleVisibility();});
+     fv?.addEventListener('change',()=>{updateToggleVisibility();});
+     const si=document.getElementById('searchInput');
+     if(si){si.addEventListener('input',function(){filterOptions(this.value.toLowerCase());});}
+ }
+ function populateTopics(){
+     const sel=document.getElementById('selectedTopic'); if(!sel) return;
+     const topics=[...new Set(data.map(d=>d.topic))].filter(v=>v).sort();
+     sel.innerHTML='';
+     // All Topics option (multi-line)
+     const allOpt=document.createElement('option'); allOpt.value='__ALL_TOPICS__'; allOpt.textContent='All Topics (Top 10)'; sel.appendChild(allOpt);
+     topics.forEach(t=>{const o=document.createElement('option'); o.value=t; o.textContent=t; sel.appendChild(o);});
+     // Default later will set to last topic
+ }
+ function populateFilterValues(type){const fv=document.getElementById('filterValue'); const si=document.getElementById('searchInput'); if(!fv) return; fv.innerHTML=''; if(si) si.value=''; let vals=[]; if(type==='sector') vals=[...new Set(data.map(d=>d.sector))]; else if(type==='industry') vals=[...new Set(data.map(d=>d.industry))]; else if(type==='firm') vals=[...new Set(data.map(d=>d.firm))]; vals=vals.filter(v=>v).sort(); vals.forEach(v=>{const o=document.createElement('option'); o.value=v; o.textContent=v; fv.appendChild(o);}); if(vals.length){fv.selectedIndex=0; if(vals.length>1 && fv.options[1]) fv.options[1].selected=true;} }
+ function filterOptions(term){const fv=document.getElementById('filterValue'); if(!fv) return; fv.querySelectorAll('option').forEach(o=>{o.style.display=o.textContent.toLowerCase().includes(term)?'':'none';}); }
+ function setDefaultSelections(){
+     const ft=document.getElementById('filterType'); if(ft) ft.value='all';
+     const topicSel=document.getElementById('selectedTopic');
+     if(topicSel && topicSel.options.length>1){ // pick last real topic
+         topicSel.selectedIndex=topicSel.options.length-1;
+     }
+ }
+ function getFilteredData(){
+     const ft=document.getElementById('filterType')?.value;
+     const fv=document.getElementById('filterValue');
+     let filtered=data;
+     if(ft&&ft!=='all'&&fv){
+         const selected=Array.from(fv.selectedOptions).map(o=>o.value);
+         if(selected.length) filtered=data.filter(r=>selected.includes(r[ft]));
+     }
+     return filtered;
+ }
+ function aggregateTopicsAll(filtered){
+     // Efficient pre-aggregation by topic & quarter
+     const topicQuarterMap=new Map();
+     filtered.forEach(r=>{const key=r.topic+'|'+r.quarter; let arr=topicQuarterMap.get(key); if(!arr){arr=[]; topicQuarterMap.set(key,arr);} arr.push(r.exposure*100);});
+     const topics=[...new Set(filtered.map(d=>d.topic))].filter(Boolean);
+     // compute overall averages for ranking
+     const topicAvg=topics.map(t=>{let sum=0,count=0; topicQuarterMap.forEach((vals,k)=>{if(k.startsWith(t+'|')){vals.forEach(v=>{if(v!=null&&!isNaN(v)){sum+=v; count++;}});}}); return {t,avg: count? sum/count:0};}).sort((a,b)=>b.avg-a.avg);
+     const ranked=topicAvg.slice(0,10).map(o=>o.t);
+     const quarters=[...new Set(filtered.map(d=>d.quarter))].sort();
+     const aggregated={};
+     ranked.forEach(t=>{aggregated[t]={}; quarters.forEach(q=>{const key=t+'|'+q; const vals=topicQuarterMap.get(key)||[]; if(vals.length){const avg=vals.reduce((a,b)=>a+b,0)/vals.length; aggregated[t][q]=parseFloat(avg.toFixed(3));}});});
+     const notice= topics.length>10? `Showing top 10 topics by average exposure out of ${topics.length}.` : '';
+     return {quarters,aggregated,entities:ranked,notice};
+ }
+ function aggregate(filtered, topic, ft){
+     if(topic==='__ALL_TOPICS__') return aggregateTopicsAll(filtered);
+     const topicFiltered = topic==='__ALL_TOPICS__'? filtered : filtered.filter(d=>d.topic===topic);
+     const quarters=[...new Set(topicFiltered.map(d=>d.quarter))].sort();
+     let entities=[]; let aggregated={};
+     if(ft==='all'){
+         aggregated['All Companies']={}; entities=['All Companies'];
+         quarters.forEach(q=>{
+             const vals=topicFiltered.filter(d=>d.quarter===q).map(d=>d.exposure*100).filter(v=>v!=null&&!isNaN(v));
+             if(vals.length){const avg=vals.reduce((a,b)=>a+b,0)/vals.length; aggregated['All Companies'][q]=parseFloat(avg.toFixed(3));}
+         });
+     } else {
+         const showGroupCompanies=document.getElementById('showGroupCompanies')?.checked;
+         if(showGroupCompanies && (ft==='sector' || ft==='industry')){
+             // user wants companies inside each selected sector/industry (top 10 by avg exposure overall period for selected topic set)
+             const groupValues=[...new Set(topicFiltered.map(d=>d[ft]))];
+             // gather firms within selected groups (if subset selected limit to that subset)
+             const fv=document.getElementById('filterValue');
+             let selectedGroups=[];
+             if(fv && fv.selectedOptions.length){selectedGroups=Array.from(fv.selectedOptions).map(o=>o.value);} else {selectedGroups=groupValues;}
+             let firms=[...new Set(topicFiltered.filter(d=>selectedGroups.includes(d[ft])).map(d=>d.firm))];
+             // compute avg exposure per firm across quarters (topicFiltered already respects topic selection or all topics)
+             const firmAvg= firms.map(f=>{
+                 const vals=topicFiltered.filter(r=>r.firm===f).map(r=>r.exposure*100).filter(v=>v!=null&&!isNaN(v));
+                 const avg=vals.length? vals.reduce((a,b)=>a+b,0)/vals.length : 0; return {firm:f,avg};
+             }).sort((a,b)=>b.avg-a.avg).slice(0,10).map(o=>o.firm);
+             entities=firmAvg; aggregated={};
+             entities.forEach(firm=>{aggregated[firm]={}; quarters.forEach(q=>{const vals=topicFiltered.filter(d=>d.quarter===q && d.firm===firm).map(d=>d.exposure*100).filter(v=>v!=null&&!isNaN(v)); if(vals.length){const avg=vals.reduce((a,b)=>a+b,0)/vals.length; aggregated[firm][q]=parseFloat(avg.toFixed(3));}});});
+         } else {
+             // aggregate by selected grouping dimension (sector/industry/firm) with top-10 trimming
+             entities=[...new Set(topicFiltered.map(d=>d[ft]))].filter(e=>e).sort();
+             // compute averages to rank
+             const averages=entities.map(ent=>{const vals=topicFiltered.filter(r=>r[ft]===ent).map(r=>r.exposure*100).filter(v=>v!=null&&!isNaN(v)); const avg=vals.length? vals.reduce((a,b)=>a+b,0)/vals.length:0; return {ent,avg};}).sort((a,b)=>b.avg-a.avg).slice(0,10).map(o=>o.ent);
+             entities=averages; aggregated={};
+             entities.forEach(ent=>{aggregated[ent]={}; quarters.forEach(q=>{const vals=topicFiltered.filter(d=>d.quarter===q && d[ft]===ent).map(d=>d.exposure*100).filter(v=>v!=null&&!isNaN(v)); if(vals.length){const avg=vals.reduce((a,b)=>a+b,0)/vals.length; aggregated[ent][q]=parseFloat(avg.toFixed(3));}});});
+         }
+     }
+     return {quarters,aggregated,entities};
+ }
+ function generateColors(n){const base=['rgb(0,123,255)','rgb(220,53,69)','rgb(40,167,69)','rgb(255,193,7)','rgb(108,117,125)','rgb(111,66,193)','rgb(255,87,34)','rgb(76,175,80)','rgb(33,150,243)']; if(n<=base.length) return base.slice(0,n); const ext=[...base]; for(let i=base.length;i<n;i++){const hue=(i*137.508)%360; ext.push(`hsl(${hue},70%,50%)`);} return ext; }
+ function updateChart(){
+     const filtered=getFilteredData(); const topic=document.getElementById('selectedTopic')?.value; if(!topic){populateTopics(); return;} const ft=document.getElementById('filterType')?.value||'all'; const {quarters,aggregated,entities,notice}=aggregate(filtered,topic,ft);
+     const colors=generateColors(entities.length);
+     const datasets=entities.map((e,i)=>({label:e,data:quarters.map(q=>aggregated[e][q]??null),borderColor:colors[i],backgroundColor:withAlpha(colors[i],0.15),borderWidth:2,pointRadius:3,pointBackgroundColor:colors[i],pointHoverRadius:5,tension:0.1,fill:false}));
+     updateStats(filtered,quarters);
+     const limitNote=document.getElementById('limitNote'); if(limitNote){ if(notice){ limitNote.textContent=notice; } else if(entities.length===10){ limitNote.textContent='Showing top 10 lines by average exposure.'; } else { limitNote.textContent=''; } }
+     const dark=document.documentElement.getAttribute('data-theme')==='dark'; const gridColor=dark?'rgba(255,255,255,0.1)':'rgba(0,0,0,0.1)'; const textColor=dark?'#e5e7eb':'#333'; const yLabel=getYAxisLabel(); const major=(typeof Chart!=='undefined'&&Chart.version)?parseInt(Chart.version.split('.')[0],10):4;
+     // dynamic padding to avoid large left whitespace on small screens
+     const small=window.innerWidth<600; const leftPad=small?10:55; const yOffset=small?0:40;
+     const cfg={type:'line',data:{labels:quarters,datasets},plugins:[yAxisTitlePlugin,canvasBackgroundPlugin],options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},layout:{padding:{left:leftPad,right:10,top:5,bottom:0}},plugins:{legend:{display:true,position:'top',labels:{boxWidth:12,padding:15,font:{size:12},color:textColor,usePointStyle:true,pointStyle:'line'},onHover:(evt,it)=>{if(!it||it.datasetIndex==null)return; evt.native&&(evt.native.target.style.cursor='pointer'); highlightDataset(it.datasetIndex);},onLeave:(evt)=>{evt.native&&(evt.native.target.style.cursor='default'); resetHighlight();}},tooltip:{backgroundColor:dark?'rgba(255,255,255,0.9)':'rgba(0,0,0,0.8)',titleColor:dark?'#000':'#fff',bodyColor:dark?'#000':'#fff',padding:12,cornerRadius:4,titleFont:{size:12},bodyFont:{size:12},callbacks:{label:(ctx)=> ctx.dataset.label+': '+(ctx.parsed.y!=null?ctx.parsed.y.toFixed(3):'N/A')}},yAxisTitlePlugin:{text: small? '' : yLabel,color:textColor,fontSize:12,offset:yOffset},canvasBackgroundPlugin:{color:dark?'#1c1c1c':'#ffffff'}}}};
+     if(major>=3){cfg.options.scales={x:{grid:{display:false,color:gridColor},ticks:{font:{size:11},maxRotation:45,minRotation:45,color:textColor}},y:{grid:{color:gridColor,drawBorder:false},ticks:{font:{size:11},callback:v=>Number(v).toFixed(3),color:textColor},title:{display: !small,text:yLabel,font:{size:12,weight:'normal'},color:textColor,padding:{top:0,bottom:0}}}};} else {/* v2 fallback omitted */}
+     if(chart) chart.destroy(); const ctx=document.getElementById('chart')?.getContext('2d'); if(!ctx) return; chart=new Chart(ctx,cfg); createDownloadButtonIfNeeded(); }
+ function updateStats(filtered,quarters){const companies=[...new Set(filtered.map(d=>d.firm))].length; const qc=quarters.length; const pts=filtered.length; const cc=document.getElementById('companyCount'); const qcEl=document.getElementById('quarterCount'); const dp=document.getElementById('dataPoints'); if(cc) cc.textContent=companies.toLocaleString(); if(qcEl) qcEl.textContent=qc; if(dp) dp.textContent=pts.toLocaleString(); }
+ function highlightDataset(idx){if(!chart) return; chart.data.datasets.forEach((ds,i)=>{storeOriginal(ds); if(chart.isDatasetVisible(i)){ if(i===idx){ds.borderWidth=(ds._original.borderWidth||2)+1; ds.pointRadius=(ds._original.pointRadius||3)+1; ds.tension=0.25; ds.backgroundColor=applyAlpha(ds._original.backgroundColor||ds.borderColor,0.25);} else {ds.borderColor=applyAlpha(ds._original.borderColor,0.25); ds.pointBackgroundColor=applyAlpha(ds._original.pointBackgroundColor,0.25); ds.backgroundColor=applyAlpha(ds._original.backgroundColor||ds.borderColor,0.05); ds.pointRadius=Math.max(1,(ds._original.pointRadius||3)-1); ds.borderWidth=Math.max(1,(ds._original.borderWidth||2)-1); ds.tension=0.1; }}}); chart.update('none'); }
+ function storeOriginal(ds){if(!ds._original){ds._original={borderColor:ds.borderColor,backgroundColor:ds.backgroundColor,borderWidth:ds.borderWidth,pointRadius:ds.pointRadius,pointBackgroundColor:ds.pointBackgroundColor,tension:ds.tension};}}
+ function resetHighlight(){if(!chart) return; chart.data.datasets.forEach(ds=>{if(ds._original){Object.assign(ds,ds._original);}}); chart.update('none'); }
+ function createDownloadButtonIfNeeded(){if(document.getElementById('downloadChart')) return; let container=document.querySelector('.genai-chart-container'); const canvas=document.getElementById('chart'); if(!container&&canvas) container=canvas.parentElement; if(!container) return; const wrap=document.createElement('div'); wrap.style.margin='10px 0 0'; wrap.style.textAlign='right'; const btn=document.createElement('button'); btn.id='downloadChart'; btn.type='button'; btn.className='btn btn-sm btn-outline-secondary'; btn.textContent='Download Chart (PNG)'; btn.addEventListener('click',()=>{if(!chart) return; try{const topic=document.getElementById('selectedTopic')?.value||'topic'; const ft=document.getElementById('filterType')?.value||'all'; let snippet=ft; if(ft!=='all'){const vals=Array.from(document.getElementById('filterValue')?.selectedOptions||[]).map(o=>o.value).slice(0,3).join('_').replace(/[^a-zA-Z0-9_-]/g,''); if(vals) snippet+='-'+vals;} const date=new Date().toISOString().slice(0,10); const filename=`corporatetalks_${topic}_${snippet}_${date}.png`; chart.update('none'); const link=document.createElement('a'); link.download=filename; link.href=chart.toBase64Image('image/png',1); link.click(); }catch(e){console.error('Export error',e); alert('Unable to download chart.');}}); wrap.appendChild(btn); container.insertAdjacentElement('afterend',wrap); }
+ document.addEventListener('DOMContentLoaded',()=>{document.getElementById('updateChart')?.addEventListener('click',updateChart); document.getElementById('showGroupCompanies')?.addEventListener('change',updateChart); loadData(); });
+ window.addEventListener('resize',()=>{ if(chart) updateChart(); });
+})();
