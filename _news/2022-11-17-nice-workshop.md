@@ -5,4 +5,4 @@ inline: true
 related_posts: false
 ---
 
-Talk at the [1st Nice Workshop on Interpretability](https://sites.google.com/view/nwi2023/home)
+Talk at the [1st Nice Workshop on Interpretability](https://sites.google.com/view/nwi2022/home)
