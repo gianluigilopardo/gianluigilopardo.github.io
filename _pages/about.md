@@ -9,7 +9,7 @@ profile:
   image: prof_picc.jpeg
   image_circular: false # crops the image to make it circular
   more_info: >
-    <p>Prometeia</p>
+    <p><a href='https://www.prometeia.com/'>Prometeia</a></p><br>
     <p>Rome, Italy</p>
 
 
