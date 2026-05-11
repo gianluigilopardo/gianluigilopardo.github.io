@@ -1,4 +1,4 @@
 User-agent: *
 Disallow:
 
-Sitemap: https://www.gianluigilopardo.science//sitemap.xml
+Sitemap: https://glopardo.com//sitemap.xml
