@@ -2,16 +2,15 @@
 layout: about
 title: about 🤌
 permalink: /
-subtitle: Research Analyst | <a href='https://www.ecb.europa.eu/pub/research/authors/profiles/gianluigi-lopardo.en.html'>European Central Bank</a>
+subtitle: Senior Risk Modeller | <a href='https://www.prometeia.com/'>Prometeia</a>
 
 profile:
   align: right
   image: prof_picc.jpeg
   image_circular: false # crops the image to make it circular
   more_info: >
-    <p>International Policy Analysis</p>
-    <p>European Central Bank</p>
-    <p>Frankfurt am Main, Germany</p>
+    <p>Prometeia</p>
+    <p>Rome, Italy</p>
 
 
 selected_papers: true # includes a list of papers marked as "selected={true}"
@@ -28,9 +27,6 @@ latest_posts:
   limit: 3 # leave blank to include all the blog posts
 ---
 
-Hi there!👋 I am a **research analyst** at the [European Central Bank](https://www.ecb.europa.eu/pub/research/authors/profiles/gianluigi-lopardo.en.html), where I focus on **AI/ML techniques for economic research** within the international policy analysis division. 
-Prior to this, I was a doctoral researcher at [Inria](https://inria.fr/) and [Université Côte d'Azur](https://univ-cotedazur.fr/). 
-My [PhD thesis](https://theses.hal.science/tel-04917007/) focused on the **foundations of machine learning interpretability**, under the supervision of [Damien Garreau](https://sites.google.com/view/damien-garreau/home) and [Frédéric Precioso](https://webusers.i3s.unice.fr/~precioso/). 
-Previously, I earned an MSc in **mathematical engineering** and a BSc in **applied mathematics**, both from [Politecnico di Torino](https://www.polito.it/).
+Hi there! 👋 I am a **senior risk modeller** at <a href='https://www.prometeia.com/'>Prometeia</a> in Rome. Before that, I was a **research analyst** at the <a href='https://www.ecb.europa.eu/pub/research/authors/profiles/gianluigi-lopardo.en.html'>European Central Bank</a>, where I still collaborate on **AI/ML methods** for economic research within the International Policy Analysis Division. Prior to the ECB, I was a **doctoral researcher** at <a href='https://inria.fr'>Inria</a> and <a href='https://univ-cotedazur.fr/'>Université Côte d'Azur</a>. My <a href='https://theses.hal.science/tel-04917007/'>**PhD thesis**</a> focused on the **foundations of machine learning interpretability**, under the supervision of <a href='https://sites.google.com/view/damien-garreau/home'>Damien Garreau</a> and <a href='https://webusers.i3s.unice.fr/~precioso/'>Frédéric Precioso</a>. Previously, I earned an **MSc in mathematical engineering** and a **BSc in applied mathematics**, both from <a href='https://www.polito.it/'>Politecnico di Torino</a>.
 
-Drop me a line if you're ever in Frankfurt, Rome, or [Brienza](https://www.basilicataturistica.it/territori/brienza)! 
+Drop me a line if you're ever in Rome or <a href='https://www.discoverbrienza.it'>Brienza</a>! 

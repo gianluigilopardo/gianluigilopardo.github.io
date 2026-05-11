@@ -4,18 +4,31 @@
     - name: Full Name
       value: Gianluigi Lopardo
     - name: Email
-      value: <a href='mailto:gianluigilopardo@gmail.com'>gianluigilopardo@gmail.com</a>
+      value: <a href='mailto:gianluigi.lopardo@prometeia.com'>gianluigi.lopardo@prometeia.com</a>
     - name: Location
-      value: Frankfurt am Main, Germany
+      value: Rome, Italy
     - name: Languages
       value: Italian, English, French
 
 - title: Professional Experience
   type: time_table
   contents:
+    - title: Senior Risk Modeller
+      institution: <a href='https://www.prometeia.com/'>Prometeia</a>
+      year: May 2026-present
+      location: Rome, Italy
+      description:
+        - Credit risk modelling and validation for institutional clients within the Enterprise Risk Management practice
+
+    - title: Research Affiliate
+      institution: <a href='https://www.ecb.europa.eu/pub/research/authors/profiles/gianluigi-lopardo.en.html'>European Central Bank</a>
+      year: Jan 2026-present
+      description:
+        - Ongoing collaboration on NLP/LLM projects for economic research (FOMC analysis, oil price forecasting, GenAI exposure)
+
     - title: Research Analyst
       institution: <a href='https://www.ecb.europa.eu/pub/research/authors/profiles/gianluigi-lopardo.en.html'>European Central Bank</a>
-      year: Jul 2025-present
+      year: Jul 2025 – Dec 2025
       location: Frankfurt, Germany
       description:
         - Research and development of machine learning methods for macroeconomic forecasting and policy analysis, exploiting non-traditional data sources
@@ -188,5 +201,5 @@
     - name: Machine Learning & NLP
       value: Language Models (OpenAI, Azure, Ollama), retrieval-augmented generation (LangChain, vector DBs), transformer architectures (PyTorch, Hugging Face), interpretability methods, sentiment analysis, topic modeling
     - name: Econometrics & Statistics
-      value: Time-series analysis and forecasting, forecast evaluation, risk quantification, causal inference (DiD, panel methods, PSM), statistical inference and pre-asymptotic statistics
+      value: Time-series analysis and forecasting, forecast evaluation, risk quantification, causal inference (DiD, panel methods, PSM), statistical inference and pre-asymptotic statistics, credit risk modelling (PD/LGD/EAD, IFRS 9, IRB)
 
