@@ -9,11 +9,11 @@ last_name: Lopardo
 contact_note: >
   Feel free to reach out to me through any of these channels. 
 description: > # the ">" symbol means to ignore newlines until "footer_text:"
-  Personal website of Gianluigi Lopardo. Here you'll find information about my research, projects, and professional background. 
+  Quantitative researcher at the intersection of AI, risk and economics. Credit risk modeller at Prometeia, ECB research collaborator, PhD in machine learning.
 footer_text: >
   Powered by <a href="https://jekyllrb.com/" target="_blank">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio">al-folio</a> theme.
   Hosted by <a href="https://pages.github.com/" target="_blank">GitHub Pages</a>.
-keywords: data-scientist, machine-learning, artificial-intelligence, interpretability, sentometrics, risk-modelling, gianluigi-lopardo
+keywords: quantitative-researcher, credit-risk, ifrs9, machine-learning, artificial-intelligence, llm, nlp, economics, interpretability, lopardo 
 lang: en # the language of your site (for example: en, fr, cn, ru, etc.)
 icon: favicon.png # the emoji used as the favicon (alternatively, provide image name in /assets/img/)
 
@@ -335,7 +335,7 @@ filtered_bibtex_keywords:
   ]
 
 # Maximum number of authors to be shown for each publication (more authors are visible on click)
-max_author_limit: 3 # leave blank to always show all authors
+max_author_limit:  # leave blank to always show all authors
 more_authors_animation_delay: 10 # more authors are revealed on click using animation; smaller delay means faster animation
 
 # Enables publication thumbnails. If disabled, none of the publications will display thumbnails, even if specified in the bib entry.
