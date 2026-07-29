@@ -3,8 +3,7 @@ layout: page
 title: Cruscotti IT
 permalink: /cruscotti-it/
 description: Quick comparison of Italian municipalities based on official Cruscotto Italia data.
-nav: true
-nav_order: 8
+nav: false
 ---
 
 [Cruscotti IT](/cruscotti) lets you quickly compare **Italian municipalities** on several public indicators.
