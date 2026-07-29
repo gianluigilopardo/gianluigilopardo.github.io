@@ -9,14 +9,7 @@ ninja.data = [{
     handler: () => {
       window.location.href = "/";
     },
-  },{id: "nav-corporate-talks",
-          title: "Corporate Talks",
-          description: "Interactive visualization of US corporate earnings call topic exposures.",
-          section: "Navigation",
-          handler: () => {
-            window.location.href = "/corporatetalks/";
-          },
-        },{id: "nav-publications",
+  },{id: "nav-publications",
           title: "publications",
           description: "publications by year in reversed chronological order",
           section: "Navigation",
@@ -36,6 +29,20 @@ ninja.data = [{
           section: "Navigation",
           handler: () => {
             window.location.href = "/cv/";
+          },
+        },{id: "nav-cruscotti-it",
+          title: "Cruscotti IT",
+          description: "Quick comparison of Italian municipalities based on official Cruscotto Italia data.",
+          section: "Navigation",
+          handler: () => {
+            window.location.href = "/cruscotti/";
+          },
+        },{id: "nav-corporate-talks",
+          title: "Corporate Talks",
+          description: "Interactive visualization of US corporate earnings call topic exposures.",
+          section: "Navigation",
+          handler: () => {
+            window.location.href = "/corporatetalks/";
           },
         },{id: "news-my-phd-journey-begins",
           title: 'My PhD journey begins!',
@@ -159,6 +166,9 @@ ninja.data = [{
           description: "",
           section: "News",},{id: "news-simona-presented-our-work-verba-volant-transcripta-manent-what-corporate-earnings-calls-reveal-about-the-ai-stock-rally-at-the-research-task-force-on-ai-workshop-of-the-european-central-bank-in-frankfurt-am-main",
           title: 'Simona presented our work Verba Volant, Transcripta Manent: What Corporate Earnings Calls Reveal...',
+          description: "",
+          section: "News",},{id: "news-cruscotti-it-is-now-online-a-multi-municipality-comparison-dashboard-based-on-public-cruscotto-italia-data-with-csv-png-pdf-export",
+          title: 'Cruscotti IT is now online: a multi-municipality comparison dashboard based on public Cruscotto...',
           description: "",
           section: "News",},{id: "news-ioana-will-present-our-work-the-cost-of-stablecoins-as-settlement-token-a-case-study-based-on-ethereum-data-at-the-24th-seminar-on-financial-market-infrastructures-of-bank-of-finland-in-helsinki",
           title: 'Ioana will present our work The Cost of Stablecoins as Settlement Token: a...',
