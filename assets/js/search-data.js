@@ -32,10 +32,10 @@ ninja.data = [{
           },
         },{id: "nav-cruscotti-it",
           title: "Cruscotti IT",
-          description: "Quick comparison of Italian municipalities based on official Cruscotto Italia data.",
+          description: "",
           section: "Navigation",
           handler: () => {
-            window.location.href = "/cruscotti-it/";
+            window.location.href = "/cruscotti/";
           },
         },{id: "nav-corporate-talks",
           title: "Corporate Talks",
