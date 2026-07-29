@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Confronto tra comuni italiani</title>
+<title>Confronto tra comuni italiani · glopardo.com/cruscotti</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -61,6 +61,7 @@ select{width:100%;appearance:none;font-family:var(--sans);font-size:17px;font-we
 .linkbtn{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;background:none;border:1px solid var(--rule);padding:6px 12px;cursor:pointer;color:var(--ink)}
 .linkbtn:hover{border-color:var(--ink)}
 .linkbtn.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.linkbtn:disabled{opacity:.45;cursor:default;border-color:var(--rule-soft)}
 
 .defn{border-left:3px solid var(--rule);padding:2px 0 2px 14px;margin-top:20px;max-width:74ch}
 .defn p{margin:0;font-size:15px;line-height:1.5}
@@ -399,11 +400,46 @@ function value(c,row){
   if (calc){ try{ return calc(c.kpi,c.dash); }catch(e){ return null; } }
   return K(tier===1?c.kpi:c.dash, path);
 }
+function extractYear(v){
+  if (v===null || v===undefined) return null;
+  if (typeof v==="number" && v>=1900 && v<=2100) return String(Math.trunc(v));
+  const m=String(v).match(/\b(19|20)\d{2}\b/);
+  return m?m[0]:null;
+}
+function formatReference(v){
+  if (v===null || v===undefined) return null;
+  const s=String(v).trim();
+  if (!s) return null;
+  const iso=s.match(/^(\d{4})-(\d{2})-(\d{2})(?:[T\s].*)?$/);
+  if (iso){
+    const d=new Date(Number(iso[1]),Number(iso[2])-1,Number(iso[3]));
+    if (!Number.isNaN(d.getTime())){
+      return d.toLocaleDateString("it-IT",{day:"numeric",month:"long",year:"numeric"});
+    }
+  }
+  return s;
+}
 function refYear(c,secKey){
   const y=SEC[secKey]&&SEC[secKey].year;
   if(!y||!c.kpi||!c.kpi[y[0]]) return null;
-  const v=c.kpi[y[0]][y[1]];
-  return v?String(v).slice(0,10):null;
+  const sec=y[0], key=y[1];
+  const base=formatReference(K0(c.kpi,sec+"."+key));
+  if(!base) return null;
+  if (/\b(19|20)\d{2}\b/.test(base)) return base;
+
+  const yearCandidates=[
+    K0(c.kpi,sec+".anno"),
+    K0(c.kpi,sec+".year"),
+    K0(c.kpi,sec+".anno_riferimento"),
+    K0(c.kpi,sec+".riferimento_anno"),
+    K0(c.kpi,sec+".data_riferimento"),
+    K0(c.kpi,sec+".riferimento_data"),
+    K0(c.kpi,sec+".ultimo_anno"),
+    K0(c.kpi,"demografia.anno"),
+    K0(c.kpi,"anno")
+  ];
+  const year=yearCandidates.map(extractYear).find(Boolean);
+  return year ? (base+" "+year) : base;
 }
 const pad2=i=>String(i+1).padStart(2,"0");
 
@@ -722,8 +758,14 @@ function renderOne(cs){
   const src=document.createElement("div"); src.className="source";
   const l=document.createElement("span");
   l.textContent = known.length>1 ? "Scarto percentuale rispetto al valore più alto, "+leaderName+"." : "Un solo valore disponibile.";
+  const actions=document.createElement("div");
+  actions.style.display="flex";
+  actions.style.gap="8px";
   const b=document.createElement("button"); b.className="linkbtn"; b.textContent="Scarica CSV"; b.onclick=()=>exportCsv(cs);
-  src.appendChild(l); src.appendChild(b); wrap.appendChild(src);
+  const imgBtn=document.createElement("button"); imgBtn.className="linkbtn"; imgBtn.textContent="Salva PNG ricerca";
+  imgBtn.onclick=async()=>{ imgBtn.disabled=true; try{ await exportImage(cs); } finally{ imgBtn.disabled=false; } };
+  actions.appendChild(imgBtn); actions.appendChild(b);
+  src.appendChild(l); src.appendChild(actions); wrap.appendChild(src);
   out.appendChild(wrap);
 }
 
@@ -733,8 +775,14 @@ function renderAll(cs){
   head.style.borderBottom="1.5px solid var(--ink)"; head.style.paddingBottom="10px";
   const l=document.createElement("span");
   l.textContent="● segnala il valore più alto della riga, che non vuol dire il migliore. + indica un indicatore esteso.";
+  const actions=document.createElement("div");
+  actions.style.display="flex";
+  actions.style.gap="8px";
   const b=document.createElement("button"); b.className="linkbtn"; b.textContent="Scarica CSV"; b.onclick=()=>exportCsv(cs);
-  head.appendChild(l); head.appendChild(b); out.appendChild(head);
+  const pdfBtn=document.createElement("button"); pdfBtn.className="linkbtn"; pdfBtn.textContent="Salva PDF ricerca";
+  pdfBtn.onclick=async()=>{ pdfBtn.disabled=true; try{ await exportPdf(cs); } finally{ pdfBtn.disabled=false; } };
+  actions.appendChild(pdfBtn); actions.appendChild(b);
+  head.appendChild(l); head.appendChild(actions); out.appendChild(head);
 
   const scroll=document.createElement("div"); scroll.className="tablescroll";
   const table=document.createElement("table");
@@ -793,6 +841,164 @@ function exportCsv(cs){
   const a=document.createElement("a"); a.href=url;
   a.download="confronto-comuni-"+cs.map(c=>c.istat).join("-")+".csv"; a.click();
   setTimeout(()=>URL.revokeObjectURL(url),2000);
+}
+
+function ensureHtml2Canvas(){
+  if (window.html2canvas) return Promise.resolve(window.html2canvas);
+  if (window.__html2canvasLoading) return window.__html2canvasLoading;
+  window.__html2canvasLoading = new Promise((resolve,reject)=>{
+    const s=document.createElement("script");
+    s.src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js";
+    s.onload=()=>resolve(window.html2canvas);
+    s.onerror=()=>reject(new Error("Impossibile caricare il modulo per il salvataggio immagine."));
+    document.head.appendChild(s);
+  });
+  return window.__html2canvasLoading;
+}
+
+function ensureJsPdf(){
+  if (window.jspdf && window.jspdf.jsPDF) return Promise.resolve(window.jspdf.jsPDF);
+  if (window.__jspdfLoading) return window.__jspdfLoading;
+  window.__jspdfLoading = new Promise((resolve,reject)=>{
+    const s=document.createElement("script");
+    s.src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js";
+    s.onload=()=>resolve(window.jspdf && window.jspdf.jsPDF);
+    s.onerror=()=>reject(new Error("Impossibile caricare il modulo PDF."));
+    document.head.appendChild(s);
+  });
+  return window.__jspdfLoading;
+}
+
+function buildExportCard(cs){
+  const card=document.createElement("div");
+  card.style.position="fixed";
+  card.style.left="-10000px";
+  card.style.top="0";
+  card.style.width=Math.max(980,Math.min(1400,window.innerWidth-40))+"px";
+  card.style.background=getComputedStyle(document.body).backgroundColor;
+  card.style.color="var(--ink)";
+  card.style.padding="26px 28px";
+  card.style.fontFamily="var(--sans)";
+
+  const title=document.createElement("div");
+  title.style.fontSize="36px";
+  title.style.fontWeight="800";
+  title.style.letterSpacing="-.02em";
+  title.style.lineHeight="1";
+  title.textContent="Confronto comuni italiani · Cruscotti";
+  card.appendChild(title);
+
+  const sub=document.createElement("div");
+  sub.style.marginTop="10px";
+  sub.style.fontFamily="var(--mono)";
+  sub.style.fontSize="12px";
+  sub.style.color="var(--ink-soft)";
+  const indicatorLabel = CAT[state.indicator] ? CAT[state.indicator][4] : "Indicatore";
+  sub.textContent=(state.mode==="one" ? "Indicatore: "+indicatorLabel : "Tutti gli indicatori")+" · Comuni: "+cs.map(c=>c.nome).join(", ");
+  card.appendChild(sub);
+
+  const line=document.createElement("div");
+  line.style.marginTop="12px";
+  line.style.borderTop="1px solid var(--ink)";
+  card.appendChild(line);
+
+  const cloned=out.cloneNode(true);
+  cloned.style.marginTop="14px";
+  cloned.querySelectorAll("button").forEach(b=>b.remove());
+  cloned.querySelectorAll(".tablescroll").forEach(el=>{ el.style.overflow="visible"; });
+  cloned.querySelectorAll("th:first-child,td:first-child").forEach(el=>{
+    el.style.position="static";
+    el.style.left="auto";
+    el.style.zIndex="auto";
+  });
+  card.appendChild(cloned);
+
+  const note=document.createElement("div");
+  note.style.marginTop="16px";
+  note.style.paddingTop="10px";
+  note.style.borderTop="1px solid var(--rule)";
+  note.style.fontFamily="var(--mono)";
+  note.style.fontSize="10px";
+  note.style.color="var(--ink-soft)";
+  note.textContent="Elaborazione dati: Gianluigi Lopardo";
+  card.appendChild(note);
+
+  return card;
+}
+
+async function exportImage(cs){
+  const h2c = await ensureHtml2Canvas();
+  const card=buildExportCard(cs);
+
+  document.body.appendChild(card);
+  try{
+    const canvas=await h2c(card,{backgroundColor:getComputedStyle(document.body).backgroundColor,scale:2,useCORS:true,logging:false});
+    const url=canvas.toDataURL("image/png");
+    const a=document.createElement("a");
+    a.href=url;
+    a.download="confronto-comuni-"+cs.map(c=>c.istat).join("-")+".png";
+    a.click();
+  } finally {
+    card.remove();
+  }
+}
+
+async function exportPdf(cs){
+  const [h2c, JsPdf] = await Promise.all([ensureHtml2Canvas(), ensureJsPdf()]);
+  const card=buildExportCard(cs);
+
+  document.body.appendChild(card);
+  try{
+    const canvas=await h2c(card,{backgroundColor:getComputedStyle(document.body).backgroundColor,scale:2,useCORS:true,logging:false});
+    if (!canvas.width || !canvas.height) throw new Error("Impossibile generare il PDF: contenuto vuoto.");
+    const pdf=new JsPdf({orientation:"portrait",unit:"mm",format:"a4",compress:true});
+    const pageW=pdf.internal.pageSize.getWidth();
+    const pageH=pdf.internal.pageSize.getHeight();
+    const margin=10;
+    const imgW=pageW-(margin*2);
+    const printableH=pageH-(margin*2);
+    const pxPerMm=canvas.width/imgW;
+    const pagePxH=Math.max(1,Math.floor(printableH*pxPerMm));
+
+    let offsetPx=0;
+    let pageIdx=0;
+    while (offsetPx<canvas.height){
+      if (pageIdx>0) pdf.addPage();
+      const sliceH=Math.min(pagePxH,canvas.height-offsetPx);
+      const pageCanvas=document.createElement("canvas");
+      pageCanvas.width=canvas.width;
+      pageCanvas.height=sliceH;
+      const ctx=pageCanvas.getContext("2d");
+      ctx.drawImage(canvas,0,offsetPx,canvas.width,sliceH,0,0,canvas.width,sliceH);
+
+      const imgData=pageCanvas.toDataURL("image/png");
+      const sliceHmm=sliceH/pxPerMm;
+      pdf.addImage(imgData,"PNG",margin,margin,imgW,sliceHmm,undefined,"FAST");
+
+      offsetPx+=sliceH;
+      pageIdx+=1;
+    }
+
+    const siteUrl="https://glopardo.com/cruscotti";
+    const nameUrl="https://glopardo.com/cruscotti";
+    const linkColor=[90,100,108];
+
+    pdf.setPage(1);
+    pdf.setFontSize(9);
+    pdf.setTextColor(linkColor[0],linkColor[1],linkColor[2]);
+    pdf.textWithLink("Progetto Cruscotti", margin, 8, { url: siteUrl });
+
+    pdf.setPage(pdf.getNumberOfPages());
+    const nameText="Gianluigi Lopardo";
+    const prefixText="Elaborazione dati: ";
+    const yName=pageH-5;
+    const xName=margin+pdf.getTextWidth(prefixText);
+    pdf.textWithLink(nameText, xName, yName, { url: nameUrl });
+
+    pdf.save("confronto-comuni-"+cs.map(c=>c.istat).join("-")+".pdf");
+  } finally {
+    card.remove();
+  }
 }
 
 /* ------------------------------------------------------------------ */
