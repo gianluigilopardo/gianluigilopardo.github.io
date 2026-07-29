@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Confronto tra comuni italiani</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ground:#E6E9EB; --surface:#F4F6F7; --ink:#14181C; --ink-soft:#5A646C;
+  --rule:#C3CACE; --rule-soft:#D8DEE1; --bar:#16545E; --neg:#8E3B46;
+  --sans:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--ground);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px 80px}
+
+header.masthead{border-bottom:1.5px solid var(--ink);padding:26px 0 12px;display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap}
+h1{font-size:clamp(28px,5vw,44px);font-weight:800;letter-spacing:-.03em;line-height:.98;margin:0}
+h1 em{font-style:normal;display:block;font-weight:400;color:var(--ink-soft);letter-spacing:-.02em}
+.origin{font-family:var(--mono);font-size:11px;line-height:1.5;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft);text-align:right;max-width:250px}
+.origin a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--rule)}
+.origin a:hover{border-bottom-color:var(--ink)}
+
+.eyebrow{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-soft);margin:32px 0 10px;display:flex;align-items:center;gap:12px}
+.eyebrow::after{content:"";flex:1;height:1px;background:var(--rule-soft)}
+.eyebrow b{font-weight:400;color:var(--ink)}
+
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(178px,1fr));gap:8px}
+.slot{background:var(--surface);border:1px solid var(--rule);padding:9px 12px;min-height:64px;display:flex;flex-direction:column;justify-content:center;position:relative}
+.slot.empty{border-style:dashed;background:transparent}
+.slot .idx{position:absolute;top:6px;left:12px;font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--ink-soft)}
+.slot input{width:100%;border:0;background:transparent;font-family:var(--sans);font-size:15px;color:var(--ink);padding:0;outline:none}
+.slot input::placeholder{color:var(--ink-soft)}
+.slot .picked-name{font-size:17px;font-weight:600;letter-spacing:-.02em;line-height:1.15;padding-right:16px;margin-top:8px}
+.slot .picked-meta{font-family:var(--mono);font-size:10px;color:var(--ink-soft);margin-top:2px;letter-spacing:.04em}
+.slot .drop{position:absolute;top:calc(100% + 3px);left:-1px;right:-1px;z-index:60;background:var(--surface);border:1px solid var(--ink);max-height:250px;overflow:auto;box-shadow:0 12px 22px rgba(20,24,28,.14)}
+.drop button{display:block;width:100%;text-align:left;border:0;background:none;cursor:pointer;padding:8px 11px;font-family:var(--sans);font-size:14px;color:var(--ink);border-bottom:1px solid var(--rule-soft)}
+.drop button:last-child{border-bottom:0}
+.drop button:hover,.drop button[aria-selected="true"]{background:var(--ink);color:var(--surface)}
+.drop button span{font-family:var(--mono);font-size:10px;opacity:.65;margin-left:6px}
+.drop .note{padding:8px 11px;font-family:var(--mono);font-size:11px;color:var(--ink-soft)}
+.remove{position:absolute;top:4px;right:6px;border:0;background:none;cursor:pointer;font-family:var(--mono);font-size:13px;color:var(--ink-soft);padding:2px 4px;line-height:1}
+.remove:hover{color:var(--ink)}
+.slot .depth{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin-top:3px}
+.clearall{margin-top:9px}
+
+.controls{display:flex;gap:8px;flex-wrap:wrap;align-items:stretch}
+.field{flex:1 1 320px;position:relative}
+select{width:100%;appearance:none;font-family:var(--sans);font-size:17px;font-weight:600;letter-spacing:-.015em;color:var(--ink);background:var(--surface);border:1px solid var(--ink);padding:13px 40px 13px 14px;cursor:pointer;border-radius:0}
+.field::after{content:"↓";position:absolute;right:14px;top:50%;transform:translateY(-50%);font-family:var(--mono);pointer-events:none;color:var(--ink-soft)}
+.modes{display:flex;border:1px solid var(--ink)}
+.modes button{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;background:var(--surface);border:0;border-right:1px solid var(--ink);padding:0 14px;cursor:pointer;color:var(--ink)}
+.modes button:last-child{border-right:0}
+.modes button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+.depthbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:9px;font-family:var(--mono);font-size:11px;color:var(--ink-soft);letter-spacing:.04em}
+.linkbtn{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;background:none;border:1px solid var(--rule);padding:6px 12px;cursor:pointer;color:var(--ink)}
+.linkbtn:hover{border-color:var(--ink)}
+.linkbtn.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+
+.defn{border-left:3px solid var(--rule);padding:2px 0 2px 14px;margin-top:20px;max-width:74ch}
+.defn p{margin:0;font-size:15px;line-height:1.5}
+.defn .prov{font-family:var(--mono);font-size:11px;color:var(--ink-soft);letter-spacing:.05em;margin-top:6px;display:block}
+
+.ruler{margin-top:20px;border-top:1.5px solid var(--ink);padding-top:2px}
+.row{padding:11px 0;border-bottom:1px solid var(--rule-soft)}
+.row:last-child{border-bottom:0}
+.row .rname{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.13em;color:var(--ink);margin-bottom:6px;display:flex;justify-content:space-between;gap:12px}
+.row .rname i{font-style:normal;color:var(--ink-soft);letter-spacing:.14em;margin-right:8px}
+.row .rdelta{color:var(--ink-soft);letter-spacing:.06em;text-align:right;font-variant-numeric:tabular-nums}
+.track{position:relative;height:21px}
+.track .grid{position:absolute;inset:0;pointer-events:none}
+.track .grid i{position:absolute;top:0;bottom:0;width:1px;background:var(--rule-soft)}
+.track .grid i.zero{background:var(--rule)}
+.bar{position:absolute;top:2px;height:17px;background:var(--bar);transition:left .4s cubic-bezier(.22,.7,.25,1),width .4s cubic-bezier(.22,.7,.25,1)}
+.bar.neg{background:var(--neg)}
+.val{position:absolute;top:0;height:21px;display:flex;align-items:center;font-family:var(--mono);font-size:15px;font-weight:500;white-space:nowrap;transition:left .4s cubic-bezier(.22,.7,.25,1)}
+.na{font-family:var(--mono);font-size:12px;color:var(--ink-soft);letter-spacing:.06em;padding-top:3px}
+.source{font-family:var(--mono);font-size:11px;color:var(--ink-soft);letter-spacing:.05em;margin-top:14px;padding-top:10px;border-top:1px solid var(--rule);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
+
+.tablescroll{overflow-x:auto;margin-top:8px;border-bottom:1px solid var(--rule)}
+table{border-collapse:collapse;font-size:14px;min-width:100%}
+th,td{padding:6px 10px;text-align:right;border-bottom:1px solid var(--rule-soft);white-space:nowrap}
+th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:var(--ground);white-space:normal;min-width:220px;z-index:2}
+thead th{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;border-bottom:1.5px solid var(--ink);vertical-align:bottom;font-weight:500;background:var(--ground)}
+thead th b{display:block;font-weight:400;color:var(--ink-soft);font-size:9px;letter-spacing:.14em}
+tbody td:not(:first-child){font-family:var(--mono);font-feature-settings:"tnum"}
+tr.group td{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-soft);padding-top:20px;border-bottom:1px solid var(--rule)}
+td.best{font-weight:600}
+td.best::after{content:" ●";font-size:9px;vertical-align:middle}
+.hint{border-bottom:1px dotted var(--ink-soft);cursor:help}
+.tier2::before{content:"+";font-family:var(--mono);color:var(--ink-soft);margin-right:5px;font-size:11px;vertical-align:2px}
+
+#tip{position:fixed;z-index:200;max-width:330px;background:var(--ink);color:#EEF1F2;padding:11px 13px;font-size:13px;line-height:1.45;box-shadow:0 10px 26px rgba(20,24,28,.28);display:none}
+#tip b{display:block;font-size:13px;font-weight:600;margin-bottom:4px}
+#tip .meta{font-family:var(--mono);font-size:10px;letter-spacing:.05em;color:#9FB0B4;margin-top:7px;text-transform:uppercase}
+
+.msg{font-family:var(--mono);font-size:13px;color:var(--ink-soft);border:1px dashed var(--rule);padding:20px;text-align:center;margin-top:22px;line-height:1.7;white-space:pre-line}
+.msg.err{border-color:var(--neg);color:var(--neg);border-style:solid}
+footer{margin-top:50px;padding-top:14px;border-top:1px solid var(--rule);font-family:var(--mono);font-size:11px;color:var(--ink-soft);line-height:1.8}
+footer a{color:var(--ink)}
+footer .madeby{display:block;text-align:center;margin-top:30px}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="masthead">
+  <h1>Confronto comuni italiani</h1>
+  <div class="origin">dati:<br><a href="https://cruscotto-italia.dati.gov.it/" target="_blank" rel="noopener">Cruscotto Italia · AgID</a><br>CC-BY 4.0</div>
+</header>
+
+<p class="eyebrow">Comuni <b id="count">0 / 12</b></p>
+<div class="slots" id="slots"></div>
+<div class="clearall"><button class="linkbtn" id="clear">Rimuovi tutti</button></div>
+
+<p class="eyebrow">Indicatore</p>
+<div class="controls">
+  <div class="field" id="indicator-wrap"><select id="indicator" aria-label="Scegli l'indicatore da confrontare"></select></div>
+  <div class="modes" role="group" aria-label="Vista">
+    <button id="mode-one" aria-pressed="true">Un indicatore</button>
+    <button id="mode-all" aria-pressed="false">Tutti gli indicatori</button>
+  </div>
+  <div class="modes" id="ord-wrap" role="group" aria-label="Ordinamento (solo un indicatore)">
+    <button id="ord-sel" aria-pressed="true">Ordine di scelta</button>
+    <button id="ord-val" aria-pressed="false">Per valore indicatore</button>
+  </div>
+</div>
+<div class="depthbar">
+  <button class="linkbtn" id="deep">Carica indicatori estesi</button>
+  <span id="deepstate">Gli indicatori estesi scaricano la scheda completa di ogni comune.</span>
+</div>
+
+<div id="out"></div>
+
+<footer>
+  Valori: <a href="https://cruscotto-italia.dati.gov.it/" target="_blank" rel="noopener">Cruscotto Italia</a> (AgID),
+  che ricompone per codice ISTAT i dataset di ISTAT, MEF, ANAC, BDAP-MOP, ISPRA, MIUR, AGCOM, MIMIT, GSE, RUNTS, MiC, Ministero della Salute, CNR-IRPI. Contenuti CC-BY 4.0.
+  Le definizioni nei tooltip derivano dal file METADATI.csv del progetto.<br>
+  Le interrogazioni passano dall'endpoint pubblico MCP, che concede 60 unità al minuto per indirizzo IP: una scheda di sintesi ne costa 1, una scheda completa 10. Il sito si mette in pausa da solo quando serve.
+  <span class="madeby">Made by <a href="https://glopardo.com" target="_blank" rel="noopener">Gianluigi Lopardo</a></span>
+</footer>
+
+</div>
+<div id="tip" role="tooltip"></div>
+
+<script>
+"use strict";
+
+const MCP = "https://cruscotto-italia-mcp.agid.workers.dev/mcp";
+const MAX_COMUNI = 12;
+
+const SEC = {
+  pop:      { label:"Popolazione e famiglie", src:"ISTAT · POSAS e Censimento permanente", year:["demografia","riferimento"] },
+  istr:     { label:"Istruzione e lavoro",    src:"ISTAT · Censimento permanente",         year:["lavoro_profilo","anno"] },
+  redd:     { label:"Redditi",                src:"MEF · Dipartimento delle Finanze",      year:["redditi_mef","anno_fiscale"] },
+  impr:     { label:"Imprese",                src:"ISTAT · ASIA Unità locali",             year:["imprese_asia","anno"] },
+  pend:     { label:"Pendolarismo",           src:"ISTAT · Censimento permanente 2021",    year:["pendolarismo","anno"] },
+  cassa:    { label:"Bilancio di cassa",      src:"MEF-RGS · SIOPE",                       year:["siope","anno"] },
+  appalti:  { label:"Contratti pubblici",     src:"ANAC · Open Contracting Data Standard", year:null },
+  opere:    { label:"Opere pubbliche",        src:"RGS · BDAP-MOP",                        year:null },
+  pnrr:     { label:"PNRR",                   src:"Italia Domani · sistema ReGiS",         year:null },
+  patr:     { label:"Patrimonio pubblico",    src:"MEF · Dipartimento dell'Economia",      year:null },
+  terr:     { label:"Territorio e rischio",   src:"ISPRA · SNPA, Protezione Civile",       year:null },
+  aria:     { label:"Qualità dell'aria",      src:"ISPRA · rete SNPA",                     year:["aria_ispra","anno"] },
+  san:      { label:"Sanità",                 src:"Ministero della Salute",                year:null },
+  scuo:     { label:"Scuole",                 src:"MIUR · Anagrafe scuole statali",        year:["scuole_miur","anno_scolastico"] },
+  rete:     { label:"Banda larga",            src:"AGCOM · Broadband Map",                 year:["banda_larga_agcom","data_rilevazione"] },
+  veic:     { label:"Veicoli e incidenti",    src:"ISTAT · ACI",                           year:["veicoli_aci","anno"] },
+  ev:       { label:"Ricarica elettrica",     src:"GSE / MASE · Piattaforma Unica Nazionale", year:null },
+  carb:     { label:"Carburanti",             src:"MIMIT · Osservatorio prezzi",           year:null },
+  tur:      { label:"Turismo",                src:"ISTAT · Capacità ricettiva",            year:["turismo","anno"] },
+  cult:     { label:"Beni culturali",         src:"MiC · ArCo e Cultural-ON",              year:null },
+  terzo:    { label:"Terzo settore",          src:"Ministero del Lavoro · RUNTS",          year:null },
+  topo:     { label:"Toponomastica",          src:"Agenzia delle Entrate · ANNCSU",        year:null },
+  morf:     { label:"Morfologia",             src:"CNR-IRPI · HR-DTM 5 m",                 year:null }
+};
+
+const K = (o,path)=>{ let n=o; for(const s of path.split(".")){ if(n==null||typeof n!=="object") return null; n=n[s]; } return typeof n==="number"?n:null; };
+function K0(o,path){ let n=o; for(const s of path.split(".")){ if(n==null||typeof n!=="object") return null; n=n[s]; } return n; }
+const lastYearOf = o => { if(!o) return null; const ks=Object.keys(o).filter(k=>/^\d{4}$/.test(k)); return ks.length?ks.sort().pop():null; };
+
+/* ================================================================== *
+ * Catalogo indicatori — t: 1 sintesi, 2 esteso
+ * ================================================================== */
+const CAT = [
+["pop",1,"demografia.popolazione",null,"Popolazione residente","n","Residenti iscritti in anagrafe al 1° gennaio, rilevazione ISTAT POSAS."],
+["pop",1,null,(k)=>{const p=K(k,"demografia.popolazione"),s=K(k,"ambiente.superficie_kmq");return p&&s?p/s:null;},"Densità abitativa (ab./km²)","d1","Popolazione residente divisa per la superficie comunale. Calcolo di questo sito, non un campo della fonte."],
+["pop",1,"demografia.eta_media",null,"Età media","d1","Età media della popolazione residente."],
+["pop",1,"demografia.indice_vecchiaia",null,"Indice di vecchiaia","d1","Rapporto fra residenti di 65 anni e più e residenti di 0-14 anni, per 100. Sopra 100 gli anziani superano i bambini."],
+["pop",1,"demografia.indice_dipendenza",null,"Indice di dipendenza","d1","Rapporto fra popolazione in età non attiva (0-14 e 65+) e popolazione in età attiva (15-64), per 100."],
+["pop",1,"demografia.maschi",null,"Maschi","n","Popolazione maschile residente."],
+["pop",1,"demografia.femmine",null,"Femmine","n","Popolazione femminile residente."],
+["pop",2,"censimento.kpi_comune.stranieri_totali",null,"Residenti stranieri","n","Residenti con cittadinanza non italiana, UE ed extra-UE, sommati dalle sezioni di censimento rilevate."],
+["pop",2,null,(k,d)=>{const s=K(d,"censimento.kpi_comune.stranieri_totali"),p=K(d,"censimento.kpi_comune.pop_totale");return s!=null&&p?s/p*100:null;},"Quota di residenti stranieri","pct","Stranieri sul totale dei residenti censiti. Rapporto calcolato da questo sito su variabili ISTAT comparabili (ST1 su P1)."],
+["pop",2,"censimento.kpi_comune.stranieri_extra_ue",null,"Stranieri extra-UE","n","Residenti con cittadinanza di un paese non appartenente all'Unione europea."],
+["pop",2,null,(k,d)=>{const f=K(d,"censimento.distribuzioni_comune.eta_per_fascia.65+"),p=K(d,"censimento.kpi_comune.pop_totale");return f!=null&&p?f/p*100:null;},"Quota di popolazione 65 anni e più","pct","Residenti di 65 anni e più sul totale, dalle variabili censuarie 2021."],
+["pop",2,null,(k,d)=>{const f=K(d,"censimento.distribuzioni_comune.eta_per_fascia.0-14"),p=K(d,"censimento.kpi_comune.pop_totale");return f!=null&&p?f/p*100:null;},"Quota di popolazione 0-14 anni","pct","Residenti fino a 14 anni sul totale, dalle variabili censuarie 2021."],
+["pop",2,"censimento.kpi_comune.famiglie_totali",null,"Famiglie","n","Numero di famiglie residenti censite."],
+["pop",2,"profilo.famiglie.dim_media_famiglia",null,"Dimensione media della famiglia","d1","Componenti per famiglia, dal Censimento permanente."],
+["pop",2,"profilo.famiglie.pop_in_convivenza",null,"Popolazione in convivenza","n","Residenti in convivenze anagrafiche: case di riposo, caserme, istituti religiosi, strutture di cura."],
+["pop",2,"censimento.kpi_comune.abitazioni_totali",null,"Abitazioni","n","Abitazioni censite, occupate e non."],
+["pop",2,null,(k,d)=>{const v=K(d,"censimento.kpi_comune.abitazioni_vuote"),t=K(d,"censimento.kpi_comune.abitazioni_totali");return v!=null&&t?v/t*100:null;},"Quota di abitazioni vuote","pct","Abitazioni vuote o occupate solo da non residenti, sul totale. Fra i pochi proxy di spopolamento disponibili su base comunale."],
+
+["istr",1,"istruzione_profilo.pct_terziario",null,"Titolo di studio terziario","pct","Quota di residenti 25-64 anni con laurea o titolo superiore."],
+["istr",1,"istruzione_profilo.pct_diploma_oltre",null,"Diploma o titolo superiore","pct","Quota di residenti 25-64 anni con almeno il diploma di scuola secondaria."],
+["istr",1,"lavoro_profilo.tasso_occupazione",null,"Tasso di occupazione","pct","Occupati 25-64 anni sulla popolazione della stessa fascia. Censimento permanente, non rilevazione forze di lavoro."],
+["istr",1,"lavoro_profilo.tasso_disoccupazione",null,"Tasso di disoccupazione","pct","Persone in cerca di occupazione sulla forza lavoro 25-64 anni."],
+["istr",1,"lavoro_profilo.tasso_attivita",null,"Tasso di attività","pct","Forza lavoro (occupati più persone in cerca) sulla popolazione 25-64 anni."],
+["istr",2,"profilo.istruzione.terziario_n",null,"Residenti con titolo terziario","n","Numero assoluto di residenti 25-64 anni con laurea o titolo superiore."],
+["istr",2,"profilo.lavoro.occupati_n",null,"Occupati 25-64 anni","n","Numero assoluto di occupati nella fascia 25-64 anni."],
+["istr",2,"profilo.lavoro.in_cerca_n",null,"In cerca di occupazione","n","Residenti 25-64 anni che si dichiarano in cerca di lavoro."],
+["istr",2,"censimento.kpi_comune.occupati_15_64",null,"Occupati 15-64 anni","n","Occupati nella fascia 15-64, dalle sezioni di censimento. Base diversa dal dato di profilo, che parte da 25 anni."],
+
+["redd",1,"redditi_mef.reddito_medio_eur",null,"Reddito complessivo medio","eur0","Reddito complessivo dichiarato diviso il numero di contribuenti. Riguarda chi presenta dichiarazione, non tutti i residenti."],
+["redd",2,null,(k,d)=>{const y=lastYearOf(K0(d,"redditi.anni"));return y?K(d,"redditi.anni."+y+".reddito_complessivo.mediano"):null;},"Reddito complessivo mediano","eur0","Valore che divide a metà i contribuenti. Lo scarto fra media e mediana misura quanto il reddito è concentrato in alto."],
+["redd",1,"redditi_mef.imposta_netta_media_eur",null,"Imposta netta media","eur0","IRPEF netta media per contribuente, dopo detrazioni e crediti."],
+["redd",1,"redditi_mef.n_contribuenti",null,"Contribuenti IRPEF","n","Numero di dichiarazioni presentate nel comune per l'anno d'imposta."],
+["redd",2,null,(k,d)=>{const y=lastYearOf(K0(d,"redditi.anni"));if(!y)return null;const c=K(d,"redditi.anni."+y+".contribuenti"),p=K(k,"demografia.popolazione");return c&&p?c/p*100:null;},"Contribuenti ogni 100 residenti","d1","Dichiaranti sul totale dei residenti. Un valore basso segnala popolazione anziana, inattiva o redditi sotto la soglia di dichiarazione."],
+
+["impr",1,"imprese_asia.ul_totali",null,"Unità locali attive","n","Stabilimenti, negozi, uffici operativi sul territorio. ASIA conta unità locali, non imprese: una società con più sedi compare in più comuni."],
+["impr",1,"imprese_asia.addetti_totali",null,"Addetti (media annua)","n","Addetti delle unità locali, media annua."],
+["impr",1,"imprese_asia.addetti_per_ul",null,"Addetti per unità locale","d1","Dimensione media delle unità locali del comune."],
+["impr",1,"imprese_asia.ul_per_1000_ab",null,"Unità locali per 1.000 abitanti","d1","Densità imprenditoriale rapportata alla popolazione."],
+["impr",1,"imprese_asia.ul_yoy_pct",null,"Variazione annua delle unità locali","pct","Variazione percentuale rispetto all'anno precedente."],
+["impr",2,null,(k,d)=>{const u=K0(d,"asia.serie_storica.ul");if(!Array.isArray(u)||u.length<2||!u[0])return null;return (u[u.length-1]-u[0])/u[0]*100;},"Variazione unità locali sull'intera serie","pct","Scarto fra il primo e l'ultimo anno disponibile della serie ASIA, tipicamente 2018-2023."],
+
+["pend",1,"pendolarismo.uscenti_totali",null,"Pendolari in uscita","n","Residenti che ogni giorno si spostano fuori dal comune per lavoro o studio."],
+["pend",1,"pendolarismo.entranti_totali",null,"Pendolari in entrata","n","Persone che entrano quotidianamente nel comune per lavoro o studio."],
+["pend",1,"pendolarismo.saldo_netto",null,"Saldo pendolare giornaliero","n","Entrate meno uscite. Positivo nei poli di attrazione, negativo nei comuni dormitorio."],
+["pend",1,"pendolarismo.auto_contenimento_pct",null,"Auto-contenimento","pct","Quota di residenti che lavora o studia nel proprio comune. Misura quanto il comune basta a sé stesso."],
+
+["cassa",1,"siope.totale_uscite_eur",null,"Pagamenti di cassa","eur","Uscite effettive di cassa del comune nell'anno, rendicontate a SIOPE. Non è il bilancio di competenza."],
+["cassa",1,"siope.uscite_per_abitante_eur",null,"Pagamenti per abitante","eurab","Pagamenti di cassa divisi per la popolazione residente."],
+["cassa",1,"siope.totale_incassi_eur",null,"Incassi di cassa","eur","Entrate effettive di cassa dell'anno."],
+["cassa",1,"siope.incassi_per_abitante_eur",null,"Incassi per abitante","eurab","Incassi di cassa divisi per la popolazione residente."],
+["cassa",1,"siope.saldo_cassa_eur",null,"Saldo di cassa","eur","Incassi meno pagamenti. È un saldo di cassa, non un avanzo di amministrazione."],
+
+["appalti",1,"contratti_anac.n_aggiudicazioni",null,"Aggiudicazioni dal 2020","n","Contratti aggiudicati dal comune come stazione appaltante e registrati da ANAC dal 2020 in poi."],
+["appalti",1,"contratti_anac.importo_totale_eur",null,"Importo aggiudicato","eur","Somma degli importi di aggiudicazione dal 2020."],
+["appalti",1,"contratti_anac.importo_per_abitante_eur",null,"Importo aggiudicato per abitante","eurab","Importo complessivo diviso per la popolazione."],
+["appalti",2,"anac.distinct_cpv",null,"Categorie merceologiche distinte","n","Numero di codici CPV diversi fra gli affidamenti: misura quanto è varia la spesa del comune."],
+
+["opere",1,"opere_bdap.n_progetti",null,"Opere monitorate","n","Opere pubbliche attive più quelle chiuse dal 2023, monitorate dalla Ragioneria generale."],
+["opere",1,"opere_bdap.importo_totale_eur",null,"Importo delle opere","eur","Costo complessivo delle opere monitorate."],
+["opere",1,"opere_bdap.importo_per_abitante_eur",null,"Importo opere per abitante","eurab","Costo complessivo diviso per la popolazione."],
+["opere",2,"bdap_kpi.totale.count",null,"Opere nello storico complessivo","n","Tutte le opere BDAP del comune, senza il filtro temporale applicato al conteggio principale."],
+["opere",2,"bdap_kpi.totale.finanz_europei",null,"Finanziamenti europei sulle opere","eur","Quota di finanziamento europeo sul totale delle opere censite."],
+["opere",2,"bdap_kpi.totale.finanz_statali",null,"Finanziamenti statali sulle opere","eur","Quota di finanziamento statale sul totale delle opere censite."],
+
+["pnrr",1,"pnrr.n_progetti",null,"Progetti PNRR","n","Progetti in cui il comune è soggetto attuatore diretto."],
+["pnrr",1,"pnrr.n_concluso",null,"Progetti PNRR conclusi","n","Progetti con stato di avanzamento concluso."],
+["pnrr",1,"pnrr.n_in_corso",null,"Progetti PNRR in corso","n","Progetti avviati e non ancora conclusi."],
+["pnrr",1,"pnrr.importo_assegnato_eur",null,"Finanziamento PNRR assegnato","eur","Risorse PNRR assegnate ai progetti del comune."],
+["pnrr",1,"pnrr.importo_per_abitante_eur",null,"Finanziamento PNRR per abitante","eurab","Risorse PNRR divise per la popolazione residente."],
+["pnrr",2,"pnrr.kpi.n_missioni_distinte",null,"Missioni PNRR coinvolte","n","Quante delle sei missioni del Piano sono rappresentate nei progetti del comune."],
+["pnrr",2,"pnrr.kpi.totale_finanziamento_globale",null,"Finanziamento PNRR con cofinanziamento","eur","Finanziamento complessivo dei progetti, incluse le quote non PNRR."],
+
+["patr",1,"patrimonio_pa.n_immobili",null,"Immobili pubblici censiti","n","Fabbricati e terreni della pubblica amministrazione nel comune, censimento MEF al 31/12/2022."],
+["patr",1,"patrimonio_pa.n_fabbricati",null,"Fabbricati pubblici","n","Immobili costruiti di proprietà pubblica."],
+["patr",1,"patrimonio_pa.n_terreni",null,"Terreni pubblici","n","Terreni di proprietà pubblica."],
+["patr",1,"patrimonio_pa.superficie_totale_mq",null,"Superficie immobili pubblici (m²)","n","Superficie complessiva del patrimonio censito."],
+
+["terr",1,"ambiente.superficie_kmq",null,"Superficie comunale (km²)","d1","Estensione amministrativa del comune."],
+["terr",1,"ambiente.consumo_suolo_pct",null,"Suolo consumato","pct","Quota di superficie comunale coperta artificialmente, monitoraggio SNPA."],
+["terr",1,"ambiente.raccolta_differenziata_pct",null,"Raccolta differenziata","pct","Quota di rifiuti urbani raccolti in modo differenziato, ultimo anno disponibile del Catasto Rifiuti."],
+["terr",1,"ambiente.rifiuti_kg_per_abitante",null,"Rifiuti urbani per abitante (kg)","d1","Produzione pro capite di rifiuti urbani. Nei comuni turistici è gonfiata dai non residenti."],
+["terr",2,"territorio.kpi.popolazione_frane_p3p4_pct",null,"Popolazione in aree di frana P3-P4","pct","Quota di residenti in aree a pericolosità da frana elevata o molto elevata, classificazione IdroGEO-ISPRA."],
+["terr",2,"territorio.kpi.incremento_2024_ha",null,"Nuovo suolo consumato nell'anno (ha)","d1","Ettari di suolo passati a copertura artificiale nell'ultimo anno rilevato."],
+["terr",2,"territorio.classificazione_sismica.zona_principale",null,"Zona sismica","z","Classificazione amministrativa da 1 (pericolosità alta) a 4 (bassa), recepimenti regionali ex OPCM 3519/2006. Non è la pericolosità sismica di base."],
+
+["aria",1,"aria_ispra.pm10_media",null,"PM10, media annua (µg/m³)","d1","Media annua rilevata dalle centraline nel comune. Limite di legge 40, riferimento OMS 15."],
+["aria",1,"aria_ispra.pm25_media",null,"PM2.5, media annua (µg/m³)","d1","Media annua. Limite di legge 25, riferimento OMS 5."],
+["aria",1,"aria_ispra.no2_media",null,"NO₂, media annua (µg/m³)","d1","Media annua di biossido di azoto. Limite di legge 40, riferimento OMS 10."],
+["aria",2,"aria.n_stazioni",null,"Centraline di monitoraggio","n","Stazioni della rete SNPA presenti nel comune. Se è zero, il comune non ha dati propri sull'aria."],
+["aria",2,"aria.ultimo_anno.pm10.n_sup50_giorni_max",null,"Giorni di superamento PM10","n","Giorni con PM10 oltre 50 µg/m³ nella centralina peggiore. La legge ne ammette 35 all'anno."],
+["aria",2,"aria.ultimo_anno.pm10.n_stazioni_oltre_limite_oms",null,"Centraline oltre il riferimento OMS per il PM10","n","Stazioni con media annua superiore ai 15 µg/m³ raccomandati dall'OMS."],
+
+["san",1,"sanita_mds.n_farmacie",null,"Farmacie","n","Farmacie attive nel comune."],
+["san",1,"sanita_mds.farmacie_per_1000_ab",null,"Farmacie per 1.000 abitanti","d1","Densità di farmacie rapportata alla popolazione."],
+["san",1,"sanita_mds.n_ospedali",null,"Stabilimenti ospedalieri","n","Ospedali pubblici o privati accreditati con sede nel comune."],
+["san",1,"sanita_mds.posti_letto_ospedalieri",null,"Posti letto ospedalieri","n","Posti letto complessivi: degenza ordinaria, day hospital, day surgery, regime di pagamento."],
+["san",2,"sanita_mds.ospedali.kpi.posti_letto_ordinaria",null,"Posti letto in degenza ordinaria","n","Sottoinsieme dei posti letto destinati al ricovero ordinario."],
+["san",2,"sanita_mds.ospedali.kpi.n_reparti_totali",null,"Reparti ospedalieri","n","Numero complessivo di reparti negli stabilimenti del comune."],
+["san",2,"sanita_mds.parafarmacie.kpi.n_totale",null,"Parafarmacie","n","Esercizi di vendita di farmaci senza obbligo di ricetta."],
+
+["scuo",1,"scuole_miur.n_scuole",null,"Scuole statali","n","Plessi statali censiti. Esclude le paritarie e le province autonome di Trento, Bolzano e Aosta."],
+["scuo",2,"scuole.kpi.per_ordine.infanzia",null,"Scuole dell'infanzia","n","Plessi statali di scuola dell'infanzia."],
+["scuo",2,"scuole.kpi.per_ordine.primaria",null,"Scuole primarie","n","Plessi statali di scuola primaria."],
+["scuo",2,"scuole.kpi.per_ordine.sec1",null,"Secondarie di primo grado","n","Plessi statali di scuola secondaria di primo grado."],
+["scuo",2,"scuole.kpi.per_ordine.sec2",null,"Secondarie di secondo grado","n","Plessi statali di scuola secondaria di secondo grado."],
+
+["rete",1,"banda_larga_agcom.copertura_ftth_pct",null,"Copertura FTTH (metrica DESI)","pct","Quota di famiglie raggiunte dalla fibra fino a casa, secondo la metodologia della Commissione europea."],
+["rete",1,"banda_larga_agcom.copertura_ftth_20m_pct",null,"Copertura FTTH entro 20 metri","pct","Metrica più stringente: fibra a meno di venti metri dall'edificio."],
+["rete",1,"banda_larga_agcom.famiglie_residenti",null,"Famiglie residenti (base AGCOM)","n","Denominatore usato da AGCOM per le percentuali di copertura."],
+["rete",2,"agcom_bbmap.kpi.confidenza_desi_pct",null,"Indice di confidenza sul dato DESI","pct","Affidabilità che AGCOM attribuisce al proprio dato di copertura. Sotto il 70% il valore va letto con cautela."],
+["rete",2,"agcom_bbmap.kpi.famiglie_ftth",null,"Famiglie raggiunte da FTTH","n","Numero assoluto di famiglie servite dalla fibra."],
+
+["veic",1,"veicoli_aci.tasso_motorizzazione_per_1000_ab",null,"Veicoli per 1.000 abitanti","d1","Tasso di motorizzazione. Nei comuni con molte immatricolazioni societarie il dato è distorto."],
+["veic",1,"veicoli_aci.totale_veicoli",null,"Parco veicoli","n","Veicoli circolanti immatricolati nel comune."],
+["veic",1,"veicoli_aci.pct_inquinanti",null,"Veicoli in classi Euro 0-3","pct","Quota del parco nelle classi più inquinanti."],
+["veic",2,"veicoli.incidenti.ultimo_anno.incidenti",null,"Incidenti stradali con lesioni","n","Incidenti con feriti o morti rilevati nell'ultimo anno disponibile."],
+["veic",2,"veicoli.incidenti.ultimo_anno.morti",null,"Morti in incidenti stradali","n","Decessi entro trenta giorni dall'incidente, definizione ISTAT."],
+["veic",2,"veicoli.incidenti.ultimo_anno.morti_per_10k_ab",null,"Mortalità stradale per 10.000 abitanti","d1","Tasso di mortalità rapportato ai residenti. Nei comuni piccoli oscilla molto di anno in anno."],
+["veic",2,"veicoli.iscrizioni.ultimo_anno.pct_elettriche_ibride",null,"Nuove immatricolazioni elettriche o ibride","pct","Quota di elettrico e ibrido sulle nuove iscrizioni dell'anno."],
+
+["ev",1,"ricarica_ev_pun.n_attivi",null,"Punti di ricarica attivi","n","Punti di ricarica per veicoli elettrici con stato attivo."],
+["ev",1,"ricarica_ev_pun.punti_per_1000_ab",null,"Punti di ricarica per 1.000 abitanti","d1","Densità della rete di ricarica rispetto alla popolazione."],
+["ev",1,"ricarica_ev_pun.potenza_totale_kw",null,"Potenza installata (kW)","d1","Somma della potenza massima erogabile dai punti del comune."],
+["ev",2,"pun.kpi.n_dc",null,"Punti in corrente continua","n","Ricariche DC, cioè le colonnine rapide e ultrarapide."],
+["ev",2,"pun.kpi.n_non_attivi",null,"Punti non attivi","n","Punti censiti ma fuori servizio all'ultimo aggiornamento."],
+
+["carb",1,"carburanti_mimit.n_impianti",null,"Distributori di carburante","n","Impianti attivi nell'anagrafica MIMIT."],
+["carb",1,"carburanti_mimit.prezzo_medio_benzina_self",null,"Benzina self, prezzo medio (€/l)","p3","Media dei prezzi self-service comunicati dai gestori del comune."],
+["carb",1,"carburanti_mimit.prezzo_medio_gasolio_self",null,"Gasolio self, prezzo medio (€/l)","p3","Media dei prezzi self-service del gasolio."],
+["carb",2,"carburanti.kpi.prezzo_medio.benzina_serv",null,"Benzina servito, prezzo medio (€/l)","p3","Media dei prezzi del servito. Lo scarto con il self misura il sovrapprezzo del servizio."],
+["carb",2,"carburanti.kpi.pct_pompe_bianche",null,"Quota di pompe bianche","pct","Impianti senza bandiera sul totale. Di solito più alta dove la concorrenza sul prezzo è più forte."],
+["carb",2,"carburanti.kpi.n_bandiere_distinte",null,"Bandiere distinte","n","Numero di marchi diversi presenti nel comune."],
+
+["tur",1,"turismo.totale_strutture",null,"Strutture ricettive","n","Esercizi alberghieri ed extralberghieri con sede nel comune."],
+["tur",1,"turismo.totale_letti",null,"Posti letto turistici","n","Capacità ricettiva complessiva."],
+["tur",1,"turismo.indice_turisticita_per_100ab",null,"Indice di turisticità","d1","Posti letto ogni 100 residenti. Sopra 20 la pressione turistica è rilevante rispetto alla popolazione."],
+
+["cult",1,"beni_culturali_mic.n_beni_immobili",null,"Beni culturali immobili","n","Chiese, palazzi, castelli, aree archeologiche e altri beni tutelati catalogati dall'ICCD."],
+["cult",1,"beni_culturali_mic.n_visitabili",null,"Luoghi della cultura visitabili","n","Musei, biblioteche e archivi con orari e contatti pubblicati."],
+["cult",1,"beni_culturali_mic.beni_per_1000_ab",null,"Beni culturali per 1.000 abitanti","d1","Densità del patrimonio rispetto alla popolazione. Nei borghi piccoli il valore è alto per costruzione."],
+
+["terzo",1,"terzo_settore_runts.n_enti_totali",null,"Enti del Terzo settore","n","Enti iscritti al RUNTS con sede legale nel comune: volontariato, promozione sociale, imprese sociali, altri ETS."],
+["terzo",1,"terzo_settore_runts.enti_per_1000_ab",null,"Enti del Terzo settore per 1.000 abitanti","d1","Densità associativa, spesso usata come indicatore di capitale sociale."],
+["terzo",1,"terzo_settore_runts.pct_5x1000",null,"Enti iscritti al 5x1000","pct","Quota di enti accreditati per il beneficio del cinque per mille."],
+
+["topo",1,"civici_anncsu.n_strade",null,"Odonimi (vie e piazze)","n","Denominazioni stradali certificate dal comune nell'archivio nazionale."],
+["topo",1,"civici_anncsu.n_civici",null,"Numeri civici certificati","n","Civici censiti e certificati dal comune."],
+
+["morf",1,"morfologia_cnr.elev_mean",null,"Quota media (m s.l.m.)","d1","Elevazione media del territorio comunale, dal modello digitale del terreno a 5 metri."],
+["morf",1,"morfologia_cnr.elev_max",null,"Quota massima (m s.l.m.)","d1","Punto più alto del territorio comunale."],
+["morf",1,"morfologia_cnr.slope_mean",null,"Pendenza media (gradi)","d1","Pendenza media delle celle del modello digitale del terreno."],
+["morf",1,"morfologia_cnr.slope_gt15_pct",null,"Superficie con pendenza oltre 15°","pct","Quota di territorio acclive: vincola l'edificabilità e l'agricoltura meccanizzata."],
+["morf",1,"morfologia_cnr.solar_mean",null,"Irraggiamento solare (kWh/m²/anno)","d1","Radiazione solare stimata sulla superficie comunale, utile per il potenziale fotovoltaico."]
+];
+
+
+
+const N_T1 = CAT.filter(r=>r[1]===1).length, N_T2 = CAT.filter(r=>r[1]===2).length;
+
+/* ================================================================== *
+ * Budget richieste
+ * ================================================================== */
+const budget={events:[],soft:52};
+function spent(){ const t=Date.now()-60000; budget.events=budget.events.filter(e=>e.t>t); return budget.events.reduce((s,e)=>s+e.c,0); }
+function waitFor(cost){ const over=spent()+cost-budget.soft; if(over<=0) return 0; const o=budget.events[0]; return o?Math.max(0,60000-(Date.now()-o.t))+250:0; }
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+async function mcp(tool,args,cost){
+  cost=cost||1;
+  const w=waitFor(cost); if(w>0) await sleep(w);
+  budget.events.push({t:Date.now(),c:cost});
+  const res=await fetch(MCP,{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({jsonrpc:"2.0",id:Date.now(),method:"tools/call",params:{name:tool,arguments:args}})});
+  if (res.status===429){ await sleep(61000); return mcp(tool,args,cost); }
+  if (!res.ok) throw new Error("Il server dei dati ha risposto "+res.status+".");
+  const data=await res.json();
+  if (data.error) throw new Error(data.error.message||"Errore nella risposta del server.");
+  return JSON.parse(data.result.content[0].text);
+}
+
+/* ================================================================== *
+ * Stato
+ * ================================================================== */
+const state={ comuni:[], indicator:0, mode:"one", order:"sel", deep:false, busy:null, error:null };
+const cacheKpi=new Map(), cacheDash=new Map();
+
+const nf=(a,b)=>new Intl.NumberFormat("it-IT",{minimumFractionDigits:a,maximumFractionDigits:b});
+function fmt(v,kind){
+  if (v===null||v===undefined||Number.isNaN(v)) return null;
+  switch(kind){
+    case "n":   return nf(0,0).format(Math.round(v));
+    case "z":   return "zona "+Math.round(v);
+    case "d1":  return nf(1,1).format(v);
+    case "pct": return nf(1,1).format(v)+" %";
+    case "p3":  return nf(3,3).format(v)+" €";
+    case "eur0": case "eurab": return nf(0,0).format(Math.round(v))+" €";
+    case "eur": { const a=Math.abs(v);
+      if (a>=1e9) return nf(2,2).format(v/1e9)+" mld €";
+      if (a>=1e6) return nf(1,1).format(v/1e6)+" mln €";
+      return nf(0,0).format(Math.round(v))+" €"; }
+    default: return String(v);
+  }
+}
+function value(c,row){
+  const [,tier,path,calc]=row;
+  if (tier===2 && !c.dash) return undefined;
+  if (calc){ try{ return calc(c.kpi,c.dash); }catch(e){ return null; } }
+  return K(tier===1?c.kpi:c.dash, path);
+}
+function refYear(c,secKey){
+  const y=SEC[secKey]&&SEC[secKey].year;
+  if(!y||!c.kpi||!c.kpi[y[0]]) return null;
+  const v=c.kpi[y[0]][y[1]];
+  return v?String(v).slice(0,10):null;
+}
+const pad2=i=>String(i+1).padStart(2,"0");
+
+/* ================================================================== *
+ * Tooltip
+ * ================================================================== */
+const tipEl=document.getElementById("tip");
+function showTip(target,row){
+  const [sec,tier,,,label,,def]=row;
+  tipEl.innerHTML="";
+  const b=document.createElement("b"); b.textContent=label; tipEl.appendChild(b);
+  const p=document.createElement("div"); p.textContent=def; tipEl.appendChild(p);
+  const m=document.createElement("div"); m.className="meta";
+  m.textContent=SEC[sec].src+(tier===2?" · indicatore esteso":""); tipEl.appendChild(m);
+  tipEl.style.display="block";
+  const r=target.getBoundingClientRect(), t=tipEl.getBoundingClientRect();
+  let left=Math.min(r.left, window.innerWidth-t.width-14), top=r.bottom+8;
+  if (top+t.height>window.innerHeight-10) top=Math.max(8,r.top-t.height-8);
+  tipEl.style.left=Math.max(8,left)+"px"; tipEl.style.top=top+"px";
+}
+const hideTip=()=>{ tipEl.style.display="none"; };
+function bindTip(el,row){
+  el.classList.add("hint"); el.tabIndex=0;
+  el.addEventListener("mouseenter",()=>showTip(el,row));
+  el.addEventListener("focus",()=>showTip(el,row));
+  el.addEventListener("mouseleave",hideTip);
+  el.addEventListener("blur",hideTip);
+}
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") hideTip(); });
+window.addEventListener("scroll",hideTip,{passive:true});
+
+/* ================================================================== *
+ * Slot comuni
+ * ================================================================== */
+const slotsEl=document.getElementById("slots"), countEl=document.getElementById("count");
+
+async function addComune(base){
+  if (state.comuni.some(c=>c.istat===base.istat)) return;
+  const c={istat:base.istat,nome:base.nome,prov:base.prov,regione:base.regione||"",kpi:null,dash:null};
+  state.comuni.push(c); renderSlots();
+  state.busy="Carico "+c.nome+"…"; state.error=null; render();
+  try{
+    c.kpi = cacheKpi.get(c.istat) || await mcp("comune_kpi",{istat_code:c.istat},1);
+    if (c.kpi.error) throw new Error("Cruscotto non ha una scheda per "+c.nome+" (codice "+c.istat+").");
+    cacheKpi.set(c.istat,c.kpi);
+    const a=c.kpi.anagrafica||{};
+    if (a.nome) c.nome=a.nome;
+    if (a.provincia_sigla) c.prov=a.provincia_sigla;
+    if (a.regione) c.regione=a.regione;
+    if (state.deep){
+      state.busy="Scarico la scheda completa di "+c.nome+"…"; render();
+      c.dash = cacheDash.get(c.istat) || await mcp("comune_dashboard",{istat_code:c.istat},10);
+      cacheDash.set(c.istat,c.dash);
+    }
+  }catch(e){
+    state.error=e.message;
+    state.comuni=state.comuni.filter(x=>x!==c);
+  }
+  state.busy=null; renderSlots(); render();
+}
+
+function renderSlots(){
+  slotsEl.innerHTML="";
+  state.comuni.forEach((c,i)=>{
+    const el=document.createElement("div"); el.className="slot";
+    el.innerHTML='<span class="idx">'+pad2(i)+'</span><div class="picked-name"></div>'+
+                 '<div class="picked-meta"></div><button class="remove" aria-label="Togli '+c.nome+'">✕</button>';
+    el.querySelector(".picked-name").textContent=c.nome;
+    el.querySelector(".picked-meta").textContent=[c.prov,c.regione,c.istat].filter(Boolean).join(" · ");
+    if (state.deep){
+      const d=document.createElement("div"); d.className="depth";
+      d.textContent=c.dash?"scheda completa":"in attesa"; el.appendChild(d);
+    }
+    el.querySelector(".remove").onclick=()=>{ state.comuni.splice(i,1); renderSlots(); render(); };
+    slotsEl.appendChild(el);
+  });
+  if (state.comuni.length<MAX_COMUNI){
+    const el=document.createElement("div"); el.className="slot empty";
+    const idx=document.createElement("span"); idx.className="idx"; idx.textContent=pad2(state.comuni.length);
+    const input=document.createElement("input");
+    input.type="text"; input.autocomplete="off";
+    input.placeholder = state.comuni.length===0?"Cerca un comune…":"Aggiungi…";
+    input.setAttribute("aria-label","Cerca un comune da aggiungere");
+    el.appendChild(idx); el.appendChild(input); slotsEl.appendChild(el);
+    attachSearch(input,el);
+  }
+  countEl.textContent=state.comuni.length+" / "+MAX_COMUNI;
+}
+
+function attachSearch(input,slot){
+  let timer=null, drop=null, results=[], cursor=-1;
+  const close=()=>{ if(drop){drop.remove();drop=null;} results=[]; cursor=-1; };
+  const open=(items,note)=>{
+    close(); drop=document.createElement("div"); drop.className="drop";
+    if(note){ const n=document.createElement("div"); n.className="note"; n.textContent=note; drop.appendChild(n); }
+    items.forEach((r,k)=>{
+      const b=document.createElement("button"); b.type="button";
+      b.appendChild(document.createTextNode(r.denominazione));
+      const s=document.createElement("span"); s.textContent=r.provincia+" · "+r.istat_code; b.appendChild(s);
+      b.onmousedown=e=>{ e.preventDefault(); pick(k); };
+      drop.appendChild(b);
+    });
+    slot.appendChild(drop); results=items;
+  };
+  const pick=k=>{
+    const r=results[k]; close(); input.value="";
+    addComune({istat:r.istat_code,nome:r.denominazione,prov:r.provincia,regione:r.regione});
+  };
+  input.addEventListener("input",()=>{
+    clearTimeout(timer); const q=input.value.trim();
+    if(q.length<3){ close(); return; }
+    timer=setTimeout(async()=>{
+      try{
+        const r=await mcp("search_comune",{query:q,limit:8},1);
+        if(!r.results||!r.results.length){ open([],"Nessun comune trovato per «"+q+"»."); return; }
+        open(r.results,null);
+      }catch(e){ open([],e.message); }
+    },320);
+  });
+  input.addEventListener("keydown",e=>{
+    if(!drop||!results.length) return;
+    const btns=drop.querySelectorAll("button");
+    if(e.key==="ArrowDown"||e.key==="ArrowUp"){
+      e.preventDefault();
+      cursor=(cursor+(e.key==="ArrowDown"?1:-1)+results.length)%results.length;
+      btns.forEach((b,k)=>b.setAttribute("aria-selected",k===cursor));
+      btns[cursor].scrollIntoView({block:"nearest"});
+    } else if(e.key==="Enter"){ e.preventDefault(); pick(cursor>=0?cursor:0); }
+    else if(e.key==="Escape"){ close(); }
+  });
+  input.addEventListener("blur",()=>setTimeout(close,120));
+}
+
+document.getElementById("clear").onclick=()=>{
+  if (!state.comuni.length) return;
+  state.comuni=[]; state.error=null; renderSlots(); render();
+};
+
+/* ================================================================== *
+ * Selettore, modalità, ordinamento, profondità
+ * ================================================================== */
+const selEl=document.getElementById("indicator");
+function buildSelect(){
+  const keep=selEl.value; selEl.innerHTML="";
+  let cur=null, og=null;
+  CAT.forEach((row,i)=>{
+    if (row[1]===2 && !state.deep) return;
+    if (row[0]!==cur){ cur=row[0]; og=document.createElement("optgroup"); og.label=SEC[cur].label; selEl.appendChild(og); }
+    const o=document.createElement("option");
+    o.value=String(i); o.textContent=(row[1]===2?"+ ":"")+row[4];
+    og.appendChild(o);
+  });
+  selEl.value = Array.from(selEl.options).some(o=>o.value===keep) ? keep : "0";
+  state.indicator=parseInt(selEl.value,10);
+}
+selEl.onchange=()=>{ state.indicator=parseInt(selEl.value,10); render(); };
+
+const btnOne=document.getElementById("mode-one"), btnAll=document.getElementById("mode-all");
+const ordWrap=document.getElementById("ord-wrap");
+const btnOsel=document.getElementById("ord-sel"), btnOval=document.getElementById("ord-val");
+btnOne.onclick=()=>{ state.mode="one"; syncModes(); render(); };
+btnAll.onclick=()=>{ state.mode="all"; syncModes(); render(); };
+btnOsel.onclick=()=>{ state.order="sel"; syncModes(); render(); };
+btnOval.onclick=()=>{ state.order="val"; syncModes(); render(); };
+function syncModes(){
+  const onlyOne=state.mode==="one";
+
+  if (onlyOne){
+    buildSelect();
+    const wanted=String(state.indicator);
+    if (Array.from(selEl.options).some(o=>o.value===wanted)){
+      selEl.value=wanted;
+    } else if (selEl.options.length){
+      selEl.value=selEl.options[0].value;
+      state.indicator=parseInt(selEl.value,10);
+    }
+    selEl.disabled=false;
+  } else {
+    const current=parseInt(selEl.value,10);
+    if (!Number.isNaN(current)) state.indicator=current;
+    selEl.innerHTML="";
+    const o=document.createElement("option");
+    o.value="-1";
+    o.textContent="Tutti gli indicatori";
+    selEl.appendChild(o);
+    selEl.value="-1";
+    selEl.disabled=true;
+  }
+
+  btnOne.setAttribute("aria-pressed",state.mode==="one");
+  btnAll.setAttribute("aria-pressed",state.mode==="all");
+  btnOsel.setAttribute("aria-pressed",state.order==="sel");
+  btnOval.setAttribute("aria-pressed",state.order==="val");
+  ordWrap.style.opacity=onlyOne?"1":".45";
+  [btnOsel,btnOval].forEach(b=>{ b.disabled=!onlyOne; });
+}
+
+const deepBtn=document.getElementById("deep"), deepState=document.getElementById("deepstate");
+deepState.textContent="Attivi "+N_T1+" indicatori di sintesi. Gli estesi ne aggiungono "+N_T2+", scaricando la scheda completa di ogni comune.";
+deepBtn.onclick=async()=>{
+  if (state.deep){
+    state.deep=false; deepBtn.classList.remove("on"); deepBtn.textContent="Carica indicatori estesi";
+    deepState.textContent="Attivi "+N_T1+" indicatori di sintesi.";
+    buildSelect(); syncModes(); renderSlots(); render(); return;
+  }
+  state.deep=true; deepBtn.classList.add("on"); deepBtn.textContent="Indicatori estesi attivi";
+  buildSelect(); syncModes(); renderSlots();
+  const todo=state.comuni.filter(c=>!c.dash);
+  for (let i=0;i<todo.length;i++){
+    const c=todo[i], w=waitFor(10);
+    deepState.textContent = w>1000
+      ? "Pausa di "+Math.ceil(w/1000)+" s per rispettare il limite del server, poi "+c.nome+"…"
+      : "Scarico la scheda completa di "+c.nome+" ("+(i+1)+" di "+todo.length+")…";
+    render();
+    try{
+      c.dash = cacheDash.get(c.istat) || await mcp("comune_dashboard",{istat_code:c.istat},10);
+      cacheDash.set(c.istat,c.dash);
+    }catch(e){ state.error=e.message; }
+    renderSlots(); render();
+  }
+  deepState.textContent=N_T1+" indicatori di sintesi + "+N_T2+" estesi. Ogni scheda completa costa 10 delle 60 unità al minuto concesse dal server.";
+  render();
+};
+
+/* ================================================================== *
+ * Render
+ * ================================================================== */
+const out=document.getElementById("out");
+const msg=(t,cls)=>{ const d=document.createElement("div"); d.className="msg"+(cls?" "+cls:""); d.textContent=t; return d; };
+const visible=()=>CAT.filter(r=>r[1]===1||state.deep);
+
+function render(){
+  out.innerHTML="";
+  if (state.error) out.appendChild(msg(state.error,"err"));
+  if (!state.comuni.length){ out.appendChild(msg("Cerca un comune qui sopra per iniziare.\nPuoi confrontarne fino a dodici.")); return; }
+  if (state.busy) out.appendChild(msg(state.busy));
+  const ready=state.comuni.filter(c=>c.kpi);
+  if (!ready.length) return;
+  if (state.mode==="one") renderOne(ready); else renderAll(ready);
+}
+
+function renderOne(cs){
+  const row=CAT[state.indicator]; if(!row) return;
+  const [sec,tier,,,label,kind,def]=row;
+
+  const box=document.createElement("div"); box.className="defn";
+  const p=document.createElement("p");
+  const st=document.createElement("strong"); st.textContent=label+". ";
+  p.appendChild(st); p.appendChild(document.createTextNode(def)); box.appendChild(p);
+  const prov=document.createElement("span"); prov.className="prov";
+  const years=Array.from(new Set(cs.map(c=>refYear(c,sec)).filter(Boolean)));
+  prov.textContent=SEC[sec].src+(years.length?" · riferimento "+years.join(" / "):"")+(tier===2?" · indicatore esteso":"");
+  box.appendChild(prov); out.appendChild(box);
+
+  let list=cs.map(c=>({ c:c, i:state.comuni.indexOf(c), v:value(c,row) }));
+  const known=list.map(o=>o.v).filter(v=>typeof v==="number");
+  const wrap=document.createElement("div"); wrap.className="ruler";
+
+  if (!known.length){
+    wrap.appendChild(msg(tier===2&&!state.deep
+      ? "Attiva gli indicatori estesi per vedere questo dato."
+      : "Nessuno dei comuni selezionati ha questo dato.\nDi norma significa che la fonte non copre quel territorio."));
+    out.appendChild(wrap); return;
+  }
+
+  if (state.order==="val"){
+    list.sort((a,b)=>{
+      const av=typeof a.v==="number", bv=typeof b.v==="number";
+      if (av&&bv) return b.v-a.v;
+      return av?-1:(bv?1:0);
+    });
+  }
+
+  const lo=Math.min(0,...known), hi=Math.max(0,...known), span=(hi-lo)||1;
+  const zero=((0-lo)/span)*100, leader=Math.max(...known);
+  const leaderName=list.find(o=>o.v===leader).c.nome;
+
+  list.forEach(o=>{
+    const v=o.v;
+    const r=document.createElement("div"); r.className="row";
+    const head=document.createElement("div"); head.className="rname";
+    const nm=document.createElement("span");
+    const ix=document.createElement("i"); ix.textContent=pad2(o.i);
+    nm.appendChild(ix); nm.appendChild(document.createTextNode(o.c.nome+" ("+o.c.prov+")"));
+    head.appendChild(nm);
+    if (typeof v==="number" && known.length>1 && leader!==0){
+      const d=document.createElement("span"); d.className="rdelta";
+      const delta=((v-leader)/Math.abs(leader))*100;
+      d.textContent = v===leader ? "massimo" : (Math.abs(delta)<0.05 ? "in pari" : nf(1,1).format(delta)+" %");
+      head.appendChild(d);
+    }
+    r.appendChild(head);
+
+    if (typeof v!=="number"){
+      const na=document.createElement("div"); na.className="na";
+      na.textContent = v===undefined ? "scheda completa non ancora caricata" : "dato non disponibile";
+      r.appendChild(na);
+    } else {
+      const track=document.createElement("div"); track.className="track";
+      const grid=document.createElement("div"); grid.className="grid";
+      [0,25,50,75,100].forEach(pp=>{ const t=document.createElement("i"); t.style.left=pp+"%"; grid.appendChild(t); });
+      if (lo<0){ const z=document.createElement("i"); z.className="zero"; z.style.left=zero+"%"; grid.appendChild(z); }
+      track.appendChild(grid);
+      const pv=((v-lo)/span)*100, left=Math.min(zero,pv), width=Math.max(Math.abs(pv-zero),0.4);
+      const bar=document.createElement("div"); bar.className="bar"+(v<0?" neg":"");
+      bar.style.left=left+"%"; bar.style.width=width+"%"; track.appendChild(bar);
+      const val=document.createElement("div"); val.className="val"; val.textContent=fmt(v,kind);
+      const end=left+width;
+      if (end>68){ val.style.right=(100-left)+"%"; val.style.paddingRight="10px"; }
+      else { val.style.left=end+"%"; val.style.paddingLeft="10px"; }
+      track.appendChild(val); r.appendChild(track);
+    }
+    wrap.appendChild(r);
+  });
+
+  const src=document.createElement("div"); src.className="source";
+  const l=document.createElement("span");
+  l.textContent = known.length>1 ? "Scarto percentuale rispetto al valore più alto, "+leaderName+"." : "Un solo valore disponibile.";
+  const b=document.createElement("button"); b.className="linkbtn"; b.textContent="Scarica CSV"; b.onclick=()=>exportCsv(cs);
+  src.appendChild(l); src.appendChild(b); wrap.appendChild(src);
+  out.appendChild(wrap);
+}
+
+function renderAll(cs){
+  const head=document.createElement("div"); head.className="source";
+  head.style.marginTop="20px"; head.style.borderTop="none";
+  head.style.borderBottom="1.5px solid var(--ink)"; head.style.paddingBottom="10px";
+  const l=document.createElement("span");
+  l.textContent="● segnala il valore più alto della riga, che non vuol dire il migliore. + indica un indicatore esteso.";
+  const b=document.createElement("button"); b.className="linkbtn"; b.textContent="Scarica CSV"; b.onclick=()=>exportCsv(cs);
+  head.appendChild(l); head.appendChild(b); out.appendChild(head);
+
+  const scroll=document.createElement("div"); scroll.className="tablescroll";
+  const table=document.createElement("table");
+  const thead=document.createElement("thead"), hr=document.createElement("tr");
+  const h0=document.createElement("th"); h0.textContent="Indicatore"; hr.appendChild(h0);
+  cs.forEach(c=>{
+    const h=document.createElement("th");
+    const n=document.createElement("b"); n.textContent=pad2(state.comuni.indexOf(c));
+    h.appendChild(n); h.appendChild(document.createTextNode(c.nome));
+    hr.appendChild(h);
+  });
+  thead.appendChild(hr); table.appendChild(thead);
+
+  const tb=document.createElement("tbody"); let cur=null;
+  visible().forEach(row=>{
+    const [sec,tier,,,label,kind]=row;
+    const vals=cs.map(c=>value(c,row));
+    if (!vals.some(v=>typeof v==="number")) return;
+    if (sec!==cur){
+      cur=sec;
+      const gr=document.createElement("tr"); gr.className="group";
+      const td=document.createElement("td"); td.colSpan=cs.length+1;
+      td.textContent=SEC[sec].label+" — "+SEC[sec].src;
+      gr.appendChild(td); tb.appendChild(gr);
+    }
+    const tr=document.createElement("tr");
+    const nameTd=document.createElement("td");
+    const span=document.createElement("span");
+    if (tier===2) span.className="tier2";
+    span.textContent=label; nameTd.appendChild(span); bindTip(span,row);
+    tr.appendChild(nameTd);
+    const nums=vals.filter(v=>typeof v==="number");
+    const best=nums.length>1?Math.max(...nums):null;
+    vals.forEach(v=>{
+      const td=document.createElement("td");
+      td.textContent = typeof v==="number" ? fmt(v,kind) : (v===undefined?"·":"—");
+      if (best!==null && v===best) td.className="best";
+      tr.appendChild(td);
+    });
+    tb.appendChild(tr);
+  });
+  table.appendChild(tb); scroll.appendChild(table); out.appendChild(scroll);
+}
+
+function exportCsv(cs){
+  const rows=[["sezione","indicatore","tipo","fonte","definizione",...cs.map(c=>c.nome+" ("+c.prov+")")]];
+  visible().forEach(row=>{
+    const [sec,tier,,,label,,def]=row;
+    const vals=cs.map(c=>value(c,row));
+    if (!vals.some(v=>typeof v==="number")) return;
+    rows.push([SEC[sec].label,label,tier===1?"sintesi":"esteso",SEC[sec].src,def,
+               ...vals.map(v=>typeof v==="number"?String(v).replace(".",","):"")]);
+  });
+  const csv=rows.map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(";")).join("\n");
+  const url=URL.createObjectURL(new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}));
+  const a=document.createElement("a"); a.href=url;
+  a.download="confronto-comuni-"+cs.map(c=>c.istat).join("-")+".csv"; a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),2000);
+}
+
+/* ------------------------------------------------------------------ */
+buildSelect(); renderSlots(); syncModes(); render();
+</script>
+</body>
+</html>
