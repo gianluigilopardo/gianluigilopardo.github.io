@@ -35,7 +35,7 @@ ninja.data = [{
           description: "Quick comparison of Italian municipalities based on official Cruscotto Italia data.",
           section: "Navigation",
           handler: () => {
-            window.location.href = "/cruscotti/";
+            window.location.href = "/cruscotti-it/";
           },
         },{id: "nav-corporate-talks",
           title: "Corporate Talks",

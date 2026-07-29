@@ -73,6 +73,8 @@ select{width:100%;appearance:none;font-family:var(--sans);font-size:17px;font-we
 .row .rname{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.13em;color:var(--ink);margin-bottom:6px;display:flex;justify-content:space-between;gap:12px}
 .row .rname i{font-style:normal;color:var(--ink-soft);letter-spacing:.14em;margin-right:8px}
 .row .rdelta{color:var(--ink-soft);letter-spacing:.06em;text-align:right;font-variant-numeric:tabular-nums}
+.row .rstats{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.row .rvalue{font-family:var(--mono);font-size:16px;font-weight:600;letter-spacing:.01em;color:var(--ink);text-transform:none}
 .track{position:relative;height:21px}
 .track .grid{position:absolute;inset:0;pointer-events:none}
 .track .grid i{position:absolute;top:0;bottom:0;width:1px;background:var(--rule-soft)}
@@ -106,6 +108,11 @@ footer{margin-top:50px;padding-top:14px;border-top:1px solid var(--rule);font-fa
 footer a{color:var(--ink)}
 footer .madeby{display:block;text-align:center;margin-top:30px}
 :focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+@media(max-width:700px){
+  .row .rname{font-size:10px;gap:8px}
+  .row .rvalue{font-size:14px}
+  .val{display:none}
+}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -714,8 +721,7 @@ function renderOne(cs){
   }
 
   const lo=Math.min(0,...known), hi=Math.max(0,...known), span=(hi-lo)||1;
-  const zero=((0-lo)/span)*100, leader=Math.max(...known);
-  const leaderName=list.find(o=>o.v===leader).c.nome;
+  const zero=((0-lo)/span)*100;
 
   list.forEach(o=>{
     const v=o.v;
@@ -725,11 +731,12 @@ function renderOne(cs){
     const ix=document.createElement("i"); ix.textContent=pad2(o.i);
     nm.appendChild(ix); nm.appendChild(document.createTextNode(o.c.nome+" ("+o.c.prov+")"));
     head.appendChild(nm);
-    if (typeof v==="number" && known.length>1 && leader!==0){
-      const d=document.createElement("span"); d.className="rdelta";
-      const delta=((v-leader)/Math.abs(leader))*100;
-      d.textContent = v===leader ? "massimo" : (Math.abs(delta)<0.05 ? "in pari" : nf(1,1).format(delta)+" %");
-      head.appendChild(d);
+    if (typeof v==="number"){
+      const stats=document.createElement("span"); stats.className="rstats";
+      const rv=document.createElement("span"); rv.className="rvalue";
+      rv.textContent=fmt(v,kind);
+      stats.appendChild(rv);
+      head.appendChild(stats);
     }
     r.appendChild(head);
 
@@ -746,18 +753,14 @@ function renderOne(cs){
       const pv=((v-lo)/span)*100, left=Math.min(zero,pv), width=Math.max(Math.abs(pv-zero),0.4);
       const bar=document.createElement("div"); bar.className="bar"+(v<0?" neg":"");
       bar.style.left=left+"%"; bar.style.width=width+"%"; track.appendChild(bar);
-      const val=document.createElement("div"); val.className="val"; val.textContent=fmt(v,kind);
-      const end=left+width;
-      if (end>68){ val.style.right=(100-left)+"%"; val.style.paddingRight="10px"; }
-      else { val.style.left=end+"%"; val.style.paddingLeft="10px"; }
-      track.appendChild(val); r.appendChild(track);
+      r.appendChild(track);
     }
     wrap.appendChild(r);
   });
 
   const src=document.createElement("div"); src.className="source";
   const l=document.createElement("span");
-  l.textContent = known.length>1 ? "Scarto percentuale rispetto al valore più alto, "+leaderName+"." : "Un solo valore disponibile.";
+  l.textContent = known.length>1 ? "Valori reali per ciascun comune; la barra e una guida visiva al confronto." : "Un solo valore disponibile.";
   const actions=document.createElement("div");
   actions.style.display="flex";
   actions.style.gap="8px";
@@ -885,7 +888,7 @@ function buildExportCard(cs){
   title.style.fontWeight="800";
   title.style.letterSpacing="-.02em";
   title.style.lineHeight="1";
-  title.textContent="Confronto comuni italiani · Cruscotti";
+  title.textContent="Confronto comuni italiani · glopardo.com/cruscotti";
   card.appendChild(title);
 
   const sub=document.createElement("div");
@@ -980,13 +983,13 @@ async function exportPdf(cs){
     }
 
     const siteUrl="https://glopardo.com/cruscotti";
-    const nameUrl="https://glopardo.com/cruscotti";
+    const nameUrl="https://glopardo.com";
     const linkColor=[90,100,108];
 
     pdf.setPage(1);
     pdf.setFontSize(9);
     pdf.setTextColor(linkColor[0],linkColor[1],linkColor[2]);
-    pdf.textWithLink("Progetto Cruscotti", margin, 8, { url: siteUrl });
+    pdf.textWithLink("glopardo.com/cruscotti", margin, 8, { url: siteUrl });
 
     pdf.setPage(pdf.getNumberOfPages());
     const nameText="Gianluigi Lopardo";
