@@ -759,8 +759,7 @@ function renderOne(cs){
   });
 
   const src=document.createElement("div"); src.className="source";
-  const l=document.createElement("span");
-  l.textContent = known.length>1 ? "Valori reali per ciascun comune; la barra e una guida visiva al confronto." : "Un solo valore disponibile.";
+  src.style.justifyContent="flex-end";
   const actions=document.createElement("div");
   actions.style.display="flex";
   actions.style.gap="8px";
@@ -768,7 +767,7 @@ function renderOne(cs){
   const imgBtn=document.createElement("button"); imgBtn.className="linkbtn"; imgBtn.textContent="Salva PNG ricerca";
   imgBtn.onclick=async()=>{ imgBtn.disabled=true; try{ await exportImage(cs); } finally{ imgBtn.disabled=false; } };
   actions.appendChild(imgBtn); actions.appendChild(b);
-  src.appendChild(l); src.appendChild(actions); wrap.appendChild(src);
+  src.appendChild(actions); wrap.appendChild(src);
   out.appendChild(wrap);
 }
 
