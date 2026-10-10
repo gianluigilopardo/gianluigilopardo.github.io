@@ -181,6 +181,11 @@ ninja.data = [{
           description: "Multi-topic exposure trends from S&amp;P 500 earnings call transcripts.",
           section: "Projects",handler: () => {
               window.location.href = "/projects/corporatetalks/";
+            },},{id: "projects-italian-municipalities-dashboard",
+          title: 'Italian Municipalities Dashboard',
+          description: "Interactive dashboard for comparing Italian municipalities using public indicators.",
+          section: "Projects",handler: () => {
+              window.location.href = "/projects/cruscotti/";
             },},{id: "projects-genai-talks-dashboard",
           title: 'GenAI Talks Dashboard',
           description: "Interactive dashboard tracking Generative AI discussion and sentiment in S&amp;P 500 earnings calls.",
