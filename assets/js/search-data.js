@@ -18,31 +18,17 @@ ninja.data = [{
           },
         },{id: "nav-projects",
           title: "projects",
-          description: "a growing collection of cool projects (building) // see more on my GitHub",
+          description: "Dashboards and tools I&#39;ve built. More on GitHub.",
           section: "Navigation",
           handler: () => {
             window.location.href = "/projects/";
           },
         },{id: "nav-cv",
-          title: "cv",
-          description: "this is a summary of my CV beyond projects and publications",
+          title: "CV",
+          description: "Experience, education, teaching, talks and technical skills.",
           section: "Navigation",
           handler: () => {
             window.location.href = "/cv/";
-          },
-        },{id: "nav-cruscotti-it",
-          title: "Cruscotti IT",
-          description: "",
-          section: "Navigation",
-          handler: () => {
-            window.location.href = "/cruscotti/";
-          },
-        },{id: "nav-corporate-talks",
-          title: "Corporate Talks",
-          description: "Interactive visualization of US corporate earnings call topic exposures.",
-          section: "Navigation",
-          handler: () => {
-            window.location.href = "/corporatetalks/";
           },
         },{id: "news-my-phd-journey-begins",
           title: 'My PhD journey begins!',
@@ -173,21 +159,21 @@ ninja.data = [{
           section: "News",},{id: "news-ioana-will-present-our-work-the-cost-of-stablecoins-as-settlement-token-a-case-study-based-on-ethereum-data-at-the-24th-seminar-on-financial-market-infrastructures-of-bank-of-finland-in-helsinki",
           title: 'Ioana will present our work The Cost of Stablecoins as Settlement Token: a...',
           description: "",
-          section: "News",},{id: "news-we-will-present-our-work-predicting-oil-prices-with-llms-tapping-into-opec-and-iea-reports-at-the-2nd-conference-on-applied-macroeconomics-bank-of-canada-bank-of-italy-bi-norwegian-business-school-bank-of-italy-rome-8-9-october-2026",
-          title: 'We will present our work Predicting Oil Prices with LLMs: Tapping into OPEC...',
+          section: "News",},{id: "news-we-presented-our-work-predicting-oil-prices-with-llms-tapping-into-opec-and-iea-reports-at-the-2nd-conference-on-applied-macroeconomics-bank-of-canada-bank-of-italy-bi-norwegian-business-school-bank-of-italy-rome-8-9-october-2026",
+          title: 'We presented our work Predicting Oil Prices with LLMs: Tapping into OPEC and...',
           description: "",
-          section: "News",},{id: "projects-corporate-talks-dashboard",
-          title: 'Corporate Talks Dashboard',
+          section: "News",},{id: "projects-corporate-talks",
+          title: 'Corporate Talks',
           description: "Multi-topic exposure trends from S&amp;P 500 earnings call transcripts.",
           section: "Projects",handler: () => {
               window.location.href = "/projects/corporatetalks/";
-            },},{id: "projects-italian-municipalities-dashboard",
-          title: 'Italian Municipalities Dashboard',
+            },},{id: "projects-cruscotti-it",
+          title: 'Cruscotti IT',
           description: "Interactive dashboard for comparing Italian municipalities using public indicators.",
           section: "Projects",handler: () => {
               window.location.href = "/projects/cruscotti/";
-            },},{id: "projects-genai-talks-dashboard",
-          title: 'GenAI Talks Dashboard',
+            },},{id: "projects-genai-talks",
+          title: 'GenAI Talks',
           description: "Interactive dashboard tracking Generative AI discussion and sentiment in S&amp;P 500 earnings calls.",
           section: "Projects",handler: () => {
               window.location.href = "/projects/genaitalks/";
@@ -215,7 +201,7 @@ ninja.data = [{
         title: 'LinkedIn',
         section: 'Socials',
         handler: () => {
-          window.open("https://www.linkedin.com/in/gianluigilopardo", "_blank");
+          window.open("https://www.linkedin.com/in/gianluigilopardo/", "_blank");
         },
       },{
         id: 'social-scholar',
