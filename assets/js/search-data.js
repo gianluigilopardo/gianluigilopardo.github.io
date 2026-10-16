@@ -18,14 +18,14 @@ ninja.data = [{
           },
         },{id: "nav-projects",
           title: "projects",
-          description: "Dashboards and tools I&#39;ve built. More on GitHub.",
+          description: "dashboards and tools I&#39;ve built // see more on GitHub",
           section: "Navigation",
           handler: () => {
             window.location.href = "/projects/";
           },
         },{id: "nav-cv",
           title: "CV",
-          description: "Experience, education, teaching, talks and technical skills.",
+          description: "experience, education, teaching, talks and technical skills",
           section: "Navigation",
           handler: () => {
             window.location.href = "/cv/";
@@ -156,8 +156,8 @@ ninja.data = [{
           section: "News",},{id: "news-cruscotti-it-is-now-online-a-multi-municipality-comparison-dashboard-based-on-public-cruscotto-italia-data-with-csv-png-pdf-export",
           title: 'Cruscotti IT is now online: a multi-municipality comparison dashboard based on public Cruscotto...',
           description: "",
-          section: "News",},{id: "news-ioana-will-present-our-work-the-cost-of-stablecoins-as-settlement-token-a-case-study-based-on-ethereum-data-at-the-24th-seminar-on-financial-market-infrastructures-of-bank-of-finland-in-helsinki",
-          title: 'Ioana will present our work The Cost of Stablecoins as Settlement Token: a...',
+          section: "News",},{id: "news-ioana-presented-our-work-the-cost-of-stablecoins-as-settlement-token-a-case-study-based-on-ethereum-data-at-the-24th-seminar-on-financial-market-infrastructures-of-bank-of-finland-in-helsinki",
+          title: 'Ioana presented our work The Cost of Stablecoins as Settlement Token: a Case...',
           description: "",
           section: "News",},{id: "news-we-presented-our-work-predicting-oil-prices-with-llms-tapping-into-opec-and-iea-reports-at-the-2nd-conference-on-applied-macroeconomics-bank-of-canada-bank-of-italy-bi-norwegian-business-school-bank-of-italy-rome-8-9-october-2026",
           title: 'We presented our work Predicting Oil Prices with LLMs: Tapping into OPEC and...',
