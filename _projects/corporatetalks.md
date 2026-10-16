@@ -1,9 +1,10 @@
 ---
 layout: page
-title: Corporate Talks Dashboard
+title: Corporate Talks
 description: Multi-topic exposure trends from S&P 500 earnings call transcripts.
 img: assets/img/corporate_talks.png
-importance: 1
+redirect: /corporatetalks/
+importance: 2
 category: data
 related_publications: false
 ---

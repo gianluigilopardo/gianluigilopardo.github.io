@@ -1,9 +1,10 @@
 ---
 layout: page
-title: GenAI Talks Dashboard
+title: GenAI Talks
 description: Interactive dashboard tracking Generative AI discussion and sentiment in S&P 500 earnings calls.
 img: assets/img/genai_talks.png
-importance: 2
+redirect: /genaitalks/
+importance: 3
 category: data
 related_publications: false
 ---

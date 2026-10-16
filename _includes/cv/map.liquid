@@ -1,29 +1,25 @@
-<table class="table table-cv table-sm table-borderless table-responsive">
+<div class="cv-map">
   {% for content in entry.contents %}
-    <tr>
-      <td class="p-1 pr-2 font-weight-bold">
-        <b>{{ content.name }}</b>
-      </td>
+    <div class="cv-map-row">
+      <div class="cv-map-name">{{ content.name }}</div>
       {% if content.value %}
-        <td class="p-1 pl-2 font-weight-light text">{{ content.value }}</td>
+        <div class="cv-map-value">{{ content.value }}</div>
       {% endif %}
       {% if content.links %}
-        <td class="p-1 pl-2 font-weight-light text">
-          <div class="container-pdf">
-            {% for item in content.links %}
-              {% if item.link %}
-                <div class="container-link-button">
-                  {% if item.name %}
-                    <a href="{{ item.link }}" target="_blank" class="btncv z-depth-0">{{ item.name }}</a>
-                  {% else %}
-                    <a href="{{ item.link }}" target="_blank" class="btncv z-depth-0">doc</a>
-                  {% endif %}
-                </div>
-              {% endif %}
-            {% endfor %}
-          </div>
-        </td>
+        <div class="cv-map-links container-pdf">
+          {% for item in content.links %}
+            {% if item.link %}
+              <div class="container-link-button">
+                {% if item.name %}
+                  <a href="{{ item.link }}" target="_blank" rel="noopener noreferrer" class="btncv z-depth-0">{{ item.name }}</a>
+                {% else %}
+                  <a href="{{ item.link }}" target="_blank" rel="noopener noreferrer" class="btncv z-depth-0">doc</a>
+                {% endif %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
       {% endif %}
-    </tr>
+    </div>
   {% endfor %}
-</table>
+</div>

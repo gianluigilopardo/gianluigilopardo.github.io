@@ -19,7 +19,7 @@ social: true # includes social icons at the bottom of the page
 announcements:
   enabled: true # includes a list of news items
   scrollable: true # adds a vertical scroll bar if there are more than 3 news items
-  limit: 10 # leave blank to include all the news in the `_news` folder
+  limit: 5 # leave blank to include all the news in the `_news` folder
 
 latest_posts:
   enabled: false
@@ -27,6 +27,10 @@ latest_posts:
   limit: 3 # leave blank to include all the blog posts
 ---
 
-Hi there! 👋 I'm a **quantitative researcher** at the intersection of AI, risk and economics. I currently work as a **senior credit risk modeller** at <a href='https://www.prometeia.com/'>Prometeia</a>, where I develop and validate **IFRS 9 and regulatory credit models** for European banks. I also maintain an active research collaboration with the <a href='https://www.ecb.europa.eu/pub/research/authors/profiles/gianluigi-lopardo.en.html'>European Central Bank</a> on **AI methods for economic research**, within the International Policy Analysis Division. Before joining Prometeia, I was a **research analyst** at the <a href='https://www.ecb.europa.eu/pub/research/authors/profiles/gianluigi-lopardo.en.html'>ECB</a> in Frankfurt. I hold a **PhD** from <a href='https://inria.fr'>Inria</a> and <a href='https://univ-cotedazur.fr/'>Université Côte d'Azur</a>: my <a href='https://theses.hal.science/tel-04917007/'>thesis</a> focused on the **foundations of machine learning interpretability**, under the supervision of <a href='https://sites.google.com/view/damien-garreau/home'>Damien Garreau</a> and <a href='https://webusers.i3s.unice.fr/~precioso/'>Frédéric Precioso</a>. Previously, I earned an **MSc in mathematical engineering** and a **BSc in applied mathematics**, both from <a href='https://www.polito.it/'>Politecnico di Torino</a>. 
+Hi there! 👋 I'm a **quantitative researcher** working across machine learning, risk and economic policy. I'm interested in building models that are not only accurate, but also interpretable and trustworthy enough to inform real decisions.
 
-Drop me a line if you're ever in Rome or <a href='https://www.discoverbrienza.it'>Brienza</a>! 
+I'm a **senior risk modeller** at [Prometeia](https://www.prometeia.com/), where I develop and validate credit risk models for European banks. I also collaborate with the [European Central Bank](https://www.ecb.europa.eu/pub/research/authors/profiles/gianluigi-lopardo.en.html), where I previously worked as a research analyst in the International Policy Analysis Division. Our recent work uses large language models to [forecast oil prices](https://www.ecb.europa.eu/press/conferences/shared/pdf/20260323_forecasting/Lopardo_poster.pdf) and to [study how firms' exposure to generative AI relates to their stock returns](https://www.ecb.europa.eu/pub/pdf/scpwps/ecb.wp3093~458d28b4bc.en.pdf).
+
+I hold a **PhD** from [Inria](https://inria.fr) and [Université Côte d'Azur](https://univ-cotedazur.fr/), where I studied the foundations of machine learning interpretability under the supervision of [Damien Garreau](https://sites.google.com/view/damien-garreau/home) and [Frédéric Precioso](https://webusers.i3s.unice.fr/~precioso/). My [thesis](https://theses.hal.science/tel-04917007/) received the [**2025 Young Researcher Prize**](https://math.univ-cotedazur.fr/laboratoire/news/phd-awards-0) from Métropole Nice Côte d'Azur. Before that, I studied mathematical engineering and applied mathematics at [Politecnico di Torino](https://www.polito.it/).
+
+Away from work, I'm usually on my bike, hiking or [running](https://www.strava.com/athletes/95147093). Drop me a line if you're ever in Rome or [Brienza](https://www.discoverbrienza.it)!

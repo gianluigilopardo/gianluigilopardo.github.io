@@ -3,7 +3,7 @@ layout: page
 title: Hack the Act! 
 description: An AI chatbot designed to demystify the EU AI Act
 img: assets/img/hacktheact_zoom.png
-importance: 3
+importance: 4
 category: fun
 related_publications: false
 ---

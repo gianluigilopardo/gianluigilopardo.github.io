@@ -2,7 +2,7 @@
 layout: page
 title: projects
 permalink: /projects/
-description: a growing collection of cool projects (building) // see more on my <a href='https://github.com/gianluigilopardo'>GitHub</a> 
+description: Dashboards and tools I've built. More on GitHub.
 nav: true
 nav_order: 3
 # display_categories: [work, fun]

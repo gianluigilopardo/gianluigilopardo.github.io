@@ -13,11 +13,11 @@ layout: default
             {% else %}
               href="{{ page.cv_pdf | prepend: 'assets/pdf/' | relative_url }}"
             {% endif %}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="float-right"
+            {% unless page.cv_pdf contains '://' %}download{% endunless %}
+            class="btn btn-outline-primary btn-sm cv-download"
           >
-            <i class="fa-solid fa-file-pdf"></i>
+            <i class="fa-solid fa-file-pdf" aria-hidden="true"></i>
+            <span>Download PDF</span>
           </a>
         {% endif %}
       </h1>
@@ -64,11 +64,11 @@ layout: default
             {% else %}
               href="{{ page.cv_pdf | prepend: 'assets/pdf/' | relative_url }}"
             {% endif %}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="float-right"
+            {% unless page.cv_pdf contains '://' %}download{% endunless %}
+            class="btn btn-outline-primary btn-sm cv-download"
           >
-            <i class="fa-solid fa-file-pdf"></i>
+            <i class="fa-solid fa-file-pdf" aria-hidden="true"></i>
+            <span>Download PDF</span>
           </a>
         {% endif %}
       </h1>

@@ -1,9 +1,10 @@
 ---
 layout: page
-title: Italian Municipalities Dashboard
+title: Cruscotti IT
 description: Interactive dashboard for comparing Italian municipalities using public indicators.
 img: assets/img/cruscotti.png
-importance: 3
+redirect: /cruscotti/
+importance: 1
 category: data
 related_publications: false
 ---

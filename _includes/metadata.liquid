@@ -121,7 +121,7 @@
     {% assign sameaslinks = sameaslinks | push: link %}
   {% endif %}
   {% if site.linkedin_username %}
-    {% capture link %}https://www.linkedin.com/in/{{ site.linkedin_username }}{% endcapture %}
+    {% capture link %}https://www.linkedin.com/in/{{ site.linkedin_username }}/{% endcapture %}
     {% assign sameaslinks = sameaslinks | push: link %}
   {% endif %}
   {% if site.x_username %}

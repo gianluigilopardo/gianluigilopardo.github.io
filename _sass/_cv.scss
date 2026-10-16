@@ -6,15 +6,6 @@ div.container-link-button {
   margin-right: 0.5rem;
 }
 
-table.table-cv {
-  background-color: transparent !important;
-
-  td,
-  th {
-    padding: 1px;
-  }
-}
-
 a.btncv {
   color: var(--global-text-color) !important;
   border: 1px solid var(--global-text-color) !important;
@@ -42,9 +33,64 @@ a.btncv:hover {
  * CV TIME_TABLE styles
  *****************************/
 
-p.location {
-  font-size: 0.7rem;
-  white-space: nowrap;
+.cv .card {
+  overflow: hidden;
+  padding: 1.25rem !important;
+}
+
+.cv .card-title {
+  margin-bottom: 1rem;
+  font-size: 1.35rem;
+  line-height: 1.3;
+}
+
+.cv-entry {
+  display: grid;
+  grid-template-columns: minmax(8.5rem, 12rem) minmax(0, 1fr);
+  gap: 0.25rem 1.25rem;
+  align-items: start;
+  padding: 1rem 0.5rem;
+}
+
+.cv-entry-no-date {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.cv-entry-meta,
+.cv-entry-content {
+  min-width: 0;
+}
+
+.cv-date {
+  display: inline-block;
+  max-width: 100%;
+  padding: 0.35rem 0.55rem;
+  font-size: 0.75rem;
+  line-height: 1.3;
+  text-align: left;
+  white-space: normal;
+}
+
+.cv-entry-title {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.cv .location {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  margin: 0.5rem 0 0;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  white-space: normal;
+}
+
+.cv .iconlocation {
+  flex: 0 0 auto;
+  margin-top: 0.15rem;
 }
 
 i.iconlocation {
@@ -64,12 +110,50 @@ i.icondepartment {
   margin-right: 0.3rem;
 }
 
-table.institution {
-  margin-bottom: 1rem;
+.cv-affiliations {
+  display: grid;
+  gap: 0.3rem;
+  margin-bottom: 0.65rem;
 }
 
-td.department {
-  font-size: 0.8rem;
+.cv-affiliation {
+  display: grid;
+  grid-template-columns: 1rem minmax(0, 1fr);
+  gap: 0.4rem;
+  align-items: start;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.cv-department {
+  font-size: 0.82rem;
+}
+
+.cv-main-description,
+.cv .items {
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.cv .items {
+  margin: 0.5rem 0 0.25rem;
+  padding-left: 1.25rem;
+}
+
+.cv .items li + li {
+  margin-top: 0.25rem;
+}
+
+.cv .item-title {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-weight: 700;
+}
+
+.cv .subitems {
+  margin-top: 0.15rem;
+  padding-left: 1.25rem;
 }
 
 div.container-links {
@@ -92,6 +176,76 @@ div.container-pdf {
   flex-wrap: wrap;
   align-items: center;
   justify-content: flex-start;
+}
+
+.cv-map {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.cv-map-row {
+  display: grid;
+  grid-template-columns: minmax(10rem, 0.35fr) minmax(0, 1fr);
+  gap: 0.25rem 1rem;
+  align-items: start;
+}
+
+.cv-map-name {
+  font-weight: 700;
+}
+
+.cv-map-value {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.cv-map-links {
+  grid-column: 2;
+}
+
+.cv a {
+  overflow-wrap: anywhere;
+}
+
+.cv-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-left: 0.75rem;
+  font-size: 0.85rem;
+  vertical-align: middle;
+}
+
+@media (max-width: 575.98px) {
+  .cv .card {
+    padding: 1rem !important;
+  }
+
+  .cv-entry {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.5rem;
+    padding: 0.9rem 0.25rem;
+  }
+
+  .cv-entry-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 0.75rem;
+  }
+
+  .cv .location {
+    margin: 0;
+  }
+
+  .cv-map-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.15rem;
+  }
+
+  .cv-map-links {
+    grid-column: 1;
+  }
 }
 
 /*****************************

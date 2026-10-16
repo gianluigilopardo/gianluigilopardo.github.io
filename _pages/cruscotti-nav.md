@@ -2,7 +2,7 @@
 layout: none
 title: Cruscotti IT
 permalink: /cruscotti/
-nav: true
+nav: false
 nav_order: 8
 ---
 <script>
