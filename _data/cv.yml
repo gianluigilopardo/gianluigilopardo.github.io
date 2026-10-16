@@ -134,11 +134,10 @@
         - title: 2026
           contents:
             - 'Presented <a href="https://www.ecb.europa.eu/press/conferences/shared/pdf/20260323_forecasting/Lopardo_poster.pdf">Predicting Oil Prices with LLMs</a> at the <a href="https://www.ecb.europa.eu/press/conferences/html/20260323_13th_conference_on_forecasting_techniques.en.html">13th ECB Conference on Forecasting Techniques</a> (Frankfurt).'
-            - 'Presented <a href="https://www.ecb.europa.eu/press/conferences/shared/pdf/20260323_forecasting/Lopardo_poster.pdf">Predicting Oil Prices with LLMs</a> at the <a href="https://www.bancaditalia.it/media/notizie/2026/Call_for_papers_2026_applied-macroeconomics.pdf?language_id=1">2nd Conference on Applied Macroeconomics</a> (Rome).'
         - title: 2025
           contents:
-            - Presented the ECB working paper on firms' GenAI exposure at the ECB IPA Economic Seminar.
-            - Presented research on the financial impact of AI at the 2nd ECB AI in Economics workshop.
+            - 'Presented the <a href="https://www.ecb.europa.eu/pub/pdf/scpwps/ecb.wp3093~458d28b4bc.en.pdf">ECB working paper on firms'' GenAI exposure</a> at the ECB IPA Economic Seminar.'
+            - 'Presented <a href="https://www.ecb.europa.eu/pub/pdf/scpwps/ecb.wp3093~458d28b4bc.en.pdf">research on the financial impact of AI</a> at the 2nd ECB AI in Economics workshop.'
         - title: 2024
           contents:
             - 'Presented <a href="https://proceedings.mlr.press/v235/lopardo24a.html">Attention Meets Post-hoc Interpretability</a> at ICML 2024 (Vienna).'
@@ -149,13 +148,13 @@
           contents:
             - 'Presented <a href="https://proceedings.mlr.press/v206/lopardo23a.html">A Sea of Words: An In-Depth Analysis of Anchors for Text Data</a> at AISTATS 2023 (Valencia).'
             - 'Presented <a href="https://arxiv.org/abs/2111.08749">SMACE</a> to the AI4Media network (Florence).'
-            - 'Presented research at <a href="https://jds2023.sciencesconf.org/resource/page/id/8">Journées de Statistique</a> (Brussels).'
+            - 'Presented <a href="https://arxiv.org/abs/2303.08806">Understanding Post-hoc Explainers: The Case of Anchors</a> at <a href="https://jds2023.sciencesconf.org/resource/page/id/8">Journées de Statistique</a> (Brussels).'
             - Talk at the Inria Maasai seminar.
         - title: 2022
           contents:
-            - Presented SMACE at ECML 2022 (Grenoble).
+            - 'Presented <a href="https://link.springer.com/chapter/10.1007/978-3-031-26387-3_20">SMACE</a> at ECML 2022 (Grenoble).'
             - 'Talk at the <a href="https://sites.google.com/view/nwi2022/home">1st Nice Workshop on Interpretability</a>.'
-            - 'Talk at the <a href="https://xaie-icpr.labri.fr/">Workshop on Explainable and Ethical AI @ ICPR 2022</a> (Montreal).'
+            - 'Presented <a href="https://arxiv.org/abs/2207.01420">Comparing Feature Importance and Rule Extraction for Interpretability on Text Data</a> at the <a href="https://xaie-icpr.labri.fr/">Workshop on Explainable and Ethical AI @ ICPR 2022</a> (Montreal).'
         - title: 2021
           contents:
             - 'Talk at the <a href="https://univ-cotedazur.eu/events/sophia-summit">SophIA Summit</a>.'
@@ -164,7 +163,7 @@
   type: map
   contents:
     - name: Programming Languages
-      value: Python (advanced), R, MATLAB (proficient), Julia, Stata (intermediate), SQL, C, Java (base)
+      value: Python, R, MATLAB, Julia, Stata, SQL, C, Java, SAS
     - name: Machine Learning & NLP
       value: Language Models (OpenAI, Azure, Ollama), retrieval-augmented generation (LangChain, vector DBs), transformer architectures (PyTorch, Hugging Face), interpretability methods, sentiment analysis, topic modeling
     - name: Econometrics & Statistics

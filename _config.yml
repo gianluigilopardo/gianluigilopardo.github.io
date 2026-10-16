@@ -8,8 +8,7 @@ middle_name:
 last_name: Lopardo
 contact_note: >
   Feel free to reach out to me through any of these channels. 
-description: > # the ">" symbol means to ignore newlines until "footer_text:"
-  Quantitative researcher at the intersection of AI, risk and economics. Credit risk modeller at Prometeia, ECB research collaborator, PhD in machine learning.
+description: "Quantitative researcher and data scientist with a PhD in machine learning, working on risk modelling and AI for economic policy. Prometeia, European Central Bank."
 footer_text: "Views expressed on this website are my own and those of my coauthors, and do not necessarily reflect those of the institutions I am or have been affiliated with."
 keywords: quantitative-researcher, credit-risk, ifrs9, machine-learning, artificial-intelligence, llm, nlp, economics, interpretability, lopardo 
 lang: en # the language of your site (for example: en, fr, cn, ru, etc.)
